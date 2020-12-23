@@ -15,11 +15,27 @@ executable paracletus
     main-is: Main.hs
     hs-source-dirs: src
     other-modules: UPrelude
+                   Artos
+                   Artos.Data
+                   Artos.Except
+                   Artos.Queue
+                   Artos.Var
+                   Paracletus
+                   Paracletus.Data
+                   Paracletus.Vulkan
+                   Anamnesis
+                   Anamnesis.Data
+                   Anamnesis.Init
+                   Anamnesis.Util
     default-language: Haskell2010
     ghc-options: -O2 -fexcess-precision -threaded -eventlog -rtsopts -feager-blackholing
     build-depends: base
                  , base-unicode-symbols
                  , filepath
+                 , stm
+                 , mtl
+                 , monad-logger
+                 , time
     default-extensions: DataKinds
                         ExplicitForAll
                         FlexibleInstances
