@@ -13,8 +13,9 @@ import UPrelude
 import Control.Concurrent
 import qualified Control.Monad.Logger.CallStack as LoggerCS
 import Data.String (fromString)
---import Data.Time.Clock.System
+import Data.Time.Clock.System
 import GHC.Stack
+import Graphics.Vulkan
 import System.Exit
 import Anamnesis
 import Anamnesis.Data
@@ -74,14 +75,14 @@ loop action = do
   status ← locally action
   if status ≡ ContinueLoop then loop action else return ()
 
---getTime :: Anamnesis ε σ Double
---getTime = do
---  now <- liftIO getSystemTime
---  start <- sStartTime <$> get
---  let deltaSeconds      = systemSeconds now - systemSeconds start
---      deltaNS :: Int64  = fromIntegral (systemNanoseconds now)  - fromIntegral (systemNanoseconds start)
---      seconds :: Double = fromIntegral deltaSeconds + fromIntegral deltaNS / 1e9
---  return seconds
+getTime :: Anamnesis ε σ Double
+getTime = do
+  now <- liftIO getSystemTime
+  start <- stStartT <$> get
+  let deltaSeconds      = systemSeconds now - systemSeconds start
+      deltaNS :: Int64  = fromIntegral (systemNanoseconds now)  - fromIntegral (systemNanoseconds start)
+      seconds :: Double = fromIntegral deltaSeconds + fromIntegral deltaNS / 1e9
+  return seconds
 
 -- debugging flags
 isDev ∷ Bool

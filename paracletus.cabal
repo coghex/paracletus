@@ -22,9 +22,32 @@ executable paracletus
                    Artos.Var
                    Paracletus
                    Paracletus.Data
+                   Paracletus.TH
                    Paracletus.Vulkan
+                   Paracletus.Vulkan.Atlas
+                   Paracletus.Vulkan.Buffer
+                   Paracletus.Vulkan.Command
+                   Paracletus.Vulkan.Data
+                   Paracletus.Vulkan.Desc
+                   Paracletus.Vulkan.Device
+                   Paracletus.Vulkan.Draw
+                   Paracletus.Vulkan.Foreign
+                   Paracletus.Vulkan.Instance
+                   Paracletus.Vulkan.Load
+                   Paracletus.Vulkan.Pipeline
+                   Paracletus.Vulkan.Pres
+                   Paracletus.Vulkan.Shader
+                   Paracletus.Vulkan.Sync
+                   Paracletus.Vulkan.Texture
+                   Paracletus.Vulkan.Trans
+                   Paracletus.Vulkan.Vertex
+                   Paracletus.Oblatum
+                   Paracletus.Oblatum.Callback
+                   Paracletus.Oblatum.Font
+                   Paracletus.Oblatum.GLFW
                    Anamnesis
                    Anamnesis.Data
+                   Anamnesis.Foreign
                    Anamnesis.Init
                    Anamnesis.Util
     default-language: Haskell2010
@@ -32,10 +55,25 @@ executable paracletus
     build-depends: base
                  , base-unicode-symbols
                  , filepath
+                 , directory
                  , stm
                  , mtl
                  , monad-logger
                  , time
+                 , vulkan-api >= 1.3
+                 , easytensor
+                 , easytensor-vulkan
+                 , JuicyPixels
+                 , freetype2
+                 , containers
+                 , dimensions
+                 , process
+                 , hslua
+                 , GLFW-b
+                 , vector
+                 , bytestring
+                 , split
+                 , template-haskell
     default-extensions: DataKinds
                         ExplicitForAll
                         FlexibleInstances
