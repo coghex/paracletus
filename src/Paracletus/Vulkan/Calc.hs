@@ -10,11 +10,10 @@ import Prelude()
 import UPrelude
 import Graphics.Vulkan.Core_1_0
 import Numeric.DataFrame
+import Epiklesis.Data
 import Paracletus.Data
 import Paracletus.Vulkan.Atlas
 import Paracletus.Vulkan.Vertex
-
-data GTile = GTile
 
 -- determines dataframes from drawstate
 calcVertices ∷ [GTile] →  (DataFrame Vertex '[XN 0], DataFrame Word32 '[XN 3])

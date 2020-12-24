@@ -6,6 +6,7 @@ import Prelude()
 import UPrelude
 import qualified Control.Monad.Logger as Logger
 import Data.Time.Clock.System
+import qualified Foreign.Lua as Lua
 import Anamnesis
 import Anamnesis.Data
 import Artos.Except
@@ -23,9 +24,11 @@ initEnv = do
   newQ1 ← newQueue
   newQ2 ← newCmdQueue
   newC1 ← newTChan
+  newLS ← Lua.newstate
   atomically $ newTVar Env { envEventQ = newQ1
                            , envLoadQ  = newQ2
-                           , envLoadCh = newC1 }
+                           , envLoadCh = newC1
+                           , envLuaSt  = newLS }
 initState ∷ IO (TVar State)
 initState = do
   let ref = AExcept (Just AnamnSuccess) ExAnamnesis ""

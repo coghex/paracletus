@@ -3,6 +3,7 @@ module Anamnesis.Data where
 -- data for continuation monad
 import Data.Time.Clock.System
 import qualified Control.Monad.Logger as Logger
+import qualified Foreign.Lua as Lua
 import Artos.Data
 import Artos.Except
 import Artos.Queue
@@ -17,7 +18,8 @@ data LoopControl = ContinueLoop | AbortLoop deriving Eq
 -- env should only hold pointers/references
 data Env = Env { envEventQ ∷ Queue Event
                , envLoadQ  ∷ Queue LoadCmd
-               , envLoadCh ∷ TChan TState }
+               , envLoadCh ∷ TChan TState
+               , envLuaSt  ∷ Lua.State }
 -- state holds mutable data, and the
 -- current status of the whole App
 data State = State { stStatus  ∷ AExcept

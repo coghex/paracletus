@@ -21,6 +21,8 @@ import Artos.Data
 import Artos.Except
 import Artos.Queue
 import Artos.Var
+import Epiklesis
+import Epiklesis.Data
 import Paracletus.Data
 import Paracletus.Load
 import Paracletus.Vulkan.Buffer
@@ -66,8 +68,11 @@ runParacVulkan = do
     texData ← loadVulkanTextures gqdata []
     env ← ask
     st  ← get
-    -- load initial lua data from child thread
-    _ ← liftIO $ forkIO $ loadParacVulkan env
+    -- *** CHILD THREADS
+    -- epiklesis is the lua engine
+    _ ← liftIO $ forkIO $ loadEpiklesis env
+    -- paracletus loads drawstate into verticies
+    _ ← liftIO $ forkIO $ loadParacletus env Vulkan
     liftIO $ atomically $ writeChan (envLoadCh env) TStart
     -- swapchain recreation loop
     loop $ do

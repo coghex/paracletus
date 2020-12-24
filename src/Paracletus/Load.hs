@@ -1,5 +1,7 @@
 {-# LANGUAGE Strict #-}
-module Paracletus.Load where
+module Paracletus.Load
+  ( loadParacletus )
+where
 -- we define the thread that helps
 -- recreate the swapchain
 import Prelude()
@@ -8,6 +10,7 @@ import Artos.Data
 import Artos.Var
 import Artos.Queue
 import Anamnesis.Data
+import Epiklesis.Data
 import Paracletus.Data
 import Paracletus.Vulkan.Calc
 import Control.Concurrent (threadDelay)
@@ -26,24 +29,25 @@ loadParacletus env _        = atomically $ writeQueue ec $ EventLogDebug "dont k
 -- so loading new objects doesnt stutter the window
 loadParacVulkan ∷ Env → IO ()
 loadParacVulkan env = do
-  runLoadLoop env TStop
+  runLoadLoop env initDS TStop
+  where initDS = DrawState [] []
 
 -- load loop runs with a delay so that
 -- it can sleep (ghc threads run like that)
-runLoadLoop ∷ Env → TState → IO ()
-runLoadLoop env TStop = do
+runLoadLoop ∷ Env → DrawState → TState → IO ()
+runLoadLoop env ds TStop = do
   --loop starts almost immediately
   let timerChan = envLoadCh env
   tsnew ← atomically $ readChan timerChan
-  runLoadLoop env tsnew
-runLoadLoop env TStart = do
+  runLoadLoop env ds tsnew
+runLoadLoop env ds TStart = do
   start ← getCurrentTime
   let timerChan = envLoadCh env
   timerstate ← atomically $ tryReadChan timerChan
   tsnew ← case (timerstate) of
     Nothing → return TStart
     Just x  → return x
-  processCommands env
+  ds' ← processCommands env ds
   end ← getCurrentTime
   let diff  = diffUTCTime end start
       usecs = floor (toRational diff * 1000000) ∷ Int
@@ -51,23 +55,38 @@ runLoadLoop env TStart = do
   if delay > 0
     then threadDelay delay
     else return ()
-  runLoadLoop env tsnew
+  runLoadLoop env ds' tsnew
 -- pause not needed for this timer
-runLoadLoop _   TPause = return ()
-runLoadLoop _   TNULL  = return ()
+runLoadLoop _   _ TPause = return ()
+runLoadLoop _   _ TNULL  = return ()
 
 -- command queue processed every tick,
 -- logging any errors of all commands
-processCommands ∷ Env → IO ()
-processCommands env = do
+processCommands ∷ Env → DrawState → IO (DrawState)
+processCommands env ds = do
     mcmd ← atomically $ tryReadQueue $ envLoadQ env
     case mcmd of
       Just cmd → do
-        ret ← processCommand env cmd
-        if (ret ≠ "success") then do
-          atomically $ writeQueue (envEventQ env) $ EventLogDebug $ "load command returned: " ⧺ ret
-          processCommands env
-        else processCommands env
-      Nothing → return ()
-processCommand ∷ Env → LoadCmd → IO String 
-processCommand env cmd = return "success"
+        ret ← processCommand env ds cmd
+        case ret of
+          ResSuccess → processCommands env ds
+          ResDrawState ds' → processCommands env ds'
+          ResError str → do
+            atomically $ writeQueue (envEventQ env) $ EventLogDebug $ "load command error: " ⧺ str
+            processCommands env ds
+          ResNULL → do
+            atomically $ writeQueue (envEventQ env) $ EventLogDebug $ "load null command"
+            return ds
+      Nothing → return ds
+
+data LoadResult = ResSuccess | ResError String | ResDrawState DrawState | ResNULL deriving (Show, Eq)
+
+processCommand ∷ Env → DrawState → LoadCmd → IO LoadResult
+processCommand env ds cmd = case cmd of
+          LoadCmdNewWin win → return $ ResDrawState ds'
+            where ds' = ds { dsWins = win:(dsWins ds) }
+          LoadCmdVerts → do
+            let newVerts = if ((dsTiles ds) ≡ []) then VertsNULL else VertsDF $ calcVertices $ dsTiles ds
+            atomically $ writeQueue (envEventQ env) $ EventVerts newVerts
+            return ResSuccess
+          LoadCmdNULL → return ResNULL

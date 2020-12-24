@@ -15,17 +15,28 @@ executable paracletus
     main-is: Main.hs
     hs-source-dirs: src
     other-modules: UPrelude
+                   Anamnesis
+                   Anamnesis.Data
+                   Anamnesis.Event
+                   Anamnesis.Foreign
+                   Anamnesis.Init
+                   Anamnesis.Util
                    Artos
                    Artos.Data
                    Artos.Except
                    Artos.Queue
                    Artos.Var
+                   Epiklesis
+                   Epiklesis.Command
+                   Epiklesis.Data
                    Paracletus
                    Paracletus.Data
+                   Paracletus.Load
                    Paracletus.TH
                    Paracletus.Vulkan
                    Paracletus.Vulkan.Atlas
                    Paracletus.Vulkan.Buffer
+                   Paracletus.Vulkan.Calc
                    Paracletus.Vulkan.Command
                    Paracletus.Vulkan.Data
                    Paracletus.Vulkan.Desc
@@ -45,11 +56,6 @@ executable paracletus
                    Paracletus.Oblatum.Callback
                    Paracletus.Oblatum.Font
                    Paracletus.Oblatum.GLFW
-                   Anamnesis
-                   Anamnesis.Data
-                   Anamnesis.Foreign
-                   Anamnesis.Init
-                   Anamnesis.Util
     default-language: Haskell2010
     ghc-options: -O2 -fexcess-precision -threaded -eventlog -rtsopts -feager-blackholing
     build-depends: base
