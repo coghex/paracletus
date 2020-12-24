@@ -4,10 +4,17 @@ module Epiklesis.Data where
 -- draw state is kept in a seperate thread
 -- and calculated into verticies
 data DrawState = DrawState { dsWins  ∷ [Window]
-                           , dsTiles ∷ [GTile]
+                           , dsWinI  ∷ Int
+                           , dsLastI ∷ Int
+                           , dsTiles ∷ [Tile]
                            } deriving (Show, Eq)
 -- gtiles represent abstact tiles
-data GTile = GTile deriving (Show, Eq)
+data Tile = GTile { tPos   ∷ (Double,Double)
+                  , tScale ∷ (Double,Double)
+                  , tInd   ∷ (Int,Int)
+                  , tSize  ∷ (Int,Int)
+                  , tT     ∷ Int
+                  } deriving (Show, Eq)
 
 -- abstract idea of what a window can be
 data Window = Window { winTitle  ∷ String

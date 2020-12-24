@@ -29,8 +29,11 @@ executable paracletus
                    Epiklesis
                    Epiklesis.Command
                    Epiklesis.Data
+                   Epiklesis.Window
                    Paracletus
                    Paracletus.Data
+                   Paracletus.Draw
+                   Paracletus.Elem
                    Paracletus.Load
                    Paracletus.TH
                    Paracletus.Vulkan
@@ -54,6 +57,7 @@ executable paracletus
                    Paracletus.Vulkan.Vertex
                    Paracletus.Oblatum
                    Paracletus.Oblatum.Callback
+                   Paracletus.Oblatum.Event
                    Paracletus.Oblatum.Font
                    Paracletus.Oblatum.GLFW
     default-language: Haskell2010

@@ -39,5 +39,6 @@ processEvent event = case event of
   (EventLogDebug str) → logDebug str
   (EventKey win k _ ks mk) → evalKey win k ks mk
   (EventMouseButton win mb mbs mk) → evalMouse win mb mbs mk
-  (EventVerts verts) → modify $ \s → s { stVerts = verts }
+  (EventVerts verts) → modify $ \s → s { stVerts = verts
+                                       , stReload = RSReload }
   (EventRecreate) → modify $ \s → s { stReload = RSRecreate }

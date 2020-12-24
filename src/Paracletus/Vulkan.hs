@@ -197,7 +197,7 @@ genCommandBuffs dev pdev commandPool queues graphicsPipeline renderPass texData 
       newCmdBP ← createCommandBuffers dev graphicsPipeline commandPool renderPass (pipelineLayout texData) swapInfo vertexBufferNew (dfLen inds0, indexBufferNew) framebuffers descriptorSets
       return newCmdBP
     VertsNULL → do
-      let (verts0, inds0) = calcVertices $ [GTile]
+      let (verts0, inds0) = calcVertices $ [GTile (0,0) (1,1) (0,0) (1,1) 1]
       vertexBufferNew ← createVertexBuffer pdev dev commandPool (graphicsQueue queues) verts0
       indexBufferNew ← createIndexBuffer pdev dev commandPool (graphicsQueue queues) inds0
       newCmdBP ← createCommandBuffers dev graphicsPipeline commandPool renderPass (pipelineLayout texData) swapInfo vertexBufferNew (dfLen inds0, indexBufferNew) framebuffers descriptorSets

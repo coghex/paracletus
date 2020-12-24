@@ -12,9 +12,12 @@ loadEpiklesis ∷ Env → IO ()
 loadEpiklesis env = do
   let ls = envLuaSt env
   _ ← Lua.runWith ls $ do
-    Lua.registerHaskellFunction "newWindow" (hsNewWindow env)
+    Lua.registerHaskellFunction "logDebug" (hsLogDebug env)
+    Lua.registerHaskellFunction "rawNewWindow" (hsNewWindow env)
+    Lua.registerHaskellFunction "rawNewText" (hsNewText env)
+    Lua.registerHaskellFunction "rawSwitchWindow" (hsSwitchWindow env)
     Lua.openlibs
-    _ ← Lua.dofile $ "mod/base/base.lua"
+    _ ← Lua.dofile $ "mod/base/game.lua"
     ret ← Lua.callFunc "initParacletus"
     return (ret∷Int)
   let eventQ = envEventQ env

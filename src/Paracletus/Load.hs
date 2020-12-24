@@ -11,7 +11,9 @@ import Artos.Var
 import Artos.Queue
 import Anamnesis.Data
 import Epiklesis.Data
+import Epiklesis.Window
 import Paracletus.Data
+import Paracletus.Draw
 import Paracletus.Vulkan.Calc
 import Control.Concurrent (threadDelay)
 import Data.Time.Clock
@@ -30,7 +32,7 @@ loadParacletus env _        = atomically $ writeQueue ec $ EventLogDebug "dont k
 loadParacVulkan ∷ Env → IO ()
 loadParacVulkan env = do
   runLoadLoop env initDS TStop
-  where initDS = DrawState [] []
+  where initDS = DrawState [] (-1) (-1) []
 
 -- load loop runs with a delay so that
 -- it can sleep (ghc threads run like that)
@@ -85,8 +87,20 @@ processCommand ∷ Env → DrawState → LoadCmd → IO LoadResult
 processCommand env ds cmd = case cmd of
           LoadCmdNewWin win → return $ ResDrawState ds'
             where ds' = ds { dsWins = win:(dsWins ds) }
+          LoadCmdSwitchWin win → case (findWinI win (dsWins ds)) of
+            Just n  → return $ ResDrawState $ changeWin n ds
+            Nothing → return $ ResError $ "window " ⧺ win ⧺ " not found"
           LoadCmdVerts → do
-            let newVerts = if ((dsTiles ds) ≡ []) then VertsNULL else VertsDF $ calcVertices $ dsTiles ds
+            let newVerts = VertsDF $ calcVertices $ loadTiles ds
             atomically $ writeQueue (envEventQ env) $ EventVerts newVerts
             return ResSuccess
+          LoadCmdNewElem name elem → do
+            let wins = dsWins ds
+            case (findWin name wins) of
+              Nothing  → return $ ResError "no window yet present"
+              Just win → do
+                let ds'   = ds { dsWins = replaceWin win' wins }
+                    win'  = win { winElems = elems }
+                    elems = elem:(winElems win)
+                return $ ResDrawState ds'
           LoadCmdNULL → return ResNULL
