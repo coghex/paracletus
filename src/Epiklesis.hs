@@ -21,5 +21,7 @@ loadEpiklesis env = do
     ret ← Lua.callFunc "initParacletus"
     return (ret∷Int)
   let eventQ = envEventQ env
+      loadQ  = envLoadQ  env
   atomically $ writeQueue eventQ $ EventRecreate
+  atomically $ writeQueue loadQ  $ LoadCmdVerts
   return ()

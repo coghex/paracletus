@@ -26,9 +26,22 @@ vertsqs = [ S $ Vertex (vec3 (-1) (-1) 0) (vec4 1 0 0 1) (vec3 0 1 0.1) (vec3 0 
           , S $ Vertex (vec3 (-1)   1  0) (vec4 1 1 1 1) (vec3 0 0 0.1) (vec3 0 0 0) ]
 -- combines all Tiles into a dataframe
 vertices ∷ [Tile] → DataFrame Vertex '[XN 0]
-vertices ts = fromList $ combineVertices (1∷Int) ts
-  where combineVertices _ [] = []
-        combineVertices nTile (tile:tts) = vertsqs
+vertices ts = fromList $ combineVertices ts
+  where combineVertices [] = []
+        combineVertices (tile:tts) = (withTC (indexAtlas ax ay sx sy) (withTC (+ vec3 0 0 t) (withPos (+ vec4 x0 y0 0 0) (withScale (* vec3 xscale yscale 1) vertsqs)))) ⧺ combineVertices tts where
+          (x',y') = tPos tile
+          (x0,y0) = (realToFrac(2*x'), realToFrac(2*y'))
+          (ax', ay') = tInd tile
+          ( ax,  ay) = (fromIntegral ax', fromIntegral ay')
+          (xscale',yscale') = tScale tile
+          (xscale, yscale)  = (realToFrac xscale', realToFrac yscale')
+          (sx, sy) = tSize tile
+          t = fromIntegral $ tT tile
+          withPos f = map (\(S v) → S v { pos = fromHom ∘ f ∘ toHomPoint $ pos v })
+          withTC f = map (\(S v) → S v { texCoord = f $ texCoord v })
+          withScale f = map (\(S v) → S v { pos = f $ pos v })
+          withMove f = map (\(S v) → S v { move = f $ move v })
+
 
 indices ∷ [Tile] → DataFrame Word32 '[XN 3]
 indices tiles = atLeastThree $ fromList $ (combineIndices tiles)

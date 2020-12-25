@@ -89,7 +89,7 @@ runParacVulkan = do
           let vulkLoopData' = VulkanLoopData {..}
               vulkLoopData  = vulkLoopData' { texData = newTexData }
           vulkLoop vulkLoopData
-        RSNULL → do
+        _ → do
           let vulkLoopData = VulkanLoopData {..}
           vulkLoop vulkLoopData
             
