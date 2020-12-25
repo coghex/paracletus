@@ -1,7 +1,12 @@
 module Epiklesis
   ( loadEpiklesis ) where
 -- an interface to lua is defined
+import Prelude()
+import UPrelude
+import Data.List (sort)
 import qualified Foreign.Lua as Lua
+import System.Directory (getDirectoryContents)
+import System.FilePath (combine)
 import Anamnesis.Data
 import Artos.Data
 import Artos.Queue
@@ -10,6 +15,7 @@ import Epiklesis.Command
 
 loadEpiklesis ∷ Env → IO ()
 loadEpiklesis env = do
+  modFiles ← findModFiles "mod/game/"
   let ls = envLuaSt env
   _ ← Lua.runWith ls $ do
     Lua.registerHaskellFunction "logDebug" (hsLogDebug env)
@@ -21,10 +27,23 @@ loadEpiklesis env = do
     Lua.registerHaskellFunction "rawSwitchWindow" (hsSwitchWindow env)
     Lua.openlibs
     _ ← Lua.dofile $ "mod/base/game.lua"
-    ret ← Lua.callFunc "initParacletus"
+    ret ← Lua.callFunc "initParacletus" modFiles
     return (ret∷Int)
   let eventQ = envEventQ env
       loadQ  = envLoadQ  env
   atomically $ writeQueue eventQ $ EventRecreate
   atomically $ writeQueue loadQ  $ LoadCmdVerts
   return ()
+
+findModFiles ∷ String → IO (String)
+findModFiles path = do
+  paths ← getDirectoryContents "mod/game/"
+  return $ collapsePaths $ map (combine path) $ sort $ filter filterOutPathJunk paths
+  where filterOutPathJunk ∷ FilePath → Bool
+        filterOutPathJunk "."  = False
+        filterOutPathJunk ".." = False
+        filterOutPathJunk _    = True
+        collapsePaths ∷ [String] → String
+        collapsePaths [] = ""
+        collapsePaths [str]      = str
+        collapsePaths (str:strs) = str ⧺ ";" ⧺ collapsePaths strs
