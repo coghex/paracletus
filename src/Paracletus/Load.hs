@@ -75,6 +75,10 @@ processCommands env ds = do
           ResSuccess → processCommands env ds
           ResDrawState ds' → case (dsStatus ds') of
             DSSNULL → processCommands env ds'
+            DSSExit → do
+              let eventQ = envEventQ env
+              atomically $ writeQueue eventQ $ EventExit
+              return ds'
             DSSLogDebug str → do
               let eventQ = envEventQ env
               atomically $ writeQueue eventQ $ EventLogDebug str

@@ -9,7 +9,8 @@ import Artos.Data
 import Artos.Queue
 import Artos.Var
 import Epiklesis.Data
-import Paracletus.Elem (calcLinkSize)
+import Paracletus.Data (TextSize(..))
+import Paracletus.Elem (calcTextBoxSize)
 
 hsExit ∷ Env → Lua.Lua ()
 hsExit env = do
@@ -48,12 +49,16 @@ hsNewText env name x y text box = do
 hsNewLink ∷ Env → String → Double → Double → String → String → Lua.Lua ()
 hsNewLink env name x y args "exit" = do
   let eventQ = envLoadQ env
-      (w,h)  = calcLinkSize args
+      (w,h)  = calcTextBoxSize TextSize30px args
   Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewElem name $ WinElemLink (x,y) (w,h) LinkExit
+hsNewLink env name x y args "back" = do
+  let eventQ = envLoadQ env
+      (w,h)  = calcTextBoxSize TextSize30px args
+  Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewElem name $ WinElemLink (x,y) (w,h) LinkBack
 hsNewLink env name x y args func = case (head (splitOn ":" func)) of
   "link" → do
     let eventQ = envLoadQ env
-        (w,h)  = calcLinkSize args
+        (w,h)  = calcTextBoxSize TextSize30px args
     Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewElem name $ WinElemLink (x,y) (w,h) $ LinkLink $ last $ splitOn ":" func
   _      → do
     let eventQ = envEventQ env

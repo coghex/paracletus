@@ -13,6 +13,7 @@ function initParacletus ()
     local menu2 = window:new ()
     menu2:initMenu("menu2")
     menu2:newText (-6.0,1.0,"World Parameters")
+    menu2:newLink(-6.0,-3.0,"Back",back)
 
     local game1 = window:new ()
     game1:initGame("game1")

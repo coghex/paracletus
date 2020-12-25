@@ -84,7 +84,3 @@ calcText size x0 (x,y) (ch:str)   = [textTile] ⧺ calcText size x0 (x + chX',y)
         chY' = case size of
                  TextSize16px → 0.25*chY
                  TextSize30px → 0.5*chY
-
--- calculates size of link on text
-calcLinkSize ∷ String → (Double,Double)
-calcLinkSize str = (fromIntegral $ length str,1.0)

@@ -57,7 +57,11 @@ testLink (x1,y1) (x2,y2) (w,h)
   | ((abs(x1 - x2)) < w) ∧ ((abs(y1 - y2)) < h) = True
   | otherwise = False
 
+-- various link actions defined here
 evalLink ∷ LinkAction → DrawState → DrawState
+evalLink (LinkExit)      ds = ds { dsStatus = DSSExit }
+evalLink (LinkBack)      ds = ds { dsWinI  = dsLastI ds
+                                 , dsLastI = dsWinI  ds }
 evalLink (LinkLink name) ds = case (findWinI name (dsWins ds)) of
   Nothing → ds
   Just wi → changeWin wi ds
