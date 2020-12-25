@@ -1,4 +1,3 @@
-
 {-# LANGUAGE Strict #-}
 module Anamnesis.Event where
 -- events and exceptions are handled
@@ -16,6 +15,7 @@ import Artos.Except
 import Artos.Queue
 import Artos.Var
 import Paracletus.Oblatum.Event
+import Paracletus.Oblatum.Mouse
 
 -- reads event channel, then
 -- executes events in order

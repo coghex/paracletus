@@ -15,6 +15,7 @@ import Epiklesis.Window
 import Paracletus.Data
 import Paracletus.Draw
 import Paracletus.Vulkan.Calc
+import Paracletus.Oblatum.Mouse (linkTest)
 import Control.Concurrent (threadDelay)
 import Data.Time.Clock
 
@@ -90,6 +91,8 @@ processCommand env ds cmd = case cmd of
           LoadCmdSwitchWin win → case (findWinI win (dsWins ds)) of
             Just n  → return $ ResDrawState $ changeWin n ds
             Nothing → return $ ResError $ "window " ⧺ win ⧺ " not found"
+          LoadCmdLink pos → return $ ResDrawState ds'
+            where ds'  = linkTest pos ds
           LoadCmdVerts → do
             let newVerts = VertsDF $ calcVertices $ loadTiles ds
             atomically $ writeQueue (envEventQ env) $ EventVerts newVerts

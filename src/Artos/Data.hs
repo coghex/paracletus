@@ -20,4 +20,4 @@ data Event = EventError !GLFW.Error !String
 
 -- cmds that can be asked of
 -- the loading thread
-data LoadCmd = LoadCmdNewWin Window | LoadCmdSwitchWin String | LoadCmdNewElem String WinElem | LoadCmdVerts | LoadCmdNULL
+data LoadCmd = LoadCmdNewWin Window | LoadCmdSwitchWin String | LoadCmdNewElem String WinElem | LoadCmdLink (Double,Double) | LoadCmdVerts | LoadCmdNULL

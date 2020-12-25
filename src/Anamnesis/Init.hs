@@ -52,16 +52,13 @@ initState env = do
                              , stFPS      = FPS 30.0 30 }
 
 initInputState ∷ InputState
-initInputState = InputState { mouse1      = False
-                            , mouse1Cache = (0.0,0.0)
-                            , mouse2      = False
-                            , mouse2Cache = (0.0,0.0)
-                            , mouse3      = False
-                            , mouse3Cache = (0.0,0.0)
-                            , isElems     = []
-                            , inpCap      = False
-                            , keyUp       = False
-                            , keyLeft     = False
-                            , keyDown     = False
-                            , keyRight    = False
-                            , keyAccel    = (0.0,0.0) }
+initInputState = InputState { mouse1   = Nothing
+                            , mouse2   = Nothing
+                            , mouse3   = Nothing
+                            , isElems  = []
+                            , inpCap   = False
+                            , keyUp    = False
+                            , keyLeft  = False
+                            , keyDown  = False
+                            , keyRight = False
+                            , keyAccel = (0.0,0.0) }

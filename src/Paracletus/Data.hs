@@ -32,19 +32,16 @@ data DynData = DynData
 data DDRef = DDSlider Int | DDNULL deriving (Show, Eq)
 
 -- input data
-data InputState = InputState { mouse1      ∷ Bool
-                             , mouse1Cache ∷ (Float,Float)
-                             , mouse2      ∷ Bool
-                             , mouse2Cache ∷ (Float,Float)
-                             , mouse3      ∷ Bool
-                             , mouse3Cache ∷ (Float,Float)
-                             , isElems     ∷ [InputElem]
-                             , inpCap      ∷ Bool
-                             , keyUp       ∷ Bool
-                             , keyLeft     ∷ Bool
-                             , keyDown     ∷ Bool
-                             , keyRight    ∷ Bool
-                             , keyAccel    ∷ (Float,Float)
+data InputState = InputState { mouse1   ∷ Maybe (Float,Float)
+                             , mouse2   ∷ Maybe (Float,Float)
+                             , mouse3   ∷ Maybe (Float,Float)
+                             , isElems  ∷ [InputElem]
+                             , inpCap   ∷ Bool
+                             , keyUp    ∷ Bool
+                             , keyLeft  ∷ Bool
+                             , keyDown  ∷ Bool
+                             , keyRight ∷ Bool
+                             , keyAccel ∷ (Float,Float)
                              } deriving (Show, Eq)
 
 -- input state related to various winelems

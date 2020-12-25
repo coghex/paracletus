@@ -15,6 +15,3 @@ evalKey window k ks mk = do
   -- glfw is parent thread, so this
   -- will close everything
   when (GLFW.keyCheck False keyLayout k "ESC") $ liftIO $ GLFW.setWindowShouldClose window True
-
-evalMouse ∷ GLFW.Window → GLFW.MouseButton → GLFW.MouseButtonState → GLFW.ModifierKeys → Anamnesis ε σ ()
-evalMouse win mb mbs _ = return ()
