@@ -15,7 +15,5 @@ function initParacletus ()
 
     menu1:switchWindow ()
 
-    logDebug ("blop blop")
-
     return 0
 end

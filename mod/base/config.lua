@@ -1,0 +1,11 @@
+-- configuration and settings go here
+esckey = 'ESC'
+retkey = 'RET'
+delkey = 'DEL'
+spckey = 'SPC'
+tabkey = 'TAB'
+upkey  = 'W'
+lftkey = 'A'
+dwnkey = 'S'
+rgtkey = 'D'
+shkey  = 'SH'

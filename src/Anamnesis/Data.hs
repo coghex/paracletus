@@ -22,18 +22,22 @@ data Env = Env { envEventQ ∷ Queue Event
                , envLuaSt  ∷ Lua.State }
 -- state holds mutable data, and the
 -- current status of the whole App
-data State = State { stStatus  ∷ AExcept
-                   , stLogFunc ∷ Logger.Loc → Logger.LogSource → Logger.LogLevel → Logger.LogStr → IO ()
-                   , stWindow  ∷ !(Maybe GLFW.Window)
-                   , stReload  ∷ !ReloadState
-                   , stVerts   ∷ !Verts
-                   , stNDefTex ∷ !Int
-                   , stInput   ∷ !InputState
-                   , stStartT  ∷ !SystemTime
-                   , stTick    ∷ !(Maybe Double)
-                   , stFPS     ∷ !FPS
+data State = State { stStatus   ∷ AExcept
+                   , stLogFunc  ∷ Logger.Loc → Logger.LogSource → Logger.LogLevel → Logger.LogStr → IO ()
+                   , stWindow   ∷ !(Maybe GLFW.Window)
+                   , stReload   ∷ !ReloadState
+                   , stVerts    ∷ !Verts
+                   , stSettings ∷ !Settings
+                   , stNDefTex  ∷ !Int
+                   , stInput    ∷ !InputState
+                   , stStartT   ∷ !SystemTime
+                   , stTick     ∷ !(Maybe Double)
+                   , stFPS      ∷ !FPS
                    }
 -- fps defined as actual and desired
 data FPS = FPS Double Int
 -- defines if we want to reload everything and how
 data ReloadState = RSReload | RSRecreate | RSNULL deriving (Show, Eq)
+
+-- defines some user alterable settings
+data Settings = Settings { sKeyLayout ∷ GLFW.KeyLayout }
