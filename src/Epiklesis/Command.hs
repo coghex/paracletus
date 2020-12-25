@@ -40,10 +40,10 @@ hsSwitchWindow env name = do
   let eventQ = envLoadQ env
   Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdSwitchWin name
 
-hsNewText ∷ Env → String → Double → Double → String → Lua.Lua ()
-hsNewText env name x y text = do
+hsNewText ∷ Env → String → Double → Double → String → Bool → Lua.Lua ()
+hsNewText env name x y text box = do
   let eventQ = envLoadQ env
-  Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewElem name $ WinElemText (x,y) False text
+  Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewElem name $ WinElemText (x,y) box text
 
 hsNewLink ∷ Env → String → Double → Double → String → String → Lua.Lua ()
 hsNewLink env name x y args "exit" = do

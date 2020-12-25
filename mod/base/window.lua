@@ -22,7 +22,7 @@ function window:switchWindow ()
     rawSwitchWindow (self.lwName)
 end
 function window:newText (x,y,args)
-    rawNewText ((self.lwName),x,y,args)
+    rawNewText ((self.lwName),x,y,args,false)
 end
 function window:newLink (x,y,args,hook)
     if ((type(hook)) == "string") then
@@ -30,7 +30,7 @@ function window:newLink (x,y,args,hook)
     else
       ret = hook ()
     end
-    rawNewText ((self.lwName),x,y,args,ret)
+    rawNewText ((self.lwName),x,y,args,ret,true)
     rawNewLink ((self.lwName),x,y,args,ret)
 end
 
