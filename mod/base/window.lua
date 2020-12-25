@@ -24,5 +24,13 @@ end
 function window:newText (x,y,args)
     rawNewText ((self.lwName),x,y,args)
 end
+function window:newLink (x,y,args,hook)
+    if ((type(hook)) == "string") then
+      ret = hook
+    else
+      ret = hook ()
+    end
+    rawNewText ((self.lwName),x,y,args,ret)
+end
 
 return window

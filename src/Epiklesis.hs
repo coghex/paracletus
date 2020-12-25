@@ -13,8 +13,11 @@ loadEpiklesis env = do
   let ls = envLuaSt env
   _ ← Lua.runWith ls $ do
     Lua.registerHaskellFunction "logDebug" (hsLogDebug env)
+    Lua.registerHaskellFunction "rawExit" (hsExit env)
     Lua.registerHaskellFunction "rawNewWindow" (hsNewWindow env)
     Lua.registerHaskellFunction "rawNewText" (hsNewText env)
+    Lua.registerHaskellFunction "rawNewLink" (hsNewLink env)
+    Lua.registerHaskellFunction "rawCreateWorld" (hsCreateWorld env)
     Lua.registerHaskellFunction "rawSwitchWindow" (hsSwitchWindow env)
     Lua.openlibs
     _ ← Lua.dofile $ "mod/base/game.lua"

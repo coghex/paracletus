@@ -34,4 +34,11 @@ data WinArgV = WinArgNULL deriving (Show, Eq)
 data WinElem = WinElemText { textPos ∷ (Double,Double)
                            , textBox ∷ Bool
                            , textStr ∷ String }
+             | WinElemLink { linkPos ∷ (Double,Double)
+                           , linkBox ∷ (Double,Double)
+                           , linkAct ∷ LinkAction }
              | WinElemNULL deriving (Show, Eq)
+
+-- possible actions when links are clicked
+data LinkAction = LinkExit | LinkBack | LinkLink String | LinkSelect Int String | LinkSlider Int | LinkNULL deriving (Show, Eq)
+
