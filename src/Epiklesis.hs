@@ -16,24 +16,29 @@ import Epiklesis.Command
 loadEpiklesis ∷ Env → IO ()
 loadEpiklesis env = do
   modFiles ← findModFiles "mod/game/"
-  let ls = envLuaSt env
-  _ ← Lua.runWith ls $ do
-    Lua.registerHaskellFunction "logDebug" (hsLogDebug env)
-    Lua.registerHaskellFunction "rawExit" (hsExit env)
-    Lua.registerHaskellFunction "rawNewWindow" (hsNewWindow env)
-    Lua.registerHaskellFunction "rawNewText" (hsNewText env)
-    Lua.registerHaskellFunction "rawNewLink" (hsNewLink env)
-    Lua.registerHaskellFunction "rawCreateWorld" (hsCreateWorld env)
-    Lua.registerHaskellFunction "rawSwitchWindow" (hsSwitchWindow env)
-    Lua.openlibs
-    _ ← Lua.dofile $ "mod/base/game.lua"
-    ret ← Lua.callFunc "initParacletus" modFiles
-    return (ret∷Int)
-  let eventQ = envEventQ env
-      loadQ  = envLoadQ  env
-  atomically $ writeQueue eventQ $ EventRecreate
-  atomically $ writeQueue loadQ  $ LoadCmdVerts
-  return ()
+  if (modFiles ≡ []) then do
+    let eventQ = envEventQ env
+    atomically $ writeQueue eventQ $ EventLogDebug $ "no files in mod/game/"
+    return ()
+  else do
+    let ls = envLuaSt env
+    _ ← Lua.runWith ls $ do
+      Lua.registerHaskellFunction "logDebug" (hsLogDebug env)
+      Lua.registerHaskellFunction "rawExit" (hsExit env)
+      Lua.registerHaskellFunction "rawNewWindow" (hsNewWindow env)
+      Lua.registerHaskellFunction "rawNewText" (hsNewText env)
+      Lua.registerHaskellFunction "rawNewLink" (hsNewLink env)
+      Lua.registerHaskellFunction "rawCreateWorld" (hsCreateWorld env)
+      Lua.registerHaskellFunction "rawSwitchWindow" (hsSwitchWindow env)
+      Lua.openlibs
+      _ ← Lua.dofile $ "mod/base/game.lua"
+      ret ← Lua.callFunc "initParacletus" modFiles
+      return (ret∷Int)
+    let eventQ = envEventQ env
+        loadQ  = envLoadQ  env
+    atomically $ writeQueue eventQ $ EventRecreate
+    atomically $ writeQueue loadQ  $ LoadCmdVerts
+    return ()
 
 findModFiles ∷ String → IO (String)
 findModFiles path = do

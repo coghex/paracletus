@@ -1,4 +1,4 @@
 -- test mod
 function initMod ()
-    logDebug "test mod init"
+    logDebug "loaded test mod"
 end
