@@ -37,6 +37,8 @@ currentWin ds
 
 -- TODO: set argVs here
 changeWin ∷ Int → DrawState → DrawState
-changeWin n ds = ds { dsWinI  = n
-                    , dsLastI = n' }
+changeWin n ds = ds { dsWinI   = n
+                    , dsLastI  = n'
+                    , dsStatus = DSSLogDebug $ "window changed to " ⧺ nname }
   where n' = dsWinI ds
+        nname = winTitle $ (dsWins ds) !! n

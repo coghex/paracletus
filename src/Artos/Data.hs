@@ -17,6 +17,7 @@ data Event = EventError !GLFW.Error !String
            | EventMouseButton !GLFW.Window !GLFW.MouseButton !GLFW.MouseButtonState !GLFW.ModifierKeys
            | EventVerts !Verts
            | EventRecreate
+           | EventReload
 
 -- cmds that can be asked of
 -- the loading thread

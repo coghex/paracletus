@@ -7,10 +7,12 @@ import Control.Monad (when)
 import Control.Monad.State.Class (modify',gets)
 import Anamnesis
 import Anamnesis.Data
+import Anamnesis.Util
 import Artos.Data
 import Artos.Queue
 import Artos.Var
 import Epiklesis.Data
+import Epiklesis.Window
 import Paracletus.Data
 import qualified Paracletus.Oblatum.GLFW as GLFW
       
@@ -39,4 +41,24 @@ evalMouse win mb mbs _ = do
     else return ()
 
 linkTest ∷ (Double,Double) → DrawState → DrawState
-linkTest (x,y) ds = ds
+linkTest pos ds = case (currentWin ds) of
+  Nothing  → ds
+  Just win → linkTestFunc pos elems ds
+    where elems = winElems win
+linkTestFunc ∷ (Double,Double) → [WinElem] → DrawState → DrawState
+linkTestFunc _   []           ds = ds
+linkTestFunc pos (elem:elems) ds = case (elem) of
+  WinElemLink lpos lbox lact → case (testLink pos lpos lbox) of
+    True  → evalLink lact ds
+    False → linkTestFunc pos elems ds
+  _                          → linkTestFunc pos elems ds
+testLink ∷ (Double,Double) → (Double,Double) → (Double,Double) → Bool
+testLink (x1,y1) (x2,y2) (w,h)
+  | ((abs(x1 - x2)) < w) ∧ ((abs(y1 - y2)) < h) = True
+  | otherwise = False
+
+evalLink ∷ LinkAction → DrawState → DrawState
+evalLink (LinkLink name) ds = case (findWinI name (dsWins ds)) of
+  Nothing → ds
+  Just wi → changeWin wi ds
+evalLink _               ds = ds

@@ -48,3 +48,4 @@ processEvent event = case event of
   (EventVerts verts) → modify $ \s → s { stVerts = verts
                                        , stReload = RSReload }
   (EventRecreate) → modify $ \s → s { stReload = RSRecreate }
+  (EventReload) → modify $ \s → s { stReload = RSReload }

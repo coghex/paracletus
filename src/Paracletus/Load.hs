@@ -33,7 +33,7 @@ loadParacletus env _        = atomically $ writeQueue ec $ EventLogDebug "dont k
 loadParacVulkan ∷ Env → IO ()
 loadParacVulkan env = do
   runLoadLoop env initDS TStop
-  where initDS = DrawState [] (-1) (-1) []
+  where initDS = DrawState DSSNULL [] (-1) (-1) []
 
 -- load loop runs with a delay so that
 -- it can sleep (ghc threads run like that)
@@ -73,7 +73,13 @@ processCommands env ds = do
         ret ← processCommand env ds cmd
         case ret of
           ResSuccess → processCommands env ds
-          ResDrawState ds' → processCommands env ds'
+          ResDrawState ds' → case (dsStatus ds') of
+            DSSNULL → processCommands env ds'
+            DSSLogDebug str → do
+              let eventQ = envEventQ env
+              atomically $ writeQueue eventQ $ EventLogDebug str
+              processCommands env ds''
+                where ds'' = ds' { dsStatus = DSSNULL }
           ResError str → do
             atomically $ writeQueue (envEventQ env) $ EventLogDebug $ "load command error: " ⧺ str
             processCommands env ds
@@ -91,8 +97,11 @@ processCommand env ds cmd = case cmd of
           LoadCmdSwitchWin win → case (findWinI win (dsWins ds)) of
             Just n  → return $ ResDrawState $ changeWin n ds
             Nothing → return $ ResError $ "window " ⧺ win ⧺ " not found"
-          LoadCmdLink pos → return $ ResDrawState ds'
-            where ds'  = linkTest pos ds
+          LoadCmdLink pos → do
+            let ds'    = linkTest pos ds
+                eventQ = envEventQ env
+            atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
+            return $ ResDrawState ds'
           LoadCmdVerts → do
             let newVerts = VertsDF $ calcVertices $ loadTiles ds
             atomically $ writeQueue (envEventQ env) $ EventVerts newVerts

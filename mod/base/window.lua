@@ -31,6 +31,7 @@ function window:newLink (x,y,args,hook)
       ret = hook ()
     end
     rawNewText ((self.lwName),x,y,args,ret)
+    rawNewLink ((self.lwName),x,y,args,ret)
 end
 
 return window

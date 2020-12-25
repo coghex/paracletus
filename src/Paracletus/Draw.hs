@@ -21,4 +21,5 @@ loadWinElems (we:wes) = loadWinElem we ⧺ loadWinElems wes
 loadWinElem ∷ WinElem → [Tile]
 loadWinElem (WinElemText pos True  str) = []
 loadWinElem (WinElemText pos False str) = calcText TextSize30px (fst pos) pos str
+loadWinElem (WinElemLink _ _ _)         = []
 loadWinElem (WinElemNULL)               = []

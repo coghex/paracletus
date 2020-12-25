@@ -3,11 +3,18 @@ module Epiklesis.Data where
 
 -- draw state is kept in a seperate thread
 -- and calculated into verticies
-data DrawState = DrawState { dsWins  ∷ [Window]
-                           , dsWinI  ∷ Int
-                           , dsLastI ∷ Int
-                           , dsTiles ∷ [Tile]
+data DrawState = DrawState { dsStatus ∷ DSStatus
+                           , dsWins   ∷ [Window]
+                           , dsWinI   ∷ Int
+                           , dsLastI  ∷ Int
+                           , dsTiles  ∷ [Tile]
                            } deriving (Show, Eq)
+
+-- status of the loading thread, allowing
+-- us to return results of deeply nested
+-- pure functions
+data DSStatus = DSSLogDebug String | DSSNULL deriving (Show, Eq)
+
 -- gtiles represent abstact tiles
 data Tile = GTile { tPos   ∷ (Double,Double)
                   , tScale ∷ (Double,Double)
