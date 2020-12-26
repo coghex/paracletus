@@ -31,6 +31,10 @@ data DynData = DynData
 -- corresponding reference to lua state
 data DDRef = DDSlider Int | DDNULL deriving (Show, Eq)
 
+-- fps defined as actual and desired,
+-- and whether or not to display
+data FPS = FPS Double Int Bool deriving (Show, Eq)
+
 -- input data
 data InputState = InputState { mouse1   ∷ Maybe (Float,Float)
                              , mouse2   ∷ Maybe (Float,Float)

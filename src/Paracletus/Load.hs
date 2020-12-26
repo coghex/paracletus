@@ -33,7 +33,7 @@ loadParacletus env _        = atomically $ writeQueue ec $ EventLogDebug "dont k
 loadParacVulkan ∷ Env → IO ()
 loadParacVulkan env = do
   runLoadLoop env initDS TStop
-  where initDS = DrawState DSSNULL [] (-1) (-1) []
+  where initDS = DrawState DSSNULL [] (-1) (-1) [] $ FPS 30.0 30 False
 
 -- load loop runs with a delay so that
 -- it can sleep (ghc threads run like that)
@@ -96,6 +96,12 @@ data LoadResult = ResSuccess | ResError String | ResDrawState DrawState | ResNUL
 
 processCommand ∷ Env → DrawState → LoadCmd → IO LoadResult
 processCommand env ds cmd = case cmd of
+          LoadCmdToggleFPS → do
+            let eventQ = envEventQ env
+            atomically $ writeQueue eventQ $ EventToggleFPS
+            return ResSuccess
+          LoadCmdSetFPS fps → return $ ResDrawState ds'
+            where ds' = ds { dsFPS = fps }
           LoadCmdNewWin win → return $ ResDrawState ds'
             where ds' = ds { dsWins = win:(dsWins ds) }
           LoadCmdSwitchWin win → case (findWinI win (dsWins ds)) of

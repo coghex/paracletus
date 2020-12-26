@@ -1,5 +1,6 @@
 module Epiklesis.Data where
 -- data for generating verticies from lua
+import Paracletus.Data
 
 -- draw state is kept in a seperate thread
 -- and calculated into verticies
@@ -8,6 +9,7 @@ data DrawState = DrawState { dsStatus ∷ DSStatus
                            , dsWinI   ∷ Int
                            , dsLastI  ∷ Int
                            , dsTiles  ∷ [Tile]
+                           , dsFPS    ∷ FPS
                            } deriving (Show, Eq)
 
 -- status of the loading thread, allowing

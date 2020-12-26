@@ -16,9 +16,10 @@ data Event = EventError !GLFW.Error !String
            | EventKey !GLFW.Window !GLFW.Key !Int !GLFW.KeyState !GLFW.ModifierKeys
            | EventMouseButton !GLFW.Window !GLFW.MouseButton !GLFW.MouseButtonState !GLFW.ModifierKeys
            | EventVerts !Verts
+           | EventToggleFPS
            | EventRecreate
            | EventReload
 
 -- cmds that can be asked of
 -- the loading thread
-data LoadCmd = LoadCmdNewWin Window | LoadCmdSwitchWin String | LoadCmdNewElem String WinElem | LoadCmdLink (Double,Double) | LoadCmdVerts | LoadCmdNULL
+data LoadCmd = LoadCmdNewWin Window | LoadCmdSwitchWin String | LoadCmdNewElem String WinElem | LoadCmdLink (Double,Double) | LoadCmdVerts | LoadCmdSetFPS FPS | LoadCmdToggleFPS | LoadCmdNULL

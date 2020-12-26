@@ -19,6 +19,7 @@ function initMod ()
     game1:initGame("game1")
 
     menu1:switchWindow ()
+    toggleFPS ()
 
     return 0
 end

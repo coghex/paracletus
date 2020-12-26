@@ -22,10 +22,15 @@ hsLogDebug env str = do
   let eventQ = envEventQ env
   Lua.liftIO $ atomically $ writeQueue eventQ $ EventLogDebug str
 
+hsToggleFPS ∷ Env → Lua.Lua ()
+hsToggleFPS env = do
+  let loadQ = envLoadQ env
+  Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdToggleFPS
+
 hsNewWindow ∷ Env → String → String → Lua.Lua ()
 hsNewWindow env name "menu" = do
-  let eventQ = envLoadQ env
-  Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewWin win
+  let loadQ = envLoadQ env
+  Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewWin win
   where win = Window name WinTypeMenu WinArgNULL (0,0,(-1)) []
 hsNewWindow env name "game" = do
   let eventQ = envLoadQ env

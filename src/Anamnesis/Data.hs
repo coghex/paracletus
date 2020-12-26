@@ -34,8 +34,6 @@ data State = State { stStatus   ∷ AExcept
                    , stTick     ∷ !(Maybe Double)
                    , stFPS      ∷ !FPS
                    }
--- fps defined as actual and desired
-data FPS = FPS Double Int
 -- defines if we want to reload everything and how
 data ReloadState = RSReload | RSRecreate | RSNULL deriving (Show, Eq)
 

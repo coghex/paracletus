@@ -24,6 +24,7 @@ loadEpiklesis env = do
     let ls = envLuaSt env
     _ ← Lua.runWith ls $ do
       Lua.registerHaskellFunction "logDebug" (hsLogDebug env)
+      Lua.registerHaskellFunction "toggleFPS" (hsToggleFPS env)
       Lua.registerHaskellFunction "rawExit" (hsExit env)
       Lua.registerHaskellFunction "rawNewWindow" (hsNewWindow env)
       Lua.registerHaskellFunction "rawNewText" (hsNewText env)

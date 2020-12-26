@@ -8,6 +8,7 @@ import UPrelude
 import Control.Concurrent (forkIO)
 import Control.Monad (forM_, when)
 import Control.Monad.State.Class (gets, modify)
+import Control.Monad.Reader.Class (asks)
 import Data.List (zip4)
 import Graphics.Vulkan.Core_1_0
 import Graphics.Vulkan.Ext.VK_KHR_swapchain
@@ -131,6 +132,7 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
   shouldExit ← loadLoop window $ do
     cmdBP0 ← genCommandBuffs dev pdev commandPool queues graphicsPipeline renderPass texData swapInfo framebuffers descriptorSets
     -- main loop runs draw loop and trans functions
+    modify $ \s → s { stReload = RSNULL }
     shouldLoad ← glfwMainLoop window $ do
       stNew ← get
       let camNew   = (0.0,0.0,(-1.0))
@@ -166,8 +168,11 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
       cur ← liftIO $ atomically $ readTVar currentSec
       if floor seconds ≠ cur then do
         count ← liftIO $ atomically $ readTVar frameCount
-        FPS fpsTarget _ ← gets stFPS
-        when (cur ≠ 0) $ modify $ \s → s { stFPS = FPS fpsTarget count }
+        when (cur ≠ 0) $ do
+          FPS fpsTarget _ display ← gets stFPS
+          loadQ ← asks envLoadQ
+          liftIO $ atomically $ writeQueue loadQ $ LoadCmdSetFPS $ FPS fpsTarget count display
+          modify $ \s → s { stFPS = FPS fpsTarget count display }
         liftIO $ do
           atomically $ writeTVar currentSec (floor seconds)
           atomically $ writeTVar frameCount 0

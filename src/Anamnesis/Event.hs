@@ -14,6 +14,7 @@ import Artos.Data
 import Artos.Except
 import Artos.Queue
 import Artos.Var
+import Paracletus.Data
 import Paracletus.Oblatum.Event
 import Paracletus.Oblatum.Mouse
 
@@ -49,3 +50,8 @@ processEvent event = case event of
                                        , stReload = RSReload }
   (EventRecreate) → modify $ \s → s { stReload = RSRecreate }
   (EventReload) → modify $ \s → s { stReload = RSReload }
+  (EventToggleFPS) → do
+    fps ← gets stFPS
+    modify $ \s → s { stFPS = toggleFPS fps }
+    where toggleFPS ∷ FPS → FPS
+          toggleFPS (FPS a b c) = FPS a b (not c)
