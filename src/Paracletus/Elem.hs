@@ -30,14 +30,30 @@ loadWinElem (WinElemNULL)               = []
 -- finds tiles for window pane
 calcPaneTiles ∷ (Double,Double) → [(Int,PaneBit)] → [Tile]
 calcPaneTiles _   []                    = []
+calcPaneTiles pos ((i,PaneBitSlider text mn mx vl):pbs) = (calcText TextSize30px (fst pos) pos' text) ⧺ calcPaneSlider pos' mn mx vl ⧺ calcPaneTiles pos pbs
+  where pos' = ((fst pos) + 1.0,(snd pos) - (fromIntegral i))
 calcPaneTiles pos ((i,PaneBitText text):pbs) = (calcText TextSize30px (fst pos) pos' text) ⧺ calcPaneTiles pos pbs
-  where pos' = ((fst pos),(snd pos) + (fromIntegral i))
+  where pos' = ((fst pos) + 0.5,(snd pos) + (fromIntegral i))
 calcPaneTiles pos ((i,PaneBitNULL):pbs) = [] ⧺ calcPaneTiles pos pbs
 
 -- figure out what size the pane box should be
 calcPaneBoxSize ∷ TextSize → [(Int,PaneBit)] → (Double,Double)
 calcPaneBoxSize _    []  = (24,1)
-calcPaneBoxSize size pbs = (24,fromIntegral(length pbs))
+calcPaneBoxSize size pbs = (24,2.0*fromIntegral(length pbs))
+
+-- create a slider of arbitrary bounds
+calcPaneSlider ∷ (Double,Double) → Int → Int → Int → [Tile]
+calcPaneSlider pos mn mx val = sliderTile ⧺ barTiles ⧺ minTiles ⧺ maxTiles ⧺ valTiles
+  where sliderTile = [DTile DMNULL pos (0.05,0.25) (0,0) (1,1) 112]
+        barTiles   = calcText size 0 posBar "<-------->"
+        posBar     = ((fst pos) + 4.0, (snd pos))
+        minTiles   = calcText size 0 posMin $ show mn
+        posMin     = ((fst pos) + 3.0, (snd pos))
+        maxTiles   = calcText size 0 posMax $ show mx
+        posMax     = ((fst pos) + 7.5, (snd pos))
+        valTiles   = calcText size 0 posVal $ show val
+        posVal     = ((fst pos) + 9.5, (snd pos))
+        size       = TextSize30px
 
 -- figure out what size the textbox should be
 calcTextBoxSize ∷ TextSize → String → (Double,Double)

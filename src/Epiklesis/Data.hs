@@ -67,6 +67,10 @@ data WinElem
 -- possible bits in a pane
 data PaneBit
   = PaneBitText { bptText ∷ String }
+  | PaneBitSlider { pbsText ∷ String
+                  , pbsMin  ∷ Int
+                  , pbsMax  ∷ Int
+                  , pbsVal  ∷ Int }
   | PaneBitNULL deriving (Show, Eq)
 
 -- possible actions when links are clicked

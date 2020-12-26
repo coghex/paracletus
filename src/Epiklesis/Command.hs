@@ -53,7 +53,15 @@ hsNewPaneBit env name pane bit = case (head (splitOn ":" bit)) of
   "text" → do
     let loadQ = envLoadQ env
     Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewBit name pane $ PaneBitText $ last $ splitOn ":" bit
-  bitbit → hsLogDebug env $ "no know bit: " ⧺ (show bitbit)
+  "slider" → do
+    let loadQ = envLoadQ env
+    Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewBit name pane $ PaneBitSlider text mn mx vl
+      where args = splitOn ":" bit
+            text = head $ tail args
+            mn   = read $ head $ tail $ tail args
+            mx   = read $ head $ tail $ tail $ tail args
+            vl   = read $ head $ tail $ tail $ tail $ tail $ args
+  bitbit → hsLogDebug env $ "no known bit: " ⧺ (show bitbit)
 
 hsNewText ∷ Env → String → Double → Double → String → Bool → Lua.Lua ()
 hsNewText env name x y text box = do
