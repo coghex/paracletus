@@ -52,13 +52,21 @@ data WinType = WinTypeMenu | WinTypeGame | WinTypeNULL deriving (Show, Eq)
 data WinArgV = WinArgNULL deriving (Show, Eq)
 
 -- possible elements of a window
-data WinElem = WinElemText { textPos ∷ (Double,Double)
-                           , textBox ∷ Bool
-                           , textStr ∷ String }
-             | WinElemLink { linkPos ∷ (Double,Double)
-                           , linkBox ∷ (Double,Double)
-                           , linkAct ∷ LinkAction }
-             | WinElemNULL deriving (Show, Eq)
+data WinElem
+  = WinElemText { textPos ∷ (Double,Double)
+                , textBox ∷ Bool
+                , textStr ∷ String }
+  | WinElemLink { linkPos ∷ (Double,Double)
+                , linkBox ∷ (Double,Double)
+                , linkAct ∷ LinkAction }
+  | WinElemPane { panePos  ∷ (Double,Double)
+                , paneName ∷ String
+                , paneBits ∷ [PaneBit] }
+  | WinElemNULL deriving (Show, Eq)
+
+-- possible bits in a pane
+data PaneBit
+  = PaneBitNULL deriving (Show, Eq)
 
 -- possible actions when links are clicked
 data LinkAction = LinkExit | LinkBack | LinkLink String | LinkSelect Int String | LinkSlider Int | LinkNULL deriving (Show, Eq)

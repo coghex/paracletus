@@ -7,6 +7,28 @@ import Epiklesis.Data
 import Paracletus.Data
 import Paracletus.Oblatum.Font
 
+-- finds tiles from a window
+loadWindow ∷ Window → [Tile]
+loadWindow win = loadWinElems $ winElems win
+
+loadWinElems ∷ [WinElem] → [Tile]
+loadWinElems []       = []
+loadWinElems (we:wes) = loadWinElem we ⧺ loadWinElems wes
+loadWinElem ∷ WinElem → [Tile]
+loadWinElem (WinElemText pos True  str) = (calcTextBox size posOffset s) ⧺ calcText size (fst pos) pos str
+  where s = calcTextBoxSize size str
+        posOffset = ((fst pos) - 0.5, (snd pos) + 0.5)
+        size = TextSize30px
+loadWinElem (WinElemText pos False str) = calcText TextSize30px (fst pos) pos str
+loadWinElem (WinElemPane pos _ bits)    = calcPaneTiles pos bits
+loadWinElem (WinElemLink _ _ _)         = []
+loadWinElem (WinElemNULL)               = []
+
+-- finds tiles for window pane
+calcPaneTiles ∷ (Double,Double) → [PaneBit] → [Tile]
+calcPaneTiles _   []                = []
+calcPaneTiles pos (PaneBitNULL:pbs) = [] ⧺ calcPaneTiles pos pbs
+
 -- figure out what size the textbox should be
 calcTextBoxSize ∷ TextSize → String → (Double,Double)
 calcTextBoxSize size str = (max 1 (calcTBWidth size str),fromIntegral (length (splitOn ['\n'] str)))

@@ -49,7 +49,7 @@ hsSwitchWindow env name = do
 hsNewPane ∷ Env → String → Double → Double → String → Lua.Lua ()
 hsNewPane env name x y pane = do
   let eventQ = envLoadQ env
-  Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewElem name $ WinElemText (x,y) True pane
+  Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewElem name $ WinElemPane (x,y) pane []
 
 hsNewText ∷ Env → String → Double → Double → String → Bool → Lua.Lua ()
 hsNewText env name x y text box = do
