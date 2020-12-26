@@ -1,5 +1,6 @@
 -- abfa mod defines an example game
 require "mod/base/window"
+require "mod/base/pane"
 require "mod/base/base"
 -- this runs once at the beginning
 function initMod ()
@@ -12,7 +13,10 @@ function initMod ()
 
     local menu2 = window:new ()
     menu2:initMenu("menu2")
-    menu2:newText (-6.0,1.0,"World Parameters")
+    menu2:newText(-6.0,5.0,"World Parameters")
+    local pane1 = pane:new ()
+    pane1:initPane(-4.0,3.0,"wparams")
+    menu2:addPane(pane1)
     menu2:newLink(-6.0,-3.0,"Back",back)
 
     local game1 = window:new ()

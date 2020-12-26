@@ -33,5 +33,8 @@ function window:newLink (x,y,args,hook)
     rawNewText ((self.lwName),x,y,args,ret,true)
     rawNewLink ((self.lwName),x,y,args,ret)
 end
+function window:addPane (pane)
+    rawNewPane ((self.lwName),pane.pPosx,pane.pPosy,pane.pName)
+end
 
 return window

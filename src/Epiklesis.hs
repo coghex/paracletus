@@ -27,6 +27,7 @@ loadEpiklesis env = do
       Lua.registerHaskellFunction "toggleFPS" (hsToggleFPS env)
       Lua.registerHaskellFunction "rawExit" (hsExit env)
       Lua.registerHaskellFunction "rawNewWindow" (hsNewWindow env)
+      Lua.registerHaskellFunction "rawNewPane" (hsNewPane env)
       Lua.registerHaskellFunction "rawNewText" (hsNewText env)
       Lua.registerHaskellFunction "rawNewLink" (hsNewLink env)
       Lua.registerHaskellFunction "rawCreateWorld" (hsCreateWorld env)
