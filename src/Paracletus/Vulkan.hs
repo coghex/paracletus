@@ -135,10 +135,10 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
     modify $ \s → s { stReload = RSNULL }
     shouldLoad ← glfwMainLoop window $ do
       stNew ← get
-      let camNew   = (0.0,0.0,(-1.0))
-          nDynData = []
-          nDynNew  = 0
-          rdata    = RenderData { dev
+      let camNew        = (0.0,0.0,(-1.0))
+          Dyns nDynData = stDynData stNew
+          nDynNew       = length nDynData
+          rdata         = RenderData { dev
                                 , swapInfo
                                 , queues
                                 , imgIndexPtr

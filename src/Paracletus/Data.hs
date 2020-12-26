@@ -23,13 +23,16 @@ data Verts = VertsNULL | VertsDF (DataFrame Vertex '[XN 0], DataFrame Word32 '[X
 
 -- data for dynamic object transformations
 data DynData = DynData
-         { ddRef      ∷ DDRef
+         { ddTex      ∷ Int
          , ddPosition ∷ (Float,Float)
          , ddTIndex   ∷ (Int,Int)
          } deriving (Show, Eq)
 
+-- collection of dyndata
+data Dyns = Dyns [DynData]
+
 -- corresponding reference to lua state
-data DDRef = DDSlider Int | DDNULL deriving (Show, Eq)
+data DDRef = DDFPS | DDSlider Int | DDNULL deriving (Show, Eq)
 
 -- fps defined as actual and desired,
 -- and whether or not to display

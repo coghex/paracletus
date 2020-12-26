@@ -21,7 +21,7 @@ loadVulkanTextures ∷ GQData → [FilePath] → Anamnesis ε σ (TextureData)
 loadVulkanTextures (GQData pdev dev cmdPool cmdQueue) fps = do
   -- the engine reserves the first few
   -- textures for default usage.
-  let tex1Path     = "dat/tex/texture.jpg"
+  let tex1Path     = "dat/tex/alpha.png"
       texAlph      = "dat/tex/alph.png"
       texboxPath   = "dat/tex/box"
       texmboxPath  = "dat/tex/mbox"

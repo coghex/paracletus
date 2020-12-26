@@ -14,6 +14,7 @@ import Epiklesis.Data
 import Epiklesis.Window
 import Paracletus.Data
 import Paracletus.Draw
+import Paracletus.Dyn
 import Paracletus.Vulkan.Calc
 import Paracletus.Oblatum.Mouse (linkTest)
 import Control.Concurrent (threadDelay)
@@ -98,10 +99,17 @@ processCommand ∷ Env → DrawState → LoadCmd → IO LoadResult
 processCommand env ds cmd = case cmd of
           LoadCmdToggleFPS → do
             let eventQ = envEventQ env
+                ds'    = ds { dsFPS = toggleFPS (dsFPS ds) }
+                toggleFPS ∷ FPS → FPS
+                toggleFPS (FPS a b c) = FPS a b (not c)
             atomically $ writeQueue eventQ $ EventToggleFPS
-            return ResSuccess
-          LoadCmdSetFPS fps → return $ ResDrawState ds'
-            where ds' = ds { dsFPS = fps }
+            return $ ResDrawState ds'
+          LoadCmdSetFPS fps → do
+            let eventQ = envEventQ env
+                dyns   = loadDyns ds'
+                ds'    = ds { dsFPS = fps }
+            atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
+            return $ ResDrawState ds'
           LoadCmdNewWin win → return $ ResDrawState ds'
             where ds' = ds { dsWins = win:(dsWins ds) }
           LoadCmdSwitchWin win → case (findWinI win (dsWins ds)) of
@@ -114,8 +122,9 @@ processCommand env ds cmd = case cmd of
             return $ ResDrawState ds'
           LoadCmdVerts → do
             let newVerts = VertsDF $ calcVertices $ loadTiles ds
+                ds'      = ds { dsTiles = loadTiles ds }
             atomically $ writeQueue (envEventQ env) $ EventVerts newVerts
-            return ResSuccess
+            return $ ResDrawState ds'
           LoadCmdNewElem name elem → do
             let wins = dsWins ds
             case (findWin name wins) of

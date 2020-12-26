@@ -10,11 +10,11 @@ layout(binding = 0) uniform TransformationObject {
 } trans;
 
 layout(binding = 2) uniform DynTransObject {
-  mat4 move[32];
+  mat4 move[64];
 } dyn;
 
 layout(binding = 3) uniform DynTexTransObject {
-  mat4 dynTexI[32];
+  mat4 dynTexI[64];
 } dynTex;
 
 layout(location = 0) in vec3 inPosition;
@@ -43,6 +43,9 @@ void main() {
     fragColor = inColor;
     mat4 dynTC = dynTex.dynTexI[dynI];
     vec2 dynTexCoord = (inMove.y > 0.0) ? (vec2(inTexCoord.x + dynTC[3][0],inTexCoord.y + dynTC[3][1])) : inTexCoord.xy;
+    int texI = int(floor (dynTC[3][2]));
+    int inTex = int(inTexCoord.z);
+    int outTex = (inMove.x > 0.0) ? inTex + texI : inTex;
     fragTexCoord = dynTexCoord;
-    fragTexIndex = int(inTexCoord.z);
+    fragTexIndex = outTex;
 }

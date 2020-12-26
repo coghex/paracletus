@@ -19,13 +19,13 @@ loadTiles ds = fpsTiles ⧺ winTiles
 
 genFPSTiles ∷ [Tile]
 genFPSTiles = [tile1,tile2,tile3,tile4]
-  where tile1 = GTile (0.0,0.0) (chW',chH') (0,0) (1,1) chIndex
-        tile2 = GTile (0.4,0.0) (chW',chH') (0,0) (1,1) chIndex
-        tile3 = GTile (0.8,0.0) (chW',chH') (0,0) (1,1) chIndex
-        tile4 = GTile (1.2,0.0) (chW',chH') (0,0) (1,1) chIndex
-        TTFData chIndex chW chH chX chY = indexTTF TextSize16px '0'
-        chW'  = 0.25*chW
-        chH'  = 0.25*chH
+  where tile1 = DTile (DMFPS 0) (3.0,2.0) (chW',chH') (0,0) (1,1) chIndex
+        tile2 = DTile (DMFPS 1) (3.4,2.0) (chW',chH') (0,0) (1,1) chIndex
+        tile3 = DTile (DMFPS 2) (3.8,2.0) (chW',chH') (0,0) (1,1) chIndex
+        tile4 = DTile (DMFPS 3) (4.2,2.0) (chW',chH') (0,0) (1,1) chIndex
+        TTFData chIndex chW chH chX chY = indexTTF TextSize30px '0'
+        chW'  = 0.5*chW
+        chH'  = 0.5*chH
 
 loadWindow ∷ Window → [Tile]
 loadWindow win = loadWinElems $ winElems win

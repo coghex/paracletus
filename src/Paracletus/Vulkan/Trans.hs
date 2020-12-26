@@ -94,9 +94,10 @@ updateTransTex nDyn (dd:dds) device extent uniBuf = do
                  (DF4 1 0 0 0)
                  (DF4 0 1 0 0)
                  (DF4 0 0 1 0)
-                 (DF4 (x/16.0) (y/6.0) 0 1)
+                 (DF4 (x/16.0) (y/6.0) n 1)
       (x ,y)  = (fromIntegral x', fromIntegral y')
       (x',y') = ddTIndex dd
+      n       = fromIntegral $ ddTex dd
   poke (castPtr uboPtr) (scalar $ DynTexTransObject {..})
   liftIO $ vkUnmapMemory device uniBuf
   updateTransTex (nDyn - 1) dds device extent uniBuf

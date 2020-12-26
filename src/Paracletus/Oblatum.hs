@@ -72,8 +72,8 @@ glfwMainLoop w action = go
                 FPS fps dfps disp ← gets stFPS
                 let deltafps = 0.1
                 liftIO $ whileM_ ((\cur → (cur - (newtick)) < (1.0/fps)) <$> getCurTick) (liftIO (threadDelay 1000))
-                if (dfps > 60) then modify $ \s → s { stFPS = FPS (fps-deltafps) dfps disp }
-                else if (dfps < 60) then modify $ \s → s { stFPS = FPS (min 200.0 (fps+deltafps)) dfps disp }
+                if (dfps > 30) then modify $ \s → s { stFPS = FPS (fps-deltafps) dfps disp }
+                else if (dfps < 30) then modify $ \s → s { stFPS = FPS (min 200.0 (fps+deltafps)) dfps disp }
                 else modify $ \s → s { stFPS = FPS fps dfps disp }
               _ → return ()
             if status ≡ ContinueLoop then go else return False

@@ -16,6 +16,7 @@ data Event = EventError !GLFW.Error !String
            | EventKey !GLFW.Window !GLFW.Key !Int !GLFW.KeyState !GLFW.ModifierKeys
            | EventMouseButton !GLFW.Window !GLFW.MouseButton !GLFW.MouseButtonState !GLFW.ModifierKeys
            | EventVerts !Verts
+           | EventDyns !Dyns
            | EventToggleFPS
            | EventRecreate
            | EventReload

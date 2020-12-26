@@ -27,6 +27,7 @@ data State = State { stStatus   ∷ AExcept
                    , stWindow   ∷ !(Maybe GLFW.Window)
                    , stReload   ∷ !ReloadState
                    , stVerts    ∷ !Verts
+                   , stDynData  ∷ !Dyns
                    , stSettings ∷ !Settings
                    , stNDefTex  ∷ !Int
                    , stInput    ∷ !InputState

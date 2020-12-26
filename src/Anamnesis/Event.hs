@@ -46,12 +46,16 @@ processEvent event = case event of
       Nothing  → liftIO $ exitWith ExitSuccess
   (EventKey win k _ ks mk) → evalKey win k ks mk
   (EventMouseButton win mb mbs mk) → evalMouse win mb mbs mk
+  (EventDyns dyns) → modify $ \s → s { stDynData = dyns }
   (EventVerts verts) → modify $ \s → s { stVerts = verts
                                        , stReload = RSReload }
   (EventRecreate) → modify $ \s → s { stReload = RSRecreate }
   (EventReload) → modify $ \s → s { stReload = RSReload }
   (EventToggleFPS) → do
     fps ← gets stFPS
-    modify $ \s → s { stFPS = toggleFPS fps }
+    env ← ask
+    let loadQ = envLoadQ env
+    modify $ \s → s { stFPS    = toggleFPS fps }
+    liftIO $ atomically $ writeQueue loadQ $ LoadCmdVerts
     where toggleFPS ∷ FPS → FPS
           toggleFPS (FPS a b c) = FPS a b (not c)

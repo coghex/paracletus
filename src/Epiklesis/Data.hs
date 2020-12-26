@@ -23,7 +23,19 @@ data Tile = GTile { tPos   ∷ (Double,Double)
                   , tInd   ∷ (Int,Int)
                   , tSize  ∷ (Int,Int)
                   , tT     ∷ Int
+                  }
+-- dtiles represent dynamic tiles,
+-- ones that can move and change texture
+          | DTile { tDyn   ∷ DynMap
+                  , tPos   ∷ (Double,Double)
+                  , tScale ∷ (Double,Double)
+                  , tInd   ∷ (Int,Int)
+                  , tSize  ∷ (Int,Int)
+                  , tT     ∷ Int
                   } deriving (Show, Eq)
+
+-- function of the particular dyn tile
+data DynMap = DMFPS Int | DMNULL deriving (Show, Eq)
 
 -- abstract idea of what a window can be
 data Window = Window { winTitle  ∷ String
