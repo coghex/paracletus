@@ -5,6 +5,9 @@ base = {}
 function link (dest)
     return ("link:"..dest)
 end
+function textBit (text)
+    return ("text:"..text)
+end
 
 function exit ()
     return "exit"

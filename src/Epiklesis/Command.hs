@@ -36,10 +36,7 @@ hsNewWindow env name "game" = do
   let eventQ = envLoadQ env
   Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewWin win
   where win = Window name WinTypeGame WinArgNULL (0,0,(-1)) []
-hsNewWindow env _    wintype = do
-  let eventQ = envEventQ env
-  Lua.liftIO $ atomically $ writeQueue eventQ $ EventLogDebug errorstr
-  where errorstr = "window type " ⧺ wintype ⧺ " not known"
+hsNewWindow env _    wintype = hsLogDebug env $ "window type " ⧺ wintype ⧺ " not known"
 
 hsSwitchWindow ∷ Env → String → Lua.Lua ()
 hsSwitchWindow env name = do
@@ -51,10 +48,17 @@ hsNewPane env name x y pane = do
   let eventQ = envLoadQ env
   Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewElem name $ WinElemPane (x,y) pane []
 
+hsNewPaneBit ∷ Env → String → String → String → Lua.Lua ()
+hsNewPaneBit env name pane bit = case (head (splitOn ":" bit)) of
+  "text" → do
+    let loadQ = envLoadQ env
+    Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewBit name pane $ PaneBitText $ last $ splitOn ":" bit
+  bitbit → hsLogDebug env $ "no know bit: " ⧺ (show bitbit)
+
 hsNewText ∷ Env → String → Double → Double → String → Bool → Lua.Lua ()
 hsNewText env name x y text box = do
-  let eventQ = envLoadQ env
-  Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewElem name $ WinElemText (x,y) box text
+  let loadQ = envLoadQ env
+  Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewElem name $ WinElemText (x,y) box text
 
 hsNewLink ∷ Env → String → Double → Double → String → String → Lua.Lua ()
 hsNewLink env name x y args "exit" = do
@@ -70,11 +74,7 @@ hsNewLink env name x y args func = case (head (splitOn ":" func)) of
     let eventQ = envLoadQ env
         (w,h)  = calcTextBoxSize TextSize30px args
     Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewElem name $ WinElemLink (x,y) (w,h) $ LinkLink $ last $ splitOn ":" func
-  _      → do
-    let eventQ = envEventQ env
-    Lua.liftIO $ atomically $ writeQueue eventQ $ EventLogDebug $ "no known link function " ⧺ func
+  _      → hsLogDebug env $ "no known link function " ⧺ func
 
 hsCreateWorld ∷ Env → Lua.Lua ()
-hsCreateWorld env = do
-  let eventQ = envEventQ env
-  Lua.liftIO $ atomically $ writeQueue eventQ $ EventLogDebug "create world callback"
+hsCreateWorld env = hsLogDebug env $ "create world callback"

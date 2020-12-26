@@ -20,14 +20,24 @@ loadWinElem (WinElemText pos True  str) = (calcTextBox size posOffset s) ⧺ cal
         posOffset = ((fst pos) - 0.5, (snd pos) + 0.5)
         size = TextSize30px
 loadWinElem (WinElemText pos False str) = calcText TextSize30px (fst pos) pos str
-loadWinElem (WinElemPane pos _ bits)    = calcPaneTiles pos bits
+loadWinElem (WinElemPane pos _ bits)    = (calcTextBox size posOffset s) ⧺ calcPaneTiles pos bits
+  where s = calcPaneBoxSize size bits
+        posOffset = ((fst pos) - 0.5, (snd pos) + 0.5)
+        size = TextSize30px
 loadWinElem (WinElemLink _ _ _)         = []
 loadWinElem (WinElemNULL)               = []
 
 -- finds tiles for window pane
-calcPaneTiles ∷ (Double,Double) → [PaneBit] → [Tile]
-calcPaneTiles _   []                = []
-calcPaneTiles pos (PaneBitNULL:pbs) = [] ⧺ calcPaneTiles pos pbs
+calcPaneTiles ∷ (Double,Double) → [(Int,PaneBit)] → [Tile]
+calcPaneTiles _   []                    = []
+calcPaneTiles pos ((i,PaneBitText text):pbs) = (calcText TextSize30px (fst pos) pos' text) ⧺ calcPaneTiles pos pbs
+  where pos' = ((fst pos),(snd pos) + (fromIntegral i))
+calcPaneTiles pos ((i,PaneBitNULL):pbs) = [] ⧺ calcPaneTiles pos pbs
+
+-- figure out what size the pane box should be
+calcPaneBoxSize ∷ TextSize → [(Int,PaneBit)] → (Double,Double)
+calcPaneBoxSize _    []  = (24,1)
+calcPaneBoxSize size pbs = (24,fromIntegral(length pbs))
 
 -- figure out what size the textbox should be
 calcTextBoxSize ∷ TextSize → String → (Double,Double)

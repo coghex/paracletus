@@ -8,6 +8,7 @@ function pane:new (o)
     self.pName = "NULL"
     self.pPosx = 0.0
     self.pPosy = 0.0
+    self.pBits = {}
     return o
 end
 function pane:initPane (x,y,n)
@@ -15,6 +16,9 @@ function pane:initPane (x,y,n)
     self.pPosx = x
     self.pPosy = y
     rawNewWindow (n,"menu")
+end
+function pane:addPaneBit (bit)
+    table.insert (self.pBits,bit)
 end
 
 return pane

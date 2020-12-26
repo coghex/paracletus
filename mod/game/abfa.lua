@@ -13,9 +13,9 @@ function initMod ()
 
     local menu2 = window:new ()
     menu2:initMenu("menu2")
-    menu2:newText(-6.0,5.0,"World Parameters")
     local pane1 = pane:new ()
-    pane1:initPane(-4.0,3.0,"wparams")
+    pane1:addPaneBit (textBit ("World Parameters"))
+    pane1:initPane(-6.0,3.0,"wparams")
     menu2:addPane(pane1)
     menu2:newLink(-6.0,-3.0,"Back",back)
 

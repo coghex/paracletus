@@ -42,3 +42,12 @@ changeWin n ds = ds { dsWinI   = n
                     , dsStatus = DSSLogDebug $ "window changed to " ⧺ nname }
   where n' = dsWinI ds
         nname = winTitle $ (dsWins ds) !! n
+
+loadNewBit ∷ String → [WinElem] → PaneBit → [WinElem]
+loadNewBit _    []       _   = []
+loadNewBit pane (we:wes) bit = case we of
+  WinElemPane pos name bits
+    | name ≡ pane → [WinElemPane pos name bits'] ⧺ loadNewBit pane wes bit
+    | otherwise   → [WinElemPane pos name bits]  ⧺ loadNewBit pane wes bit
+    where bits' = bits ⧺ [((length bits),bit)]
+  we                        → [we] ⧺ loadNewBit pane wes bit

@@ -128,10 +128,19 @@ processCommand env ds cmd = case cmd of
           LoadCmdNewElem name elem → do
             let wins = dsWins ds
             case (findWin name wins) of
-              Nothing  → return $ ResError "no window yet present"
+              Nothing  → return $ ResError $ "no window " ⧺ name ⧺ " yet present"
               Just win → do
                 let ds'   = ds { dsWins = replaceWin win' wins }
                     win'  = win { winElems = elems }
                     elems = elem:(winElems win)
+                return $ ResDrawState ds'
+          LoadCmdNewBit name pane bit → do
+            let wins = dsWins ds
+            case (findWin name wins) of
+              Nothing  → return $ ResError $ "no window " ⧺ name ⧺ " yet present"
+              Just win → do
+                let ds'   = ds { dsWins = replaceWin win' wins }
+                    win'  = win { winElems = elems }
+                    elems = loadNewBit pane (winElems win) bit
                 return $ ResDrawState ds'
           LoadCmdNULL → return ResNULL

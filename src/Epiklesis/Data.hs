@@ -61,12 +61,13 @@ data WinElem
                 , linkAct ∷ LinkAction }
   | WinElemPane { panePos  ∷ (Double,Double)
                 , paneName ∷ String
-                , paneBits ∷ [PaneBit] }
+                , paneBits ∷ [(Int,PaneBit)] }
   | WinElemNULL deriving (Show, Eq)
 
 -- possible bits in a pane
 data PaneBit
-  = PaneBitNULL deriving (Show, Eq)
+  = PaneBitText { bptText ∷ String }
+  | PaneBitNULL deriving (Show, Eq)
 
 -- possible actions when links are clicked
 data LinkAction = LinkExit | LinkBack | LinkLink String | LinkSelect Int String | LinkSlider Int | LinkNULL deriving (Show, Eq)
