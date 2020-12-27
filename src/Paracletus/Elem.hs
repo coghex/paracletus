@@ -45,7 +45,6 @@ calcPaneBoxSize size pbs = (24,2.0*fromIntegral(length pbs))
 calcPaneSlider ∷ Int → (Double,Double) → Int → Int → Int → [Tile]
 calcPaneSlider n pos mn mx val = sliderTile ⧺ barTiles ⧺ minTiles ⧺ maxTiles ⧺ valTiles
   where sliderTile = [DTile (DMSlider n) sliderPos (0.1,0.5) (0,0) (1,1) 112]
-  --where sliderTile = [GTile sliderPos (0.1,0.5) (0,0) (1,1) 112]
         sliderPos  = ((fst pos) + 4.0, (snd pos))
         barTiles   = calcText size 0 posBar "<-------->"
         posBar     = ((fst pos) + 4.0, (snd pos))
@@ -53,7 +52,7 @@ calcPaneSlider n pos mn mx val = sliderTile ⧺ barTiles ⧺ minTiles ⧺ maxTil
         posMin     = ((fst pos) + 3.0, (snd pos))
         maxTiles   = calcText size 0 posMax $ show mx
         posMax     = ((fst pos) + 7.5, (snd pos))
-        valTiles   = calcText size 0 posVal $ show val
+        valTiles   = calcDText n 3 size 0 posVal "0000"
         posVal     = ((fst pos) + 9.5, (snd pos))
         size       = TextSize30px
 
@@ -136,6 +135,27 @@ calcText size x0 (_,y) ('\n':str) = calcText size x0 (x0,(y - 1)) str
 calcText size x0 (x,y) (' ':str)  = calcText size x0 (x + 0.25,y) str
 calcText size x0 (x,y) (ch:str)   = [textTile] ⧺ calcText size x0 (x + chX',y) str
   where textTile = GTile (x+(chX'/2.0),y+chY') (chW',chH') (0,0) (1,1) chIndex
+        TTFData chIndex chW chH chX chY = indexTTF size ch
+        chW' = case size of
+                 TextSize16px → 0.25*chW
+                 TextSize30px → 0.5*chW
+        chH' = case size of
+                 TextSize16px → 0.25*chH
+                 TextSize30px → 0.5*chH
+        chX' = case size of
+                 TextSize16px → 0.25*chX
+                 TextSize30px → 0.5*chX
+        chY' = case size of
+                 TextSize16px → 0.25*chY
+                 TextSize30px → 0.5*chY
+
+-- functions to convert winelems to gtiles
+calcDText ∷ Int → Int → TextSize → Double → (Double,Double) → String → [Tile]
+calcDText _ _   _    _  _     []         = []
+calcDText n len size x0 (_,y) ('\n':str) = calcDText n len size x0 (x0,(y - 1)) str
+calcDText n len size x0 (x,y) (' ':str)  = calcDText n len size x0 (x + 0.25,y) str
+calcDText n len size x0 (x,y) (ch:str)   = [textTile] ⧺ calcDText n (len - 1) size x0 (x + chX',y) str
+  where textTile = DTile (DMSliderVal n len) (x+(chX'/2.0),y+chY') (chW',chH') (0,0) (1,1) chIndex
         TTFData chIndex chW chH chX chY = indexTTF size ch
         chW' = case size of
                  TextSize16px → 0.25*chW

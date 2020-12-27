@@ -7,24 +7,40 @@ import Epiklesis.Data
 import Epiklesis.Window
 
 loadDyns ∷ DrawState → [DynData]
-loadDyns ds = loadDynData ds $ dsTiles ds
+loadDyns ds = reverse $ loadDynData ds $ dsTiles ds
 loadDynData ∷ DrawState → [Tile] → [DynData]
 loadDynData _  []                     = []
 loadDynData ds ((GTile _ _ _ _ _):ts) = [] ⧺ loadDynData ds ts
 loadDynData ds ((DTile (DMFPS n) _ _ _ _ _):ts) = [DynData dig (0,0) (0,0)] ⧺ loadDynData ds ts
   where dig = calcDiglet n $ dsFPS ds
+loadDynData ds ((DTile (DMSliderVal n d) _ _ _ _ _):ts) = [DynData dig (0,0) (0,0)] ⧺ loadDynData ds ts
+  where dig = case (currentWin ds) of
+                Just w  → sliderDiglet (winElems w) n d
+                Nothing → 0
 loadDynData ds ((DTile (DMSlider n) _ _ _ _ _):ts) = [DynData 0 (x,0) (0,0)] ⧺ loadDynData ds ts
   where x = case (currentWin ds) of
-              Just w  → calcSliderOffset w (1 + len - n)
-              Nothing → 0.0
-        len = length $ filter isSlider $ dsTiles ds
+              Just w  → calcSliderOffset w (n)
+              Nothing → 0
 loadDynData ds ((DTile (DMNULL) _ _ _ _ _):ts) = [DynData 0 (0,0) (0,0)] ⧺ loadDynData ds ts
 
-isSlider ∷ Tile → Bool
-isSlider (DTile (DMSlider _) _ _ _ _ _) = True
-isSlider (DTile _            _ _ _ _ _) = False
-isSlider (GTile              _ _ _ _ _) = False
-
+-- calcs dyndata for slider val
+sliderDiglet ∷ [WinElem] → Int → Int → Int
+sliderDiglet []       _ _ = -36
+sliderDiglet ((WinElemPane _ _ bits):wes) n d = sliderBitDiglet bits n d
+sliderDiglet (we:wes) n d = sliderDiglet wes n d
+sliderBitDiglet ∷ [(Int,PaneBit)] → Int → Int → Int
+sliderBitDiglet []       _ _ = -36
+sliderBitDiglet ((i,(PaneBitSlider _ _ _ val)):pbs) n d
+  | n ≡ i = calcSliderDig d val
+  | otherwise = sliderBitDiglet pbs n d
+sliderBitDiglet (pb:pbs) n d = sliderBitDiglet pbs n d
+calcSliderDig ∷ Int → Int → Int
+calcSliderDig d val
+  | val > 0   ∧ d < 1 = calcDig d val
+  | val > 9   ∧ d < 2 = calcDig d val
+  | val > 99  ∧ d < 3 = calcDig d val
+  | val > 999 ∧ d < 4 = calcDig d val
+  | otherwise         = -36
 
 -- convert fps to singe didget
 calcDiglet ∷ Int → FPS → Int
@@ -34,7 +50,7 @@ calcDiglet n (FPS _ fps True)
   | fps > 9    ∧ n < 2 = calcDig n fps
   | fps > 99   ∧ n < 3 = calcDig n fps
   | fps > 999  ∧ n < 4 = calcDig n fps
-  | otherwise         = -36
+  | otherwise          = -36
 calcDig ∷ Int → Int → Int
 calcDig 0 fps = fps `mod` 10
 calcDig 1 fps = (fps `div` 10) `mod` 10

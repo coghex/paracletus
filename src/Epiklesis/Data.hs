@@ -33,21 +33,26 @@ data Tile = GTile { tPos   ∷ (Double,Double)
                   , tSize  ∷ (Int,Int)
                   , tT     ∷ Int
                   } deriving (Show, Eq)
-instance Ord Tile where
-  compare (GTile _ _ _ _ _) (GTile _ _ _ _ _) = EQ
-  compare (GTile _ _ _ _ _) _ = LT
-  compare _ (GTile _ _ _ _ _) = GT
-  compare (DTile (DMNULL) _ _ _ _ _) _ = LT
-  compare _ (DTile (DMNULL) _ _ _ _ _) = GT
-  compare (DTile (DMFPS nl) _ _ _ _ _) (DTile (DMFPS nr) _ _ _ _ _) = compare nl nr
-  compare (DTile (DMSlider nl) _ _ _ _ _) (DTile (DMSlider nr) _ _ _ _ _) = compare nl nr
-  compare (DTile (DMFPS _) _ _ _ _ _) (DTile (DMSlider _) _ _ _ _ _) = GT
-  compare (DTile (DMSlider _) _ _ _ _ _) (DTile (DMFPS _) _ _ _ _ _) = LT
-
+--instance Ord Tile where
+--  compare (GTile _ _ _ _ _) (GTile _ _ _ _ _) = EQ
+--  compare (GTile _ _ _ _ _) _ = LT
+--  compare _ (GTile _ _ _ _ _) = GT
+--  compare (DTile (DMNULL) _ _ _ _ _) _ = LT
+--  compare _ (DTile (DMNULL) _ _ _ _ _) = GT
+--  compare (DTile (DMFPS nl) _ _ _ _ _) (DTile (DMFPS nr) _ _ _ _ _) = compare nl nr
+--  compare (DTile (DMSlider nl) _ _ _ _ _) (DTile (DMSlider nr) _ _ _ _ _) = EQ
+--  compare (DTile (DMSliderVal nl) _ _ _ _ _) (DTile (DMSliderVal nr) _ _ _ _ _) = EQ
+--  compare (DTile (DMFPS _) _ _ _ _ _) (DTile (DMSlider _) _ _ _ _ _) = GT
+--  compare (DTile (DMFPS _) _ _ _ _ _) (DTile (DMSliderVal _) _ _ _ _ _) = LT
+--  compare (DTile (DMSlider _) _ _ _ _ _) (DTile (DMFPS _) _ _ _ _ _) = LT
+--  compare (DTile (DMSlider _) _ _ _ _ _) (DTile (DMSliderVal _) _ _ _ _ _) = GT
+--  compare (DTile (DMSliderVal _) _ _ _ _ _) (DTile (DMSlider _) _ _ _ _ _) = LT
+--  compare (DTile (DMSliderVal _) _ _ _ _ _) (DTile (DMFPS _) _ _ _ _ _) = GT
 
 -- function of the particular dyn tile
 data DynMap = DMFPS Int
             | DMSlider Int
+            | DMSliderVal Int Int
             | DMNULL deriving (Show, Eq)
 
 -- abstract idea of what a window can be

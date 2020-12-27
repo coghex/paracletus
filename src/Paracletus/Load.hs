@@ -131,12 +131,12 @@ processCommand env ds cmd = case cmd of
             where ds' = linkTest pos ds
           LoadCmdDyns → do
             let eventQ = envEventQ env
-                newVerts = VertsDF $ calcVertices $ sort $ loadTiles ds
+                newVerts = VertsDF $ calcVertices $ loadTiles ds
                 dyns   = loadDyns ds
             atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
             return ResSuccess
           LoadCmdVerts → do
-            let newVerts = VertsDF $ calcVertices $ sort $ loadTiles ds
+            let newVerts = VertsDF $ calcVertices $ loadTiles ds
                 ds'      = ds { dsTiles = loadTiles ds }
             atomically $ writeQueue (envEventQ env) $ EventVerts newVerts
             return $ ResDrawState ds'
