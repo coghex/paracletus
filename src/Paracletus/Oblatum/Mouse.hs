@@ -37,7 +37,8 @@ evalMouse win mb mbs _ = do
       liftIO $ atomically $ writeQueue loadQ $ LoadCmdLink pos
     else if (mbs ≡ GLFW.MouseButtonState'Released) then do
       oldIS ← gets stInput
-      let newIS = oldIS { mouse1 = Nothing }
+      let newIS = oldIS { mouse1 = Nothing
+                        , isElems = falseInputElems (isElems oldIS) }
       modify' $ \s → s { stInput = newIS }
     else return ()
 
@@ -66,9 +67,54 @@ evalLink _     (LinkBack)      ds = ds { dsWinI  = dsLastI ds
 evalLink (x,_) (LinkSlider n)  ds = case (currentWin ds) of
   Nothing → ds
   Just w  → ds { dsWins = replaceWin win (dsWins ds)
-               , dsStatus = DSSLoadDyns}
+               , dsStatus = DSSLoadInput (LinkSlider n)}
     where win = moveSlider x n w
 evalLink _     (LinkLink name) ds = case (findWinI name (dsWins ds)) of
   Nothing → ds
   Just wi → changeWin wi ds
 evalLink _     _               ds = ds
+
+toggleLink ∷ LinkAction → InputState → InputState
+toggleLink link is = is { isElems = toggleLinkAction link (isElems is) }
+toggleLinkAction ∷ LinkAction → [InputElem] → [InputElem]
+toggleLinkAction _    []       = []
+toggleLinkAction link (ie:ies) = [ie'] ⧺ toggleLinkAction link ies
+  where ie' = case ie of
+                IESlider _ _ → toggleAction link ie
+                _            → ie
+
+toggleAction ∷ LinkAction → InputElem → InputElem
+toggleAction (LinkSlider n) (IESlider b m)
+  | n ≡ m     = IESlider (not b) m
+  | otherwise = IESlider b       m
+toggleAction _ ie = ie
+
+addLink ∷ LinkAction → InputState → InputState
+addLink (LinkSlider n) is = is { isElems = (isElems is) ⧺ [IESlider False n] }
+
+falseInputElems ∷ [InputElem] → [InputElem]
+falseInputElems []       = []
+falseInputElems (ie:ies) = [ie'] ⧺ falseInputElems ies
+  where ie' = case ie of
+                IESlider _ a → IESlider False a
+                IESelect b a → IESelect b a
+                IENULL       → IENULL
+
+moveSliderWithMouse ∷ InputState → Anamnesis ε σ ()
+moveSliderWithMouse is = do
+  st ← get
+  case (stWindow st) of
+    Nothing → return ()
+    Just w  → do
+      pos ← liftIO $ GLFW.getCursorPos w
+      let (x,_) = convertPixels pos
+      env ← ask
+      let loadQ = envLoadQ env
+      liftIO $ atomically $ writeQueue loadQ $ LoadCmdMoveSlider x $ sliderPressed is
+
+sliderPressed ∷ InputState → Int
+sliderPressed is = sliderPressedElem (isElems is)
+sliderPressedElem ∷ [InputElem] → Int
+sliderPressedElem [] = (-1)
+sliderPressedElem ((IESlider True n):ies) = n
+sliderPressedElem (_:ies) = sliderPressedElem ies

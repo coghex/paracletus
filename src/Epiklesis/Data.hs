@@ -15,7 +15,7 @@ data DrawState = DrawState { dsStatus ∷ DSStatus
 -- status of the loading thread, allowing
 -- us to return results of deeply nested
 -- pure functions
-data DSStatus = DSSLogDebug String | DSSLoadDyns | DSSLoadVerts | DSSExit | DSSNULL deriving (Show, Eq)
+data DSStatus = DSSLogDebug String | DSSLoadDyns | DSSLoadVerts | DSSLoadInput LinkAction | DSSExit | DSSNULL deriving (Show, Eq)
 
 -- gtiles represent abstact tiles
 data Tile = GTile { tPos   ∷ (Double,Double)
@@ -92,5 +92,10 @@ data PaneBit
   | PaneBitNULL deriving (Show, Eq)
 
 -- possible actions when links are clicked
-data LinkAction = LinkExit | LinkBack | LinkLink String | LinkSelect Int String | LinkSlider Int | LinkNULL deriving (Show, Eq)
+data LinkAction = LinkExit
+                | LinkBack
+                | LinkLink String
+                | LinkSelect Int String
+                | LinkSlider Int
+                | LinkNULL deriving (Show, Eq)
 

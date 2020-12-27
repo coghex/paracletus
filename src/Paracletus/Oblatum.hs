@@ -16,6 +16,7 @@ import Artos.Var
 import Paracletus.Data
 import Paracletus.Oblatum.Callback
 import Paracletus.Oblatum.GLFW (WindowHint(..),ClientAPI(..))
+import Paracletus.Oblatum.Mouse
 import qualified Paracletus.Oblatum.GLFW as GLFW
 
 -- setting of glfw callbacks and hints
@@ -117,4 +118,11 @@ glfwWaitMinimized win = liftIO go where
 
 -- run every frame for handling input
 processInput ∷ Anamnesis ε σ ()
-processInput = return ()
+processInput = do
+  st ← get
+  let is = stInput st
+  case (mouse1 is) of
+    Just _  → if ((sliderPressed is) > 0) then do
+                moveSliderWithMouse is
+              else return ()
+    Nothing → return ()

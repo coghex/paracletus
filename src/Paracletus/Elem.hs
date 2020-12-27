@@ -63,6 +63,23 @@ calcSliderPos mn mx val = 4.0 + 3.0*val'/(mx' - mn')
         mx'  = fromIntegral mx
         val' = fromIntegral val
 
+moveSliderWin ∷ Double → Int → Window → Window
+moveSliderWin x n win = win { winElems = moveSliderWinElem x n (winElems win) }
+moveSliderWinElem ∷ Double → Int → [WinElem] → [WinElem]
+moveSliderWinElem _ _ []       = []
+moveSliderWinElem x n ((WinElemPane pos name bits):wes) = [WinElemPane pos name bits'] ⧺ moveSliderWinElem x n wes
+  where bits' = moveSliderBits (x + 2.0) n bits
+moveSliderWinElem x n (we:wes) = [we] ⧺ moveSliderWinElem x n wes
+moveSliderBits ∷ Double → Int → [(Int,PaneBit)] → [(Int,PaneBit)]
+moveSliderBits _ _ []       = []
+moveSliderBits x n ((i,(PaneBitSlider text mn mx val)):pbs)
+  | (i ≡ n)   = [(i,PaneBitSlider text mn mx val')] ⧺ moveSliderBits x n pbs
+  | otherwise = [(i,PaneBitSlider text mn mx val)]  ⧺ moveSliderBits x n pbs
+  where val' = (round (x*(mx' - mn'))) `div` 3
+        mn'  = fromIntegral mn
+        mx'  = fromIntegral mx
+moveSliderBits x n (pb:pbs) = [pb] ⧺ moveSliderBits x n pbs
+
 -- finds offset of generic bit just added
 findBitPos ∷ String → [WinElem] → (Int,(Double,Double))
 findBitPos _    []       = (0,(0.0,0.0))

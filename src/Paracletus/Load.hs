@@ -82,13 +82,18 @@ processCommands env ds = do
               let eventQ = envEventQ env
               atomically $ writeQueue eventQ $ EventExit
               return ds'
-            DSSLoadVerts → do
+            DSSLoadInput link → do
               let eventQ = envEventQ env
+                  loadQ  = envLoadQ  env
+              atomically $ writeQueue eventQ $ EventInput link
+              atomically $ writeQueue loadQ $ LoadCmdDyns
+              processCommands env ds''
+                where ds'' = ds' { dsStatus = DSSNULL }
+            DSSLoadVerts → do
               atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
               processCommands env ds''
                 where ds'' = ds' { dsStatus = DSSNULL }
             DSSLoadDyns → do
-              let eventQ = envEventQ env
               atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
               processCommands env ds''
                 where ds'' = ds' { dsStatus = DSSNULL }
@@ -116,6 +121,15 @@ processCommand env ds cmd = case cmd of
                 toggleFPS (FPS a b c) = FPS a b (not c)
             atomically $ writeQueue eventQ $ EventToggleFPS
             return $ ResDrawState ds'
+          LoadCmdMoveSlider x n → case (currentWin ds) of
+            Nothing → return $ ResError "no window"
+            Just w  → do
+              let eventQ = envEventQ env
+                  dyns   = loadDyns ds'
+                  ds'    = ds { dsWins = replaceWin win (dsWins ds) }
+                  win    = moveSliderWin x n w
+              atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
+              return $ ResDrawState ds'
           LoadCmdSetFPS fps → do
             let eventQ = envEventQ env
                 dyns   = loadDyns ds'
@@ -154,15 +168,18 @@ processCommand env ds cmd = case cmd of
             case (findWin name wins) of
               Nothing  → return $ ResError $ "no window " ⧺ name ⧺ " yet present"
               Just win → do
-                let ds'   = ds { dsWins = replaceWin win' wins }
-                    win'  = win { winElems = elems }
-                    elems = loadNewBit pane (winElems win) bit
-                    box   = (2.0,1.0)
-                    loadQ = envLoadQ env
-                    pos'  = ((fst pos) + 6.5,(snd pos) + 0.5)
+                let ds'    = ds { dsWins = replaceWin win' wins }
+                    win'   = win { winElems = elems }
+                    elems  = loadNewBit pane (winElems win) bit
+                    box    = (2.0,1.0)
+                    loadQ  = envLoadQ env
+                    eventQ = envEventQ env
+                    pos'   = ((fst pos) + 6.5,(snd pos) + 0.5)
                     (bitL,pos) = findBitPos pane elems
                 case bit of
-                  PaneBitSlider _ _ _ _ → atomically $ writeQueue loadQ $ LoadCmdNewElem name $ WinElemLink pos' box $ LinkSlider $ bitL
+                  PaneBitSlider _ _ _ _ → do
+                    atomically $ writeQueue loadQ $ LoadCmdNewElem name $ WinElemLink pos' box $ LinkSlider $ bitL
+                    atomically $ writeQueue eventQ $ EventNewInput $ LinkSlider $ bitL
                   _ → return ()
                 return $ ResDrawState ds'
           LoadCmdNULL → return ResNULL

@@ -49,6 +49,16 @@ processEvent event = case event of
   (EventDyns dyns) → modify $ \s → s { stDynData = dyns }
   (EventVerts verts) → modify $ \s → s { stVerts = verts
                                        , stReload = RSReload }
+  (EventNewInput link) → do
+    st ← get
+    let oldIS = stInput st
+        newIS = addLink link oldIS
+    modify $ \s → s { stInput = newIS }
+  (EventInput link) → do
+    st ← get
+    let oldIS = stInput st
+        newIS = toggleLink link oldIS
+    modify $ \s → s { stInput = newIS }
   (EventRecreate) → modify $ \s → s { stReload = RSRecreate }
   (EventReload) → modify $ \s → s { stReload = RSReload }
   (EventToggleFPS) → do

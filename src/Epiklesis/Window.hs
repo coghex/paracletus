@@ -51,3 +51,4 @@ loadNewBit pane (we:wes) bit = case we of
     | otherwise   → [WinElemPane pos name bits]  ⧺ loadNewBit pane wes bit
     where bits' = bits ⧺ [((length bits),bit)]
   we                        → [we] ⧺ loadNewBit pane wes bit
+
