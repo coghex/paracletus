@@ -12,6 +12,7 @@ import Artos.Var
 import Artos.Queue
 import Anamnesis.Data
 import Epiklesis.Data
+import Epiklesis.Shell
 import Epiklesis.Window
 import Paracletus.Data
 import Paracletus.Draw
@@ -36,7 +37,7 @@ loadParacletus env _        = atomically $ writeQueue ec $ EventLogDebug "dont k
 loadParacVulkan ∷ Env → IO ()
 loadParacVulkan env = do
   runLoadLoop env initDS TStop
-  where initDS = DrawState DSSNULL [] (-1) (-1) [] $ FPS 30.0 30 False
+  where initDS    = DrawState DSSNULL initShell [] (-1) (-1) [] $ FPS 30.0 30 False
 
 -- load loop runs with a delay so that
 -- it can sleep (ghc threads run like that)
@@ -97,6 +98,11 @@ processCommands env ds = do
               atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
               processCommands env ds''
                 where ds'' = ds' { dsStatus = DSSNULL }
+            DSSLoadCap cap → do
+              atomically $ writeQueue (envEventQ env) $ EventCap cap
+              atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
+              processCommands env ds''
+                where ds'' = ds' { dsStatus = DSSNULL }
             DSSLogDebug str → do
               let eventQ = envEventQ env
               atomically $ writeQueue eventQ $ EventLogDebug str
@@ -136,6 +142,14 @@ processCommand env ds cmd = case cmd of
                 ds'    = ds { dsFPS = fps }
             atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
             return $ ResDrawState ds'
+          LoadCmdShell shCmd → case shCmd of
+            ShellCmdOpen  → return $ ResDrawState ds'
+              where ds' = ds { dsShell = openShell (dsShell ds)
+                             , dsStatus = DSSLoadCap True }
+            ShellCmdClose → return $ ResDrawState ds'
+              where ds' = ds { dsShell = closeShell (dsShell ds)
+                             , dsStatus = DSSLoadCap False }
+            ShellCmdNULL  → return $ ResNULL
           LoadCmdNewWin win → return $ ResDrawState ds'
             where ds' = ds { dsWins = win:(dsWins ds) }
           LoadCmdSwitchWin win → case (findWinI win (dsWins ds)) of

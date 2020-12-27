@@ -5,6 +5,7 @@ import Paracletus.Data
 -- draw state is kept in a seperate thread
 -- and calculated into verticies
 data DrawState = DrawState { dsStatus ∷ DSStatus
+                           , dsShell  ∷ Shell
                            , dsWins   ∷ [Window]
                            , dsWinI   ∷ Int
                            , dsLastI  ∷ Int
@@ -15,7 +16,13 @@ data DrawState = DrawState { dsStatus ∷ DSStatus
 -- status of the loading thread, allowing
 -- us to return results of deeply nested
 -- pure functions
-data DSStatus = DSSLogDebug String | DSSLoadDyns | DSSLoadVerts | DSSLoadInput LinkAction | DSSExit | DSSNULL deriving (Show, Eq)
+data DSStatus = DSSLogDebug String
+              | DSSLoadDyns
+              | DSSLoadVerts
+              | DSSLoadInput LinkAction
+              | DSSLoadCap Bool
+              | DSSExit
+              | DSSNULL deriving (Show, Eq)
 
 -- gtiles represent abstact tiles
 data Tile = GTile { tPos   ∷ (Double,Double)
@@ -99,3 +106,19 @@ data LinkAction = LinkExit
                 | LinkSlider Int
                 | LinkNULL deriving (Show, Eq)
 
+-- possible actions to load the shell
+data ShellCmd = ShellCmdOpen
+              | ShellCmdClose
+              | ShellCmdNULL deriving (Show, Eq)
+
+-- lua shell executes commands in global state
+data Shell = Shell { shPrompt ∷ String
+                   , shOpen   ∷ Bool
+                   , shTabbed ∷ Maybe Int
+                   , shCursor ∷ Int
+                   , shCBlink ∷ Bool
+                   , shInpStr ∷ String
+                   , shCache  ∷ String
+                   , shOutStr ∷ String
+                   , shHistI  ∷ Int
+                   , shHist   ∷ [String] } deriving (Show, Eq)

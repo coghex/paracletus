@@ -19,6 +19,7 @@ data Event = EventError !GLFW.Error !String
            | EventDyns !Dyns
            | EventNewInput !LinkAction
            | EventInput !LinkAction
+           | EventCap !Bool
            | EventToggleFPS
            | EventRecreate
            | EventReload
@@ -31,6 +32,7 @@ data LoadCmd = LoadCmdNewWin Window
              | LoadCmdLink (Double,Double)
              | LoadCmdNewBit String String PaneBit
              | LoadCmdMoveSlider Double Int
+             | LoadCmdShell !ShellCmd
              | LoadCmdVerts
              | LoadCmdDyns
              | LoadCmdSetFPS FPS

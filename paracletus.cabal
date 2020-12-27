@@ -30,6 +30,7 @@ executable paracletus
                    Epiklesis.Command
                    Epiklesis.Data
                    Epiklesis.Settings
+                   Epiklesis.Shell
                    Epiklesis.Window
                    Paracletus
                    Paracletus.Data

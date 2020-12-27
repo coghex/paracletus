@@ -59,6 +59,11 @@ processEvent event = case event of
     let oldIS = stInput st
         newIS = toggleLink link oldIS
     modify $ \s → s { stInput = newIS }
+  (EventCap cap) → do
+    st ← get
+    let oldIS = stInput st
+        newIS = oldIS { inpCap = cap }
+    modify $ \s → s { stInput = newIS }
   (EventRecreate) → modify $ \s → s { stReload = RSRecreate }
   (EventReload) → modify $ \s → s { stReload = RSReload }
   (EventToggleFPS) → do

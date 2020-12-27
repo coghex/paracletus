@@ -3,19 +3,21 @@ module Paracletus.Draw where
 import Prelude()
 import UPrelude
 import Epiklesis.Data
+import Epiklesis.Shell (loadShell)
 import Epiklesis.Window
 import Paracletus.Data
 import Paracletus.Elem
 import Paracletus.Oblatum.Font
 
 loadTiles ∷ DrawState → [Tile]
-loadTiles ds = fpsTiles ⧺ winTiles
+loadTiles ds = winTiles ⧺ shTiles ⧺ fpsTiles
   where winTiles = case (currentWin ds) of
                      Just win → loadWindow win
                      Nothing  → []
         fpsTiles = case (dsFPS ds) of
                      FPS _ _ True  → genFPSTiles
                      FPS _ _ False → []
+        shTiles  = loadShell (dsShell ds)
 
 genFPSTiles ∷ [Tile]
 genFPSTiles = [tile1,tile2,tile3,tile4]
