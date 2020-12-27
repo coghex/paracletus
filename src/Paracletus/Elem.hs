@@ -75,7 +75,7 @@ moveSliderBits _ _ []       = []
 moveSliderBits x n ((i,(PaneBitSlider text mn mx val)):pbs)
   | (i ≡ n)   = [(i,PaneBitSlider text mn mx val')] ⧺ moveSliderBits x n pbs
   | otherwise = [(i,PaneBitSlider text mn mx val)]  ⧺ moveSliderBits x n pbs
-  where val' = (round (x*(mx' - mn'))) `div` 3
+  where val' = min mx $ max mn $ (round (x*(mx' - mn'))) `div` 3
         mn'  = fromIntegral mn
         mx'  = fromIntegral mx
 moveSliderBits x n (pb:pbs) = [pb] ⧺ moveSliderBits x n pbs
