@@ -79,7 +79,7 @@ moveSlider x n win = win { winElems = moveWinSlider (winElems win) x n }
 moveWinSlider ∷ [WinElem] → Double → Int → [WinElem]
 moveWinSlider []       _ _ = []
 moveWinSlider ((WinElemPane pos name bits):wes) x n = [WinElemPane pos name bits'] ⧺ moveWinSlider wes x n
-  where bits' = moveBitsSlider (x - 0.25*(fst pos) + 0.25) n bits
+  where bits' = moveBitsSlider (x - (fst pos) - 5.0) n bits
 moveWinSlider (we:wes) x n = [we] ⧺ moveWinSlider wes x n
 
 moveBitsSlider ∷ Double → Int → [(Int,PaneBit)] → [(Int,PaneBit)]

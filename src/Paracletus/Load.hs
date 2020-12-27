@@ -127,7 +127,7 @@ processCommand env ds cmd = case cmd of
               let eventQ = envEventQ env
                   dyns   = loadDyns ds'
                   ds'    = ds { dsWins = replaceWin win (dsWins ds) }
-                  win    = moveSliderWin x n w
+                  win    = moveSlider x n w
               atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
               return $ ResDrawState ds'
           LoadCmdSetFPS fps → do
