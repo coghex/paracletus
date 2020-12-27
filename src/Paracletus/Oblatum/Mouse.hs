@@ -62,6 +62,7 @@ evalLink ∷ LinkAction → DrawState → DrawState
 evalLink (LinkExit)      ds = ds { dsStatus = DSSExit }
 evalLink (LinkBack)      ds = ds { dsWinI  = dsLastI ds
                                  , dsLastI = dsWinI  ds }
+evalLink (LinkSlider n)  ds = findSlider n ds
 evalLink (LinkLink name) ds = case (findWinI name (dsWins ds)) of
   Nothing → ds
   Just wi → changeWin wi ds

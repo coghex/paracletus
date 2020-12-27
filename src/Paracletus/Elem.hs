@@ -30,7 +30,7 @@ loadWinElem (WinElemNULL)               = []
 -- finds tiles for window pane
 calcPaneTiles ∷ (Double,Double) → [(Int,PaneBit)] → [Tile]
 calcPaneTiles _   []                    = []
-calcPaneTiles pos ((i,PaneBitSlider text mn mx vl):pbs) = (calcText TextSize30px (fst pos) pos' text) ⧺ calcPaneSlider pos' mn mx vl ⧺ calcPaneTiles pos pbs
+calcPaneTiles pos ((i,PaneBitSlider text mn mx vl):pbs) = (calcText TextSize30px (fst pos) pos' text) ⧺ calcPaneSlider i pos' mn mx vl ⧺ calcPaneTiles pos pbs
   where pos' = ((fst pos) + 1.0,(snd pos) - (fromIntegral i))
 calcPaneTiles pos ((i,PaneBitText text):pbs) = (calcText TextSize30px (fst pos) pos' text) ⧺ calcPaneTiles pos pbs
   where pos' = ((fst pos) + 0.5,(snd pos) + (fromIntegral i))
@@ -42,9 +42,11 @@ calcPaneBoxSize _    []  = (24,1)
 calcPaneBoxSize size pbs = (24,2.0*fromIntegral(length pbs))
 
 -- create a slider of arbitrary bounds
-calcPaneSlider ∷ (Double,Double) → Int → Int → Int → [Tile]
-calcPaneSlider pos mn mx val = sliderTile ⧺ barTiles ⧺ minTiles ⧺ maxTiles ⧺ valTiles
-  where sliderTile = [DTile DMNULL pos (0.05,0.25) (0,0) (1,1) 112]
+calcPaneSlider ∷ Int → (Double,Double) → Int → Int → Int → [Tile]
+calcPaneSlider n pos mn mx val = sliderTile ⧺ barTiles ⧺ minTiles ⧺ maxTiles ⧺ valTiles
+  where sliderTile = [DTile (DMSlider n) sliderPos (0.1,0.5) (0,0) (1,1) 112]
+  --where sliderTile = [GTile sliderPos (0.1,0.5) (0,0) (1,1) 112]
+        sliderPos  = ((fst pos) + calcSliderPos mn mx val, (snd pos))
         barTiles   = calcText size 0 posBar "<-------->"
         posBar     = ((fst pos) + 4.0, (snd pos))
         minTiles   = calcText size 0 posMin $ show mn
@@ -54,6 +56,21 @@ calcPaneSlider pos mn mx val = sliderTile ⧺ barTiles ⧺ minTiles ⧺ maxTiles
         valTiles   = calcText size 0 posVal $ show val
         posVal     = ((fst pos) + 9.5, (snd pos))
         size       = TextSize30px
+
+-- position offset of slider
+calcSliderPos ∷ Int → Int → Int → Double
+calcSliderPos mn mx val = 4.0 + 3.0*val'/(mx' - mn')
+  where mn'  = fromIntegral mn
+        mx'  = fromIntegral mx
+        val' = fromIntegral val
+
+-- finds offset of generic bit just added
+findBitPos ∷ String → [WinElem] → (Int,(Double,Double))
+findBitPos _    []       = (0,(0.0,0.0))
+findBitPos pane ((WinElemPane pos name bits):wes)
+  | pane ≡ name = (length bits,((fst pos), (snd pos) - (fromIntegral(length bits))))
+  | otherwise   = findBitPos pane wes
+findBitPos pane (we:wes) = findBitPos pane wes
 
 -- figure out what size the textbox should be
 calcTextBoxSize ∷ TextSize → String → (Double,Double)

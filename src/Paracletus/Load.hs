@@ -6,6 +6,7 @@ where
 -- recreate the swapchain
 import Prelude()
 import UPrelude
+import Data.List (sort)
 import Artos.Data
 import Artos.Var
 import Artos.Queue
@@ -15,6 +16,7 @@ import Epiklesis.Window
 import Paracletus.Data
 import Paracletus.Draw
 import Paracletus.Dyn
+import Paracletus.Elem
 import Paracletus.Vulkan.Calc
 import Paracletus.Oblatum.Mouse (linkTest)
 import Control.Concurrent (threadDelay)
@@ -121,7 +123,7 @@ processCommand env ds cmd = case cmd of
             atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
             return $ ResDrawState ds'
           LoadCmdVerts → do
-            let newVerts = VertsDF $ calcVertices $ loadTiles ds
+            let newVerts = VertsDF $ calcVertices $ sort $ loadTiles ds
                 ds'      = ds { dsTiles = loadTiles ds }
             atomically $ writeQueue (envEventQ env) $ EventVerts newVerts
             return $ ResDrawState ds'
@@ -142,5 +144,11 @@ processCommand env ds cmd = case cmd of
                 let ds'   = ds { dsWins = replaceWin win' wins }
                     win'  = win { winElems = elems }
                     elems = loadNewBit pane (winElems win) bit
+                    box   = (6.0,1.0)
+                    loadQ = envLoadQ env
+                    (bitL,pos) = findBitPos pane elems
+                case bit of
+                  PaneBitSlider _ _ _ _ → atomically $ writeQueue loadQ $ LoadCmdNewElem name $ WinElemLink pos box $ LinkSlider $ bitL
+                  _ → return ()
                 return $ ResDrawState ds'
           LoadCmdNULL → return ResNULL

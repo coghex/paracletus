@@ -72,9 +72,9 @@ updateTransDyn nDyn (dd:dds) device extent uniBuf = do
   let nDyn'   = (fromIntegral nDyn) - 1
   uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf (nDyn'*(bSizeOf @DynTransObject undefined)) (bSizeOf @DynTransObject undefined) VK_ZERO_FLAGS
   let move = DF4
-                (DF4 2 0 0 0)
-                (DF4 0 2 0 0)
-                (DF4 0 0 2 0)
+                (DF4 1 0 0 0)
+                (DF4 0 1 0 0)
+                (DF4 0 0 1 0)
                 (DF4 x y 0 1)
       (x ,y)  = (realToFrac x', realToFrac y')
       (x',y') = ddPosition dd
