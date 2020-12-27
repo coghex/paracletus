@@ -14,6 +14,7 @@ import Artos.Var
 import Epiklesis.Data
 import Epiklesis.Window
 import Paracletus.Data
+import Paracletus.Dyn
 import qualified Paracletus.Oblatum.GLFW as GLFW
       
 -- TODO: un-hardcode the pixels here
@@ -49,7 +50,7 @@ linkTestFunc ∷ (Double,Double) → [WinElem] → DrawState → DrawState
 linkTestFunc _   []           ds = ds
 linkTestFunc pos (elem:elems) ds = case (elem) of
   WinElemLink lpos lbox lact → case (testLink pos lpos lbox) of
-    True  → evalLink lact ds
+    True  → evalLink pos lact ds
     False → linkTestFunc pos elems ds
   _                          → linkTestFunc pos elems ds
 testLink ∷ (Double,Double) → (Double,Double) → (Double,Double) → Bool
@@ -58,12 +59,16 @@ testLink (x1,y1) (x2,y2) (w,h)
   | otherwise = False
 
 -- various link actions defined here
-evalLink ∷ LinkAction → DrawState → DrawState
-evalLink (LinkExit)      ds = ds { dsStatus = DSSExit }
-evalLink (LinkBack)      ds = ds { dsWinI  = dsLastI ds
-                                 , dsLastI = dsWinI  ds }
-evalLink (LinkSlider n)  ds = findSlider n ds
-evalLink (LinkLink name) ds = case (findWinI name (dsWins ds)) of
+evalLink ∷ (Double,Double) → LinkAction → DrawState → DrawState
+evalLink _     (LinkExit)      ds = ds { dsStatus = DSSExit }
+evalLink _     (LinkBack)      ds = ds { dsWinI  = dsLastI ds
+                                       , dsLastI = dsWinI  ds }
+evalLink (x,_) (LinkSlider n)  ds = case (currentWin ds) of
+  Nothing → ds
+  Just w  → ds { dsWins = replaceWin win (dsWins ds)
+               , dsStatus = DSSLoadDyns}
+    where win = moveSlider x n w
+evalLink _     (LinkLink name) ds = case (findWinI name (dsWins ds)) of
   Nothing → ds
   Just wi → changeWin wi ds
-evalLink _               ds = ds
+evalLink _     _               ds = ds

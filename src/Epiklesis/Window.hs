@@ -39,7 +39,7 @@ currentWin ds
 changeWin ∷ Int → DrawState → DrawState
 changeWin n ds = ds { dsWinI   = n
                     , dsLastI  = n'
-                    , dsStatus = DSSLogDebug $ "window changed to " ⧺ nname }
+                    , dsStatus = DSSLoadVerts }
   where n' = dsWinI ds
         nname = winTitle $ (dsWins ds) !! n
 
@@ -51,7 +51,3 @@ loadNewBit pane (we:wes) bit = case we of
     | otherwise   → [WinElemPane pos name bits]  ⧺ loadNewBit pane wes bit
     where bits' = bits ⧺ [((length bits),bit)]
   we                        → [we] ⧺ loadNewBit pane wes bit
-
--- finds slider in draw state
-findSlider ∷ Int → DrawState → DrawState
-findSlider n ds = ds

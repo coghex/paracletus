@@ -82,6 +82,16 @@ processCommands env ds = do
               let eventQ = envEventQ env
               atomically $ writeQueue eventQ $ EventExit
               return ds'
+            DSSLoadVerts → do
+              let eventQ = envEventQ env
+              atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
+              processCommands env ds''
+                where ds'' = ds' { dsStatus = DSSNULL }
+            DSSLoadDyns → do
+              let eventQ = envEventQ env
+              atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
+              processCommands env ds''
+                where ds'' = ds' { dsStatus = DSSNULL }
             DSSLogDebug str → do
               let eventQ = envEventQ env
               atomically $ writeQueue eventQ $ EventLogDebug str
@@ -117,11 +127,14 @@ processCommand env ds cmd = case cmd of
           LoadCmdSwitchWin win → case (findWinI win (dsWins ds)) of
             Just n  → return $ ResDrawState $ changeWin n ds
             Nothing → return $ ResError $ "window " ⧺ win ⧺ " not found"
-          LoadCmdLink pos → do
-            let ds'    = linkTest pos ds
-                eventQ = envEventQ env
-            atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
-            return $ ResDrawState ds'
+          LoadCmdLink pos → return $ ResDrawState ds'
+            where ds' = linkTest pos ds
+          LoadCmdDyns → do
+            let eventQ = envEventQ env
+                newVerts = VertsDF $ calcVertices $ sort $ loadTiles ds
+                dyns   = loadDyns ds
+            atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
+            return ResSuccess
           LoadCmdVerts → do
             let newVerts = VertsDF $ calcVertices $ sort $ loadTiles ds
                 ds'      = ds { dsTiles = loadTiles ds }
@@ -144,11 +157,12 @@ processCommand env ds cmd = case cmd of
                 let ds'   = ds { dsWins = replaceWin win' wins }
                     win'  = win { winElems = elems }
                     elems = loadNewBit pane (winElems win) bit
-                    box   = (6.0,1.0)
+                    box   = (2.0,1.0)
                     loadQ = envLoadQ env
+                    pos'  = ((fst pos) + 6.5,(snd pos) + 0.5)
                     (bitL,pos) = findBitPos pane elems
                 case bit of
-                  PaneBitSlider _ _ _ _ → atomically $ writeQueue loadQ $ LoadCmdNewElem name $ WinElemLink pos box $ LinkSlider $ bitL
+                  PaneBitSlider _ _ _ _ → atomically $ writeQueue loadQ $ LoadCmdNewElem name $ WinElemLink pos' box $ LinkSlider $ bitL
                   _ → return ()
                 return $ ResDrawState ds'
           LoadCmdNULL → return ResNULL

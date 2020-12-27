@@ -46,7 +46,7 @@ calcPaneSlider ∷ Int → (Double,Double) → Int → Int → Int → [Tile]
 calcPaneSlider n pos mn mx val = sliderTile ⧺ barTiles ⧺ minTiles ⧺ maxTiles ⧺ valTiles
   where sliderTile = [DTile (DMSlider n) sliderPos (0.1,0.5) (0,0) (1,1) 112]
   --where sliderTile = [GTile sliderPos (0.1,0.5) (0,0) (1,1) 112]
-        sliderPos  = ((fst pos) + calcSliderPos mn mx val, (snd pos))
+        sliderPos  = ((fst pos) + 4.0, (snd pos))
         barTiles   = calcText size 0 posBar "<-------->"
         posBar     = ((fst pos) + 4.0, (snd pos))
         minTiles   = calcText size 0 posMin $ show mn
@@ -68,7 +68,7 @@ calcSliderPos mn mx val = 4.0 + 3.0*val'/(mx' - mn')
 findBitPos ∷ String → [WinElem] → (Int,(Double,Double))
 findBitPos _    []       = (0,(0.0,0.0))
 findBitPos pane ((WinElemPane pos name bits):wes)
-  | pane ≡ name = (length bits,((fst pos), (snd pos) - (fromIntegral(length bits))))
+  | pane ≡ name = (length bits - 1,((fst pos), (snd pos) - (fromIntegral(length bits))))
   | otherwise   = findBitPos pane wes
 findBitPos pane (we:wes) = findBitPos pane wes
 

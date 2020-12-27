@@ -29,6 +29,7 @@ data LoadCmd = LoadCmdNewWin Window
              | LoadCmdLink (Double,Double)
              | LoadCmdNewBit String String PaneBit
              | LoadCmdVerts
+             | LoadCmdDyns
              | LoadCmdSetFPS FPS
              | LoadCmdToggleFPS
              | LoadCmdNULL

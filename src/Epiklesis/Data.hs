@@ -15,7 +15,7 @@ data DrawState = DrawState { dsStatus ∷ DSStatus
 -- status of the loading thread, allowing
 -- us to return results of deeply nested
 -- pure functions
-data DSStatus = DSSLogDebug String | DSSExit | DSSNULL deriving (Show, Eq)
+data DSStatus = DSSLogDebug String | DSSLoadDyns | DSSLoadVerts | DSSExit | DSSNULL deriving (Show, Eq)
 
 -- gtiles represent abstact tiles
 data Tile = GTile { tPos   ∷ (Double,Double)
