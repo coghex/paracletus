@@ -61,6 +61,8 @@ getGLFWKey "UPP" = Key'Up
 getGLFWKey "DWN" = Key'Down
 getGLFWKey "SH"  = Key'GraveAccent
 getGLFWKey "C"   = Key'C
+getGLFWKey "E"   = Key'E
+getGLFWKey "R"   = Key'R
 getGLFWKey "H"   = Key'H
 getGLFWKey "J"   = Key'J
 getGLFWKey "K"   = Key'K
@@ -111,6 +113,8 @@ applyKeyLayout _         "K"   = "K"
 applyKeyLayout _         "L"   = "L"
 applyKeyLayout _         "C"   = "C"
 applyKeyLayout _         "A"   = "A"
+applyKeyLayout _         "R"   = "R"
+applyKeyLayout _         "E"   = "E"
 applyKeyLayout _         _     = "NULL"
 
 getKeyStr ∷ Key → IO (Maybe String)

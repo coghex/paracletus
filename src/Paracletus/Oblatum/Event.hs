@@ -39,6 +39,7 @@ evalKey window k ks mk = do
       else if (GLFW.modifierKeysControl mk) then
         if (GLFW.keyCheck False keyLayout k "C") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdControl ShCtlC
         else if (GLFW.keyCheck False keyLayout k "A") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdControl ShCtlA
+        else if (GLFW.keyCheck False keyLayout k "E") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdControl ShCtlE
         else return ()
       else do
           ch ← liftIO $ GLFW.calcInpKey k mk

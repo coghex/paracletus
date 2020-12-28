@@ -34,6 +34,8 @@ controlShell sh ShCtlC =
   where retstring = (shOutStr sh) ⧺ (shPrompt sh) ⧺ shInpStr sh ⧺ "\n"
 controlShell sh ShCtlA =
   sh { shCursor = 0 }
+controlShell sh ShCtlE =
+  sh { shCursor = (length (shInpStr sh)) }
 controlShell sh _      = sh
 
 loadShell ∷ Shell → [Tile]
@@ -70,8 +72,11 @@ findCursPos (ch:str)  = chX' + findCursPos str
 
 -- send string to shell
 stringShell ∷ String → Shell → Shell
-stringShell str sh = sh { shInpStr = (shInpStr sh) ⧺ str
-                        , shCursor = (shCursor sh) + (length str) }
+stringShell str sh = sh { shTabbed = Nothing
+                        , shInpStr = newStr
+                        , shCursor = (shCursor sh) + (length str)
+                        , shCBlink = False }
+  where newStr = (take (shCursor sh) (shInpStr sh)) ⧺ str ⧺ (drop (shCursor sh) (shInpStr sh))
 -- delete character
 delShell ∷ Shell → Shell
 delShell sh = sh { shInpStr = newStr
