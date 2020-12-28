@@ -54,3 +54,7 @@ findCursPos (ch:str) = chX' + findCursPos str
 stringShell ∷ String → Shell → Shell
 stringShell str sh = sh { shInpStr = (shInpStr sh) ⧺ str
                         , shCursor = (shCursor sh) + (length str) }
+-- delete character
+delShell ∷ Shell → Shell
+delShell sh = sh { shInpStr = init (shInpStr sh)
+                 , shCursor = (shCursor sh) - 1 }

@@ -111,6 +111,9 @@ data LinkAction = LinkExit
 data ShellCmd = ShellCmdOpen
               | ShellCmdClose
               | ShellCmdString String
+              | ShellCmdExec
+              | ShellCmdDelete
+              | ShellCmdTab
               | ShellCmdCursor Int
               | ShellCmdNULL deriving (Show, Eq)
 

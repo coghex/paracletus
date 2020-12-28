@@ -143,6 +143,11 @@ processCommand env ds cmd = case cmd of
             atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
             return $ ResDrawState ds'
           LoadCmdShell shCmd → case shCmd of
+            ShellCmdTab → return $ ResNULL
+            ShellCmdDelete → return $ ResDrawState ds'
+              where ds' = ds { dsShell = delShell (dsShell ds)
+                             , dsStatus = DSSLoadVerts }
+            ShellCmdExec → return $ ResNULL
             ShellCmdString ch → do
               return $ ResDrawState ds'
               where ds' = ds { dsShell = stringShell ch (dsShell ds)
