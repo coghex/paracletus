@@ -121,7 +121,7 @@ upShell sh
   | shHist sh ≡ [] = sh
   | otherwise      = sh { shInpStr = (shHist sh) !! (incShHist `mod` (length (shHist sh)))
                         , shHistI  = incShHist }
-  where incShHist = (shHistI sh) + 1
+  where incShHist = if (shHistI sh) ≥ (length (shHist sh)) then 0 else (shHistI sh) + 1
 
 downShell ∷ Shell → Shell
 downShell sh

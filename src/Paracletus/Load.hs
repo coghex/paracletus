@@ -169,6 +169,12 @@ processCommand env ds cmd = case cmd of
             ShellCmdClose → return $ ResDrawState ds'
               where ds' = ds { dsShell = closeShell (dsShell ds)
                              , dsStatus = DSSLoadCap False }
+            ShellCmdUp    → return $ ResDrawState ds'
+              where ds' = ds { dsShell = upShell (dsShell ds)
+                             , dsStatus = DSSLoadVerts }
+            ShellCmdDown  → return $ ResDrawState ds'
+              where ds' = ds { dsShell = downShell (dsShell ds)
+                             , dsStatus = DSSLoadVerts }
             ShellCmdNULL  → return $ ResNULL
           LoadCmdNewWin win → return $ ResDrawState ds'
             where ds' = ds { dsWins = win:(dsWins ds) }

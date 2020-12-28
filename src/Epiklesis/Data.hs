@@ -115,6 +115,8 @@ data ShellCmd = ShellCmdOpen
               | ShellCmdExec
               | ShellCmdDelete
               | ShellCmdTab
+              | ShellCmdUp
+              | ShellCmdDown
               | ShellCmdCursor Int
               | ShellCmdNULL deriving (Show, Eq)
 
