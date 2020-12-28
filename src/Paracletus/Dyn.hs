@@ -13,22 +13,24 @@ loadDyns ds = reverse $ loadDynData ds $ dsTiles ds
 loadDynData ∷ DrawState → [Tile] → [DynData]
 loadDynData _  []                     = []
 loadDynData ds ((GTile _ _ _ _ _):ts) = [] ⧺ loadDynData ds ts
-loadDynData ds ((DTile (DMFPS n) _ _ _ _ _):ts) = [DynData dig (0,0) (0,0)] ⧺ loadDynData ds ts
+loadDynData ds ((DTile (DMFPS n) _ _ _ _ _):ts) = [DynData dig (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
   where dig = calcDiglet n $ dsFPS ds
-loadDynData ds ((DTile (DMSliderVal n d) _ _ _ _ _):ts) = [DynData dig (0,0) (0,0)] ⧺ loadDynData ds ts
+loadDynData ds ((DTile (DMSliderVal n d) _ _ _ _ _):ts) = [DynData dig (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
   where dig = case (currentWin ds) of
                 Just w  → sliderDiglet (winElems w) n d
                 Nothing → 0
-loadDynData ds ((DTile (DMShCursor) _ _ _ _ _):ts) = [DynData 0 (x,2*(1-y)) (0,0)] ⧺ loadDynData ds ts
+loadDynData ds ((DTile (DMShCursor) _ _ _ _ _):ts) = [DynData 0 (x,2*(1-y)) (1,1) (0,0)] ⧺ loadDynData ds ts
   where x      = realToFrac $ findCursPos $ take n $ shInpStr sh
         y      = fromIntegral $ length $ splitOn "\n" $ shOutStr sh
         sh     = dsShell ds
         n      = shCursor sh
-loadDynData ds ((DTile (DMSlider n) _ _ _ _ _):ts) = [DynData 0 (x,0) (0,0)] ⧺ loadDynData ds ts
+loadDynData ds ((DTile (DMSlider n) _ _ _ _ _):ts) = [DynData 0 (x,0) (1,1) (0,0)] ⧺ loadDynData ds ts
   where x = case (currentWin ds) of
               Just w  → calcSliderOffset w n
               Nothing → 0
-loadDynData ds ((DTile (DMNULL) _ _ _ _ _):ts) = [DynData 0 (0,0) (0,0)] ⧺ loadDynData ds ts
+loadDynData ds ((DTile (DMBuff b n) _ _ _ _ _):ts) = [buff !! n] ⧺ loadDynData ds ts
+  where Dyns buff = dsBuff ds !! b
+loadDynData ds ((DTile (DMNULL) _ _ _ _ _):ts) = [DynData 0 (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
 
 -- calcs dyndata for slider val
 sliderDiglet ∷ [WinElem] → Int → Int → Int

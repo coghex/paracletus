@@ -12,6 +12,7 @@ data DrawState = DrawState { dsStatus ∷ DSStatus
                            , dsLastI  ∷ Int
                            , dsTiles  ∷ [Tile]
                            , dsFPS    ∷ FPS
+                           , dsBuff   ∷ [Dyns]
                            } deriving (Show, Eq)
 
 -- status of the loading thread, allowing
@@ -62,6 +63,7 @@ data DynMap = DMFPS Int
             | DMSlider Int
             | DMSliderVal Int Int
             | DMShCursor
+            | DMBuff Int Int
             | DMNULL deriving (Show, Eq)
 
 -- abstract idea of what a window can be

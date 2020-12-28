@@ -25,11 +25,12 @@ data Verts = VertsNULL | VertsDF (DataFrame Vertex '[XN 0], DataFrame Word32 '[X
 data DynData = DynData
          { ddTex      ∷ Int
          , ddPosition ∷ (Float,Float)
+         , ddScale    ∷ (Float,Float)
          , ddTIndex   ∷ (Int,Int)
          } deriving (Show, Eq)
 
 -- collection of dyndata
-data Dyns = Dyns [DynData]
+data Dyns = Dyns [DynData] deriving (Show, Eq)
 
 -- corresponding reference to lua state
 data DDRef = DDFPS | DDSlider Int | DDNULL deriving (Show, Eq)

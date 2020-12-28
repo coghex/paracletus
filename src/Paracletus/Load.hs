@@ -14,6 +14,7 @@ import Anamnesis.Data
 import Epiklesis.Data
 import Epiklesis.Shell
 import Epiklesis.Window
+import Paracletus.Buff
 import Paracletus.Data
 import Paracletus.Draw
 import Paracletus.Dyn
@@ -37,7 +38,7 @@ loadParacletus env _        = atomically $ writeQueue ec $ EventLogDebug "dont k
 loadParacVulkan ∷ Env → IO ()
 loadParacVulkan env = do
   runLoadLoop env initDS TStop
-  where initDS  = DrawState DSSNULL initShell cmds [] (-1) (-1) [] $ FPS 30.0 30 False
+  where initDS  = DrawState DSSNULL initShell cmds [] (-1) (-1) [] (FPS 30.0 30 False) [initBuff]
         cmds    = ["newWindow", "newText", "newMenu", "newMenuBit", "newLink", "newWorld", "switchWindow", "setBackground", "luaModule", "newDynObj", "resizeWindow", "toggleFPS"]
 
 -- load loop runs with a delay so that
@@ -155,12 +156,13 @@ processCommand env ds cmd = case cmd of
       return $ ResDrawState ds'
     ShellCmdString ch → do
       return $ ResDrawState ds'
-      where ds' = ds { dsShell = stringShell ch (dsShell ds)
-                     , dsStatus = DSSLoadVerts }
+      where ds' = ds { dsShell  = stringShell ch (dsShell ds)
+                     , dsBuff   = genStrBuff (dsBuff ds) 0 $ dsShell ds
+                     , dsStatus = DSSLoadDyns }
     ShellCmdCursor n → do
       return $ ResDrawState ds'
       where ds'  = ds { dsShell = (dsShell ds) { shCursor = newN }
-                     , dsStatus = DSSLoadDyns }
+                      , dsStatus = DSSLoadDyns }
             newN = max 0 $ min (length (shInpStr sh)) $ (shCursor sh) + n
             sh   = dsShell ds
     ShellCmdOpen  → return $ ResDrawState ds'

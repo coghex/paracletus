@@ -33,6 +33,7 @@ executable paracletus
                    Epiklesis.Shell
                    Epiklesis.Window
                    Paracletus
+                   Paracletus.Buff
                    Paracletus.Data
                    Paracletus.Draw
                    Paracletus.Dyn

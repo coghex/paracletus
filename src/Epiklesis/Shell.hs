@@ -7,6 +7,7 @@ import Data.List (isPrefixOf)
 import Data.List.Split (splitOn)
 import Anamnesis.Data
 import Epiklesis.Data
+import Paracletus.Buff (clearBuff)
 import Paracletus.Data
 import Paracletus.Elem (calcTextBox, calcText)
 import Paracletus.Oblatum.Font
@@ -46,7 +47,6 @@ loadShell sh
         textBox    = calcTextBox TextSize30px (-8.0, 4.5) (32,18)
         text       = calcText TextSize30px (-7) (-7,4) $ genShellStr sh
         cursorTile = [DTile (DMShCursor) (-7,4) (0.05,0.5) (0,0) (1,1) 112]
-        --cursPos    = findCursPos (shInpStr sh)
 
 genShellStr ∷ Shell → String
 genShellStr sh
@@ -56,7 +56,7 @@ genShellStr sh
         strsin    = shInpStr sh
         strsout   = shOutStr sh
         height    = length $ filter (≡ '\n') retstring
-        retstring = strsout ⧺ prompt ⧺ strsin
+        retstring = strsout ⧺ prompt-- ⧺ strsin
         shortret  = flattenWith '\n' $ drop (height - 8) (splitOn "\n" retstring)
         flattenWith ∷ Char → [String] → String
         flattenWith _  []         = ""
@@ -96,7 +96,8 @@ evalShell env ds = do
                     , shHistI  = -1
                     , shHist   = ([shInpStr oldSh] ⧺ shHist oldSh)
                     , shCursor = 0 }
-  return $ ds { dsShell = newSh
+  return $ ds { dsShell  = newSh
+              , dsBuff   = clearBuff (dsBuff ds) 0
               , dsStatus = DSSLoadVerts }
 
 execShell ∷ Lua.State → String → IO (Lua.Status,String)
