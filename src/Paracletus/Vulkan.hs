@@ -189,7 +189,8 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
     let stateRecreate = case (stateRec) of
                           RSNULL → False
                           _      → True
-    return $ if shouldLoad ∨ stateRecreate then AbortLoop else ContinueLoop
+    sizeChanged ← liftIO $ atomically $ readTVar windowSizeChanged
+    return $ if shouldLoad ∨ sizeChanged ∨ stateRecreate then AbortLoop else ContinueLoop
   return $ if shouldExit then AbortLoop else ContinueLoop
 
 genCommandBuffs ∷ VkDevice → VkPhysicalDevice → VkCommandPool → DevQueues → VkPipeline → VkRenderPass → TextureData → SwapchainInfo → [VkFramebuffer] → [VkDescriptorSet] → Anamnesis ε σ (Ptr VkCommandBuffer)
