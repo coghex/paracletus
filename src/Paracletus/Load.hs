@@ -147,7 +147,9 @@ processCommand env ds cmd = case cmd of
             ShellCmdDelete → return $ ResDrawState ds'
               where ds' = ds { dsShell = delShell (dsShell ds)
                              , dsStatus = DSSLoadVerts }
-            ShellCmdExec → return $ ResNULL
+            ShellCmdExec → do
+              ds' ← evalShell env ds
+              return $ ResDrawState ds'
             ShellCmdString ch → do
               return $ ResDrawState ds'
               where ds' = ds { dsShell = stringShell ch (dsShell ds)

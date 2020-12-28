@@ -3,11 +3,15 @@ module Epiklesis.Shell where
 -- lua commands is defined
 import Prelude()
 import UPrelude
+import Data.List (isPrefixOf)
 import Data.List.Split (splitOn)
+import Anamnesis.Data
 import Epiklesis.Data
 import Paracletus.Data
 import Paracletus.Elem (calcTextBox, calcText)
 import Paracletus.Oblatum.Font
+import qualified Data.ByteString.Char8 as BL
+import qualified Foreign.Lua as Lua
 
 -- empty shell
 initShell ∷ Shell
@@ -45,8 +49,9 @@ genShellStr sh
 
 -- TODO: rewrite for new ttf fonts
 findCursPos ∷ String → Double
-findCursPos []       = 1.6
-findCursPos (ch:str) = chX' + findCursPos str
+findCursPos []        = 1.6
+findCursPos (' ':str) = 0.5 + findCursPos str
+findCursPos (ch:str)  = chX' + findCursPos str
   where TTFData _ _ _ chX _ = indexTTF TextSize30px ch
         chX' = chX
 
@@ -61,3 +66,63 @@ delShell sh = sh { shInpStr = newStr
   where newStr = initS (take (shCursor sh) (shInpStr sh)) ⧺ (drop (shCursor sh) (shInpStr sh))
         initS ""  = ""
         initS str = init str
+
+evalShell ∷ Env → DrawState → IO DrawState
+evalShell env ds = do
+  let oldSh = dsShell ds
+  (ret,outbuff) ← execShell (envLuaSt env) (shInpStr oldSh)
+  let retstring = (shOutStr oldSh) ⧺ (shPrompt oldSh) ⧺ (shInpStr oldSh) ⧺ "\n" ⧺ (show ret) ⧺ " > " ⧺ outbuff ⧺ "\n"
+      newSh = oldSh { shInpStr = ""
+                    , shOutStr = retstring
+                    , shTabbed = Nothing
+                    , shHistI  = -1
+                    , shHist   = ([shInpStr oldSh] ⧺ shHist oldSh)
+                    , shCursor = 0 }
+  return $ ds { dsShell = newSh
+              , dsStatus = DSSLoadVerts }
+
+execShell ∷ Lua.State → String → IO (Lua.Status,String)
+execShell ls str = do
+  luaerror ← Lua.runWith ls $ Lua.loadstring $ BL.pack str
+  _   ← Lua.runWith ls $ Lua.pcall 0 1 Nothing
+  ret ← Lua.runWith ls $ Lua.tostring' $ Lua.nthFromBottom (-1)
+  Lua.runWith ls $ Lua.pop $ Lua.nthFromBottom (-1)
+  return $ (luaerror,(BL.unpack ret))
+
+-- cycles through commands with tab
+tabShell ∷ Shell → [String] → Shell
+tabShell sh cmds
+  | shTabbed sh ≡ Nothing =
+      sh { shCache  = shInpStr sh
+         , shInpStr = tabCommand 0 (shInpStr sh) cmds
+         , shTabbed = Just 0 }
+  | otherwise             =
+      sh { shTabbed = Just incSh
+         , shInpStr = tabCommand incSh (shCache sh) cmds }
+    where incSh = incShTabbed $ shTabbed sh
+
+incShTabbed ∷ Maybe Int → Int
+incShTabbed Nothing  = 0
+incShTabbed (Just n) = (n+1)
+
+tabCommand ∷ Int → String → [String] → String
+tabCommand n inpStr cmds
+  | matchedStrings ≡ [] = inpStr
+  | otherwise           = matchedStrings !! (n `mod` (length matchedStrings))
+  where matchedStrings = filter (isPrefixOf inpStr) cmds
+
+-- cycles through the shell history
+upShell ∷ Shell → Shell
+upShell sh
+  | shHist sh ≡ [] = sh
+  | otherwise      = sh { shInpStr = (shHist sh) !! (incShHist `mod` (length (shHist sh)))
+                        , shHistI  = incShHist }
+  where incShHist = (shHistI sh) + 1
+
+downShell ∷ Shell → Shell
+downShell sh
+  | shHist sh ≡ [] = sh
+  | shHistI sh ≥ 0 = sh { shInpStr = (shHist sh) !! ((shHistI sh) `mod` (length (shHist sh)))
+                        , shHistI  = max (-1) ((shHistI sh) - 1) }
+  | otherwise      = sh { shInpStr = "" }
+
