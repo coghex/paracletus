@@ -23,6 +23,19 @@ openShell sh = sh { shOpen = True }
 closeShell ∷ Shell → Shell
 closeShell sh = sh { shOpen = False }
 
+controlShell ∷ Shell → ShellControl → Shell
+controlShell sh ShCtlC =
+  sh { shTabbed = Nothing
+     , shCursor = 0
+     , shInpStr = ""
+     , shCache  = ""
+     , shHistI  = -1
+     , shOutStr = retstring }
+  where retstring = (shOutStr sh) ⧺ (shPrompt sh) ⧺ shInpStr sh ⧺ "\n"
+controlShell sh ShCtlA =
+  sh { shCursor = 0 }
+controlShell sh _      = sh
+
 loadShell ∷ Shell → [Tile]
 loadShell sh
   | shOpen sh = tiles

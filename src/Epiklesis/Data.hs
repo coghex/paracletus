@@ -111,6 +111,7 @@ data LinkAction = LinkExit
 -- possible actions to load the shell
 data ShellCmd = ShellCmdOpen
               | ShellCmdClose
+              | ShellCmdControl ShellControl
               | ShellCmdString String
               | ShellCmdExec
               | ShellCmdDelete
@@ -119,6 +120,9 @@ data ShellCmd = ShellCmdOpen
               | ShellCmdDown
               | ShellCmdCursor Int
               | ShellCmdNULL deriving (Show, Eq)
+
+-- possible shell control keys
+data ShellControl = ShCtlC | ShCtlA | ShCtlE | ShCtlR | ShCtlG | ShCtlO | ShCtlL | ShCtlU | ShCtlW | ShCtlNULL deriving (Show, Eq)
 
 -- lua shell executes commands in global state
 data Shell = Shell { shPrompt ∷ String

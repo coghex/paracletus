@@ -121,107 +121,110 @@ data LoadResult = ResSuccess | ResError String | ResDrawState DrawState | ResNUL
 
 processCommand ∷ Env → DrawState → LoadCmd → IO LoadResult
 processCommand env ds cmd = case cmd of
-          LoadCmdToggleFPS → do
-            let eventQ = envEventQ env
-                ds'    = ds { dsFPS = toggleFPS (dsFPS ds) }
-                toggleFPS ∷ FPS → FPS
-                toggleFPS (FPS a b c) = FPS a b (not c)
-            atomically $ writeQueue eventQ $ EventToggleFPS
-            return $ ResDrawState ds'
-          LoadCmdMoveSlider x n → case (currentWin ds) of
-            Nothing → return $ ResError "no window"
-            Just w  → do
-              let eventQ = envEventQ env
-                  dyns   = loadDyns ds'
-                  ds'    = ds { dsWins = replaceWin win (dsWins ds) }
-                  win    = moveSlider x n w
-              atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
-              return $ ResDrawState ds'
-          LoadCmdSetFPS fps → do
-            let eventQ = envEventQ env
-                dyns   = loadDyns ds'
-                ds'    = ds { dsFPS = fps }
-            atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
-            return $ ResDrawState ds'
-          LoadCmdShell shCmd → case shCmd of
-            ShellCmdTab → return $ ResDrawState ds'
-              where ds' = ds { dsShell = tabShell (dsShell ds) $ dsCmds ds
-                             , dsStatus = DSSLoadVerts }
-            ShellCmdDelete → return $ ResDrawState ds'
-              where ds' = ds { dsShell = delShell (dsShell ds)
-                             , dsStatus = DSSLoadVerts }
-            ShellCmdExec → do
-              ds' ← evalShell env ds
-              return $ ResDrawState ds'
-            ShellCmdString ch → do
-              return $ ResDrawState ds'
-              where ds' = ds { dsShell = stringShell ch (dsShell ds)
-                             , dsStatus = DSSLoadVerts }
-            ShellCmdCursor n → do
-              return $ ResDrawState ds'
-              where ds'  = ds { dsShell = (dsShell ds) { shCursor = newN }
-                             , dsStatus = DSSLoadDyns }
-                    newN = max 0 $ min (length (shInpStr sh)) $ (shCursor sh) + n
-                    sh   = dsShell ds
-            ShellCmdOpen  → return $ ResDrawState ds'
-              where ds' = ds { dsShell = openShell (dsShell ds)
-                             , dsStatus = DSSLoadCap True }
-            ShellCmdClose → return $ ResDrawState ds'
-              where ds' = ds { dsShell = closeShell (dsShell ds)
-                             , dsStatus = DSSLoadCap False }
-            ShellCmdUp    → return $ ResDrawState ds'
-              where ds' = ds { dsShell = upShell (dsShell ds)
-                             , dsStatus = DSSLoadVerts }
-            ShellCmdDown  → return $ ResDrawState ds'
-              where ds' = ds { dsShell = downShell (dsShell ds)
-                             , dsStatus = DSSLoadVerts }
-            ShellCmdNULL  → return $ ResNULL
-          LoadCmdNewWin win → return $ ResDrawState ds'
-            where ds' = ds { dsWins = win:(dsWins ds) }
-          LoadCmdSwitchWin win → case (findWinI win (dsWins ds)) of
-            Just n  → return $ ResDrawState $ changeWin n ds
-            Nothing → return $ ResError $ "window " ⧺ win ⧺ " not found"
-          LoadCmdLink pos → return $ ResDrawState ds'
-            where ds' = linkTest pos ds
-          LoadCmdDyns → do
-            let eventQ = envEventQ env
-                newVerts = VertsDF $ calcVertices $ loadTiles ds
-                dyns   = loadDyns ds
-            atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
-            return ResSuccess
-          LoadCmdVerts → do
-            let newVerts = VertsDF $ calcVertices $ loadTiles ds
-                ds'      = ds { dsTiles = loadTiles ds }
-                dyns   = loadDyns ds'
-            atomically $ writeQueue (envEventQ env) $ EventVerts newVerts
-            atomically $ writeQueue (envEventQ env) $ EventDyns $ Dyns dyns
-            return $ ResDrawState ds'
-          LoadCmdNewElem name elem → do
-            let wins = dsWins ds
-            case (findWin name wins) of
-              Nothing  → return $ ResError $ "no window " ⧺ name ⧺ " yet present"
-              Just win → do
-                let ds'   = ds { dsWins = replaceWin win' wins }
-                    win'  = win { winElems = elems }
-                    elems = elem:(winElems win)
-                return $ ResDrawState ds'
-          LoadCmdNewBit name pane bit → do
-            let wins = dsWins ds
-            case (findWin name wins) of
-              Nothing  → return $ ResError $ "no window " ⧺ name ⧺ " yet present"
-              Just win → do
-                let ds'    = ds { dsWins = replaceWin win' wins }
-                    win'   = win { winElems = elems }
-                    elems  = loadNewBit pane (winElems win) bit
-                    box    = (2.0,1.0)
-                    loadQ  = envLoadQ env
-                    eventQ = envEventQ env
-                    pos'   = ((fst pos) + 6.5,(snd pos) + 0.5)
-                    (bitL,pos) = findBitPos pane elems
-                case bit of
-                  PaneBitSlider _ _ _ _ → do
-                    atomically $ writeQueue loadQ $ LoadCmdNewElem name $ WinElemLink pos' box $ LinkSlider $ bitL
-                    atomically $ writeQueue eventQ $ EventNewInput $ LinkSlider $ bitL
-                  _ → return ()
-                return $ ResDrawState ds'
-          LoadCmdNULL → return ResNULL
+  LoadCmdToggleFPS → do
+    let eventQ = envEventQ env
+        ds'    = ds { dsFPS = toggleFPS (dsFPS ds) }
+        toggleFPS ∷ FPS → FPS
+        toggleFPS (FPS a b c) = FPS a b (not c)
+    atomically $ writeQueue eventQ $ EventToggleFPS
+    return $ ResDrawState ds'
+  LoadCmdMoveSlider x n → case (currentWin ds) of
+    Nothing → return $ ResError "no window"
+    Just w  → do
+      let eventQ = envEventQ env
+          dyns   = loadDyns ds'
+          ds'    = ds { dsWins = replaceWin win (dsWins ds) }
+          win    = moveSlider x n w
+      atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
+      return $ ResDrawState ds'
+  LoadCmdSetFPS fps → do
+    let eventQ = envEventQ env
+        dyns   = loadDyns ds'
+        ds'    = ds { dsFPS = fps }
+    atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
+    return $ ResDrawState ds'
+  LoadCmdShell shCmd → case shCmd of
+    ShellCmdTab → return $ ResDrawState ds'
+      where ds' = ds { dsShell = tabShell (dsShell ds) $ dsCmds ds
+                     , dsStatus = DSSLoadVerts }
+    ShellCmdDelete → return $ ResDrawState ds'
+      where ds' = ds { dsShell = delShell (dsShell ds)
+                     , dsStatus = DSSLoadVerts }
+    ShellCmdExec → do
+      ds' ← evalShell env ds
+      return $ ResDrawState ds'
+    ShellCmdString ch → do
+      return $ ResDrawState ds'
+      where ds' = ds { dsShell = stringShell ch (dsShell ds)
+                     , dsStatus = DSSLoadVerts }
+    ShellCmdCursor n → do
+      return $ ResDrawState ds'
+      where ds'  = ds { dsShell = (dsShell ds) { shCursor = newN }
+                     , dsStatus = DSSLoadDyns }
+            newN = max 0 $ min (length (shInpStr sh)) $ (shCursor sh) + n
+            sh   = dsShell ds
+    ShellCmdOpen  → return $ ResDrawState ds'
+      where ds' = ds { dsShell = openShell (dsShell ds)
+                     , dsStatus = DSSLoadCap True }
+    ShellCmdClose → return $ ResDrawState ds'
+      where ds' = ds { dsShell = closeShell (dsShell ds)
+                     , dsStatus = DSSLoadCap False }
+    ShellCmdControl key → return $ ResDrawState ds'
+      where ds' = ds { dsShell = controlShell (dsShell ds) key
+                     , dsStatus = DSSLoadVerts }
+    ShellCmdUp    → return $ ResDrawState ds'
+      where ds' = ds { dsShell = upShell (dsShell ds)
+                     , dsStatus = DSSLoadVerts }
+    ShellCmdDown  → return $ ResDrawState ds'
+      where ds' = ds { dsShell = downShell (dsShell ds)
+                     , dsStatus = DSSLoadVerts }
+    ShellCmdNULL  → return $ ResNULL
+  LoadCmdNewWin win → return $ ResDrawState ds'
+    where ds' = ds { dsWins = win:(dsWins ds) }
+  LoadCmdSwitchWin win → case (findWinI win (dsWins ds)) of
+    Just n  → return $ ResDrawState $ changeWin n ds
+    Nothing → return $ ResError $ "window " ⧺ win ⧺ " not found"
+  LoadCmdLink pos → return $ ResDrawState ds'
+    where ds' = linkTest pos ds
+  LoadCmdDyns → do
+    let eventQ = envEventQ env
+        newVerts = VertsDF $ calcVertices $ loadTiles ds
+        dyns   = loadDyns ds
+    atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
+    return ResSuccess
+  LoadCmdVerts → do
+    let newVerts = VertsDF $ calcVertices $ loadTiles ds
+        ds'      = ds { dsTiles = loadTiles ds }
+        dyns   = loadDyns ds'
+    atomically $ writeQueue (envEventQ env) $ EventVerts newVerts
+    atomically $ writeQueue (envEventQ env) $ EventDyns $ Dyns dyns
+    return $ ResDrawState ds'
+  LoadCmdNewElem name elem → do
+    let wins = dsWins ds
+    case (findWin name wins) of
+      Nothing  → return $ ResError $ "no window " ⧺ name ⧺ " yet present"
+      Just win → do
+        let ds'   = ds { dsWins = replaceWin win' wins }
+            win'  = win { winElems = elems }
+            elems = elem:(winElems win)
+        return $ ResDrawState ds'
+  LoadCmdNewBit name pane bit → do
+    let wins = dsWins ds
+    case (findWin name wins) of
+      Nothing  → return $ ResError $ "no window " ⧺ name ⧺ " yet present"
+      Just win → do
+        let ds'    = ds { dsWins = replaceWin win' wins }
+            win'   = win { winElems = elems }
+            elems  = loadNewBit pane (winElems win) bit
+            box    = (2.0,1.0)
+            loadQ  = envLoadQ env
+            eventQ = envEventQ env
+            pos'   = ((fst pos) + 6.5,(snd pos) + 0.5)
+            (bitL,pos) = findBitPos pane elems
+        case bit of
+          PaneBitSlider _ _ _ _ → do
+            atomically $ writeQueue loadQ $ LoadCmdNewElem name $ WinElemLink pos' box $ LinkSlider $ bitL
+            atomically $ writeQueue eventQ $ EventNewInput $ LinkSlider $ bitL
+          _ → return ()
+        return $ ResDrawState ds'
+  LoadCmdNULL → return ResNULL

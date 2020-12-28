@@ -6,6 +6,7 @@ import UPrelude
 import Control.Monad (when)
 import Anamnesis
 import Anamnesis.Data
+import Anamnesis.Util (logDebug)
 import Paracletus.Data
 import Artos.Data
 import Artos.Queue
@@ -35,6 +36,10 @@ evalKey window k ks mk = do
       else if (GLFW.keyCheck False keyLayout k "DNA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdDown
       else if (GLFW.keyCheck False keyLayout k "RTA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdCursor 1
       else if (GLFW.keyCheck False keyLayout k "LFA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdCursor (-1)
+      else if (GLFW.modifierKeysControl mk) then
+        if (GLFW.keyCheck False keyLayout k "C") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdControl ShCtlC
+        else if (GLFW.keyCheck False keyLayout k "A") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdControl ShCtlA
+        else return ()
       else do
           ch ← liftIO $ GLFW.calcInpKey k mk
           liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdString ch

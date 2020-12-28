@@ -63,7 +63,8 @@ testLink (x1,y1) (x2,y2) (w,h)
 evalLink ∷ (Double,Double) → LinkAction → DrawState → DrawState
 evalLink _     (LinkExit)      ds = ds { dsStatus = DSSExit }
 evalLink _     (LinkBack)      ds = ds { dsWinI  = dsLastI ds
-                                       , dsLastI = dsWinI  ds }
+                                       , dsLastI = dsWinI  ds
+                                       , dsStatus = DSSLoadVerts }
 evalLink (x,_) (LinkSlider n)  ds = case (currentWin ds) of
   Nothing → ds
   Just w  → ds { dsWins = replaceWin win (dsWins ds)
