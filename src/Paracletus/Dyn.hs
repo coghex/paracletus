@@ -2,6 +2,7 @@ module Paracletus.Dyn where
 -- dynamic data for tiles is tracked
 import Prelude()
 import UPrelude
+import Data.List.Split (splitOn)
 import Paracletus.Data
 import Epiklesis.Data
 import Epiklesis.Shell
@@ -18,10 +19,11 @@ loadDynData ds ((DTile (DMSliderVal n d) _ _ _ _ _):ts) = [DynData dig (0,0) (0,
   where dig = case (currentWin ds) of
                 Just w  → sliderDiglet (winElems w) n d
                 Nothing → 0
-loadDynData ds ((DTile (DMShCursor) _ _ _ _ _):ts) = [DynData 0 (x,0) (0,0)] ⧺ loadDynData ds ts
-  where x  = realToFrac $ findCursPos $ take n $ shInpStr sh
-        sh = dsShell ds
-        n  = shCursor sh
+loadDynData ds ((DTile (DMShCursor) _ _ _ _ _):ts) = [DynData 0 (x,2*(1-y)) (0,0)] ⧺ loadDynData ds ts
+  where x      = realToFrac $ findCursPos $ take n $ shInpStr sh
+        y      = fromIntegral $ length $ splitOn "\n" $ shOutStr sh
+        sh     = dsShell ds
+        n      = shCursor sh
 loadDynData ds ((DTile (DMSlider n) _ _ _ _ _):ts) = [DynData 0 (x,0) (0,0)] ⧺ loadDynData ds ts
   where x = case (currentWin ds) of
               Just w  → calcSliderOffset w n
