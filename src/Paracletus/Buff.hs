@@ -38,23 +38,29 @@ clearDDs ∷ Dyns → Dyns
 clearDDs (Dyns dds) = Dyns $ take (length dds) $ repeat $ DynData 0 (0,0) (1,1) (0,0)
 
 -- set a buff to equal a string
-genStrBuff ∷ [Dyns] → Int → Shell → [Dyns]
-genStrBuff buff b sh = setTileBuff b dyns buff
+genShBuff ∷ [Dyns] → Int → Shell → [Dyns]
+genShBuff buff b sh
+  | (shOpen sh) = setTileBuff b dyns buff
+  | otherwise   = buff
   where dyns = genStrDyns pos str (buff !! b)
-        pos  = (-12.5,10.0 - 2.0*y)
+        pos  = (-13.0,10.0 - 2.0*y)
         y    = fromIntegral $ length $ splitOn "\n" $ shOutStr sh
         str  = shInpStr sh
 genStrDyns ∷ (Double,Double) → String → Dyns → Dyns
 genStrDyns pos str (Dyns dyns) = Dyns $ genStrDDs pos str dyns
 genStrDDs ∷ (Double,Double) → String → [DynData] → [DynData]
 genStrDDs _   _        []       = []
-genStrDDs pos []       (_ :dds) = [dd']  ⧺ genStrDDs pos [] dds
+genStrDDs pos []       (_ :dds) = [dd'] ⧺ genStrDDs pos [] dds
   where dd' = DynData 0 (0,0) (1,1) (0,0)
-genStrDDs pos (ch:str) (_ :dds) = [dd'] ⧺ genStrDDs pos' str dds
+genStrDDs pos (ch:str) (_ :dds) = dd''  ⧺ genStrDDs pos' str dds
   where (dd',x') = genStrDD pos ch
+        dd''     = case dd' of
+                     Nothing  → []
+                     Just dd0 → [dd0]
         pos'     = (x',(snd pos))
 
 -- convert char to dyndata
-genStrDD ∷ (Double,Double) → Char → (DynData,Double)
-genStrDD (x,y) ch = (DynData chIndex (realToFrac(x + chX),realToFrac(y + chY)) (realToFrac(0.5*chW),realToFrac(0.5*chH)) (0,0), x + chX)
+genStrDD ∷ (Double,Double) → Char → (Maybe DynData,Double)
+genStrDD (x,y) ' ' = (Nothing,x + 0.5)
+genStrDD (x,y) ch  = (Just $ DynData chIndex (realToFrac(x + chX + 0.5*(1.0 - chX)),realToFrac(y + chY)) (realToFrac(0.5*chW),realToFrac(0.5*chH)) (0,0), x + chX)
   where TTFData chIndex chW chH chX chY = indexTTF TextSize30px ch

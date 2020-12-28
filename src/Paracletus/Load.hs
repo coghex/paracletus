@@ -99,7 +99,8 @@ processCommands env ds = do
             DSSLoadDyns → do
               atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
               processCommands env ds''
-                where ds'' = ds' { dsStatus = DSSNULL }
+                where ds'' = ds' { dsStatus = DSSNULL
+                                 , dsBuff   = genShBuff (dsBuff ds) 0 $ dsShell ds' }
             DSSLoadCap cap → do
               atomically $ writeQueue (envEventQ env) $ EventCap cap
               atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
@@ -147,17 +148,16 @@ processCommand env ds cmd = case cmd of
   LoadCmdShell shCmd → case shCmd of
     ShellCmdTab → return $ ResDrawState ds'
       where ds' = ds { dsShell = tabShell (dsShell ds) $ dsCmds ds
-                     , dsStatus = DSSLoadVerts }
+                     , dsStatus = DSSLoadDyns }
     ShellCmdDelete → return $ ResDrawState ds'
       where ds' = ds { dsShell = delShell (dsShell ds)
-                     , dsStatus = DSSLoadVerts }
+                     , dsStatus = DSSLoadDyns }
     ShellCmdExec → do
       ds' ← evalShell env ds
       return $ ResDrawState ds'
     ShellCmdString ch → do
       return $ ResDrawState ds'
       where ds' = ds { dsShell  = stringShell ch (dsShell ds)
-                     , dsBuff   = genStrBuff (dsBuff ds) 0 $ dsShell ds
                      , dsStatus = DSSLoadDyns }
     ShellCmdCursor n → do
       return $ ResDrawState ds'
@@ -176,10 +176,10 @@ processCommand env ds cmd = case cmd of
                      , dsStatus = DSSLoadVerts }
     ShellCmdUp    → return $ ResDrawState ds'
       where ds' = ds { dsShell = upShell (dsShell ds)
-                     , dsStatus = DSSLoadVerts }
+                     , dsStatus = DSSLoadDyns }
     ShellCmdDown  → return $ ResDrawState ds'
       where ds' = ds { dsShell = downShell (dsShell ds)
-                     , dsStatus = DSSLoadVerts }
+                     , dsStatus = DSSLoadDyns }
     ShellCmdNULL  → return $ ResNULL
   LoadCmdNewWin win → return $ ResDrawState ds'
     where ds' = ds { dsWins = win:(dsWins ds) }
