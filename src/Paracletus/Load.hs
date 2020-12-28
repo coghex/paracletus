@@ -37,7 +37,8 @@ loadParacletus env _        = atomically $ writeQueue ec $ EventLogDebug "dont k
 loadParacVulkan ∷ Env → IO ()
 loadParacVulkan env = do
   runLoadLoop env initDS TStop
-  where initDS    = DrawState DSSNULL initShell [] (-1) (-1) [] $ FPS 30.0 30 False
+  where initDS  = DrawState DSSNULL initShell cmds [] (-1) (-1) [] $ FPS 30.0 30 False
+        cmds    = ["newWindow", "newText", "newMenu", "newMenuBit", "newLink", "newWorld", "switchWindow", "setBackground", "luaModule", "newDynObj", "resizeWindow", "toggleFPS"]
 
 -- load loop runs with a delay so that
 -- it can sleep (ghc threads run like that)
@@ -143,7 +144,9 @@ processCommand env ds cmd = case cmd of
             atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
             return $ ResDrawState ds'
           LoadCmdShell shCmd → case shCmd of
-            ShellCmdTab → return $ ResNULL
+            ShellCmdTab → return $ ResDrawState ds'
+              where ds' = ds { dsShell = tabShell (dsShell ds) $ dsCmds ds
+                             , dsStatus = DSSLoadVerts }
             ShellCmdDelete → return $ ResDrawState ds'
               where ds' = ds { dsShell = delShell (dsShell ds)
                              , dsStatus = DSSLoadVerts }

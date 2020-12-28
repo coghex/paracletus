@@ -6,6 +6,7 @@ import Paracletus.Data
 -- and calculated into verticies
 data DrawState = DrawState { dsStatus ∷ DSStatus
                            , dsShell  ∷ Shell
+                           , dsCmds   ∷ [String]
                            , dsWins   ∷ [Window]
                            , dsWinI   ∷ Int
                            , dsLastI  ∷ Int

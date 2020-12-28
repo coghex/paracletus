@@ -94,12 +94,16 @@ tabShell ∷ Shell → [String] → Shell
 tabShell sh cmds
   | shTabbed sh ≡ Nothing =
       sh { shCache  = shInpStr sh
-         , shInpStr = tabCommand 0 (shInpStr sh) cmds
-         , shTabbed = Just 0 }
+         , shInpStr = newStr0
+         , shTabbed = Just 0
+         , shCursor = length newStr0 }
   | otherwise             =
       sh { shTabbed = Just incSh
-         , shInpStr = tabCommand incSh (shCache sh) cmds }
-    where incSh = incShTabbed $ shTabbed sh
+         , shInpStr = newStr1
+         , shCursor = length newStr1 }
+    where incSh   = incShTabbed $ shTabbed sh
+          newStr0 = tabCommand 0 (shInpStr sh) cmds
+          newStr1 = tabCommand incSh (shCache sh) cmds
 
 incShTabbed ∷ Maybe Int → Int
 incShTabbed Nothing  = 0
