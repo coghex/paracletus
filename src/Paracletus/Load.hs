@@ -95,7 +95,8 @@ processCommands env ds = do
             DSSLoadVerts → do
               atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
               processCommands env ds''
-                where ds'' = ds' { dsStatus = DSSNULL }
+                where ds'' = ds' { dsStatus = DSSNULL
+                                 , dsBuff   = genShBuff (dsBuff ds) 0 $ dsShell ds' }
             DSSLoadDyns → do
               atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
               processCommands env ds''

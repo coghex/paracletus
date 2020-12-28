@@ -28,7 +28,7 @@ closeShell sh = sh { shOpen = False }
 controlShStatus ∷ ShellControl → DSStatus
 controlShStatus ShCtlC = DSSLoadVerts
 controlShStatus ShCtlA = DSSLoadDyns
-controlShStatus ShCtlA = DSSLoadDyns
+controlShStatus ShCtlE = DSSLoadDyns
 controlShStatus _      = DSSNULL
 
 controlShell ∷ Shell → ShellControl → Shell
