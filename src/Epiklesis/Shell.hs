@@ -24,6 +24,13 @@ openShell sh = sh { shOpen = True }
 closeShell ∷ Shell → Shell
 closeShell sh = sh { shOpen = False }
 
+-- different keys require different returns
+controlShStatus ∷ ShellControl → DSStatus
+controlShStatus ShCtlC = DSSLoadVerts
+controlShStatus ShCtlA = DSSLoadDyns
+controlShStatus ShCtlA = DSSLoadDyns
+controlShStatus _      = DSSNULL
+
 controlShell ∷ Shell → ShellControl → Shell
 controlShell sh ShCtlC =
   sh { shTabbed = Nothing

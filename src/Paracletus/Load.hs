@@ -173,7 +173,7 @@ processCommand env ds cmd = case cmd of
                      , dsStatus = DSSLoadCap False }
     ShellCmdControl key → return $ ResDrawState ds'
       where ds' = ds { dsShell = controlShell (dsShell ds) key
-                     , dsStatus = DSSLoadVerts }
+                     , dsStatus = controlShStatus key }
     ShellCmdUp    → return $ ResDrawState ds'
       where ds' = ds { dsShell = upShell (dsShell ds)
                      , dsStatus = DSSLoadDyns }

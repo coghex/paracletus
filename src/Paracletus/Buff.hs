@@ -40,8 +40,8 @@ clearDDs (Dyns dds) = Dyns $ take (length dds) $ repeat $ DynData 0 (0,0) (1,1) 
 -- set a buff to equal a string
 genShBuff ∷ [Dyns] → Int → Shell → [Dyns]
 genShBuff buff b sh
-  | (shOpen sh) = setTileBuff b dyns buff
-  | otherwise   = buff
+  | (shOpen sh)        = setTileBuff b dyns buff
+  | otherwise          = clearBuff buff b
   where dyns = genStrDyns pos str (buff !! b)
         pos  = (-13.0,10.0 - 2.0*y)
         y    = fromIntegral $ length $ splitOn "\n" $ shOutStr sh
@@ -52,15 +52,12 @@ genStrDDs ∷ (Double,Double) → String → [DynData] → [DynData]
 genStrDDs _   _        []       = []
 genStrDDs pos []       (_ :dds) = [dd'] ⧺ genStrDDs pos [] dds
   where dd' = DynData 0 (0,0) (1,1) (0,0)
-genStrDDs pos (ch:str) (_ :dds) = dd''  ⧺ genStrDDs pos' str dds
+genStrDDs pos (ch:str) (_ :dds) = [dd'] ⧺ genStrDDs pos' str dds
   where (dd',x') = genStrDD pos ch
-        dd''     = case dd' of
-                     Nothing  → []
-                     Just dd0 → [dd0]
         pos'     = (x',(snd pos))
 
 -- convert char to dyndata
-genStrDD ∷ (Double,Double) → Char → (Maybe DynData,Double)
-genStrDD (x,y) ' ' = (Nothing,x + 0.5)
-genStrDD (x,y) ch  = (Just $ DynData chIndex (realToFrac(x + chX + 0.5*(1.0 - chX)),realToFrac(y + chY)) (realToFrac(0.5*chW),realToFrac(0.5*chH)) (0,0), x + chX)
+genStrDD ∷ (Double,Double) → Char → (DynData,Double)
+genStrDD (x,y) ' ' = (DynData 0 (0,0) (1,1) (0,0),x + 0.5)
+genStrDD (x,y) ch  = (DynData chIndex (realToFrac(x + chX + 0.5*(1.0 - chX)),realToFrac(y + chY)) (realToFrac(0.5*chW),realToFrac(0.5*chH)) (0,0), x + chX)
   where TTFData chIndex chW chH chX chY = indexTTF TextSize30px ch
