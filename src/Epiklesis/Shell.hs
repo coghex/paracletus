@@ -56,5 +56,8 @@ stringShell str sh = sh { shInpStr = (shInpStr sh) ⧺ str
                         , shCursor = (shCursor sh) + (length str) }
 -- delete character
 delShell ∷ Shell → Shell
-delShell sh = sh { shInpStr = init (shInpStr sh)
-                 , shCursor = (shCursor sh) - 1 }
+delShell sh = sh { shInpStr = newStr
+                 , shCursor = max 0 ((shCursor sh) - 1) }
+  where newStr = initS (take (shCursor sh) (shInpStr sh)) ⧺ (drop (shCursor sh) (shInpStr sh))
+        initS ""  = ""
+        initS str = init str
