@@ -25,8 +25,11 @@ evalKey window k ks mk = do
   when (GLFW.keyCheck cap keyLayout k "SH") $ if (ks ≡ GLFW.KeyState'Pressed) then
     liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell ShellCmdOpen
     else return ()
-  when cap $ do
-    if (GLFW.keyCheck False keyLayout k "SH") then
-      if (ks ≡ GLFW.KeyState'Pressed) then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell ShellCmdClose
-      else return ()
+  when cap $ if (ks ≡ GLFW.KeyState'Pressed) then do
+      if (GLFW.keyCheck False keyLayout k "SH") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell ShellCmdClose
+      else if (GLFW.keyCheck False keyLayout k "RTA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdCursor 1
+      else if (GLFW.keyCheck False keyLayout k "LFA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdCursor (-1)
+      else do
+          ch ← liftIO $ GLFW.calcInpKey k mk
+          liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdString ch
     else return ()

@@ -60,6 +60,7 @@ data Tile = GTile { tPos   ∷ (Double,Double)
 data DynMap = DMFPS Int
             | DMSlider Int
             | DMSliderVal Int Int
+            | DMShCursor
             | DMNULL deriving (Show, Eq)
 
 -- abstract idea of what a window can be
@@ -109,6 +110,8 @@ data LinkAction = LinkExit
 -- possible actions to load the shell
 data ShellCmd = ShellCmdOpen
               | ShellCmdClose
+              | ShellCmdString String
+              | ShellCmdCursor Int
               | ShellCmdNULL deriving (Show, Eq)
 
 -- lua shell executes commands in global state

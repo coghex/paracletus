@@ -4,6 +4,7 @@ import Prelude()
 import UPrelude
 import Paracletus.Data
 import Epiklesis.Data
+import Epiklesis.Shell
 import Epiklesis.Window
 
 loadDyns ∷ DrawState → [DynData]
@@ -17,9 +18,13 @@ loadDynData ds ((DTile (DMSliderVal n d) _ _ _ _ _):ts) = [DynData dig (0,0) (0,
   where dig = case (currentWin ds) of
                 Just w  → sliderDiglet (winElems w) n d
                 Nothing → 0
+loadDynData ds ((DTile (DMShCursor) _ _ _ _ _):ts) = [DynData 0 (x,0) (0,0)] ⧺ loadDynData ds ts
+  where x  = realToFrac $ findCursPos $ take n $ shInpStr sh
+        sh = dsShell ds
+        n  = shCursor sh
 loadDynData ds ((DTile (DMSlider n) _ _ _ _ _):ts) = [DynData 0 (x,0) (0,0)] ⧺ loadDynData ds ts
   where x = case (currentWin ds) of
-              Just w  → calcSliderOffset w (n)
+              Just w  → calcSliderOffset w n
               Nothing → 0
 loadDynData ds ((DTile (DMNULL) _ _ _ _ _):ts) = [DynData 0 (0,0) (0,0)] ⧺ loadDynData ds ts
 

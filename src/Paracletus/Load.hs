@@ -143,6 +143,16 @@ processCommand env ds cmd = case cmd of
             atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
             return $ ResDrawState ds'
           LoadCmdShell shCmd → case shCmd of
+            ShellCmdString ch → do
+              return $ ResDrawState ds'
+              where ds' = ds { dsShell = stringShell ch (dsShell ds)
+                             , dsStatus = DSSLoadVerts }
+            ShellCmdCursor n → do
+              return $ ResDrawState ds'
+              where ds'  = ds { dsShell = (dsShell ds) { shCursor = newN }
+                             , dsStatus = DSSLoadDyns }
+                    newN = max 0 $ min (length (shInpStr sh)) $ (shCursor sh) + n
+                    sh   = dsShell ds
             ShellCmdOpen  → return $ ResDrawState ds'
               where ds' = ds { dsShell = openShell (dsShell ds)
                              , dsStatus = DSSLoadCap True }
@@ -166,7 +176,9 @@ processCommand env ds cmd = case cmd of
           LoadCmdVerts → do
             let newVerts = VertsDF $ calcVertices $ loadTiles ds
                 ds'      = ds { dsTiles = loadTiles ds }
+                dyns   = loadDyns ds'
             atomically $ writeQueue (envEventQ env) $ EventVerts newVerts
+            atomically $ writeQueue (envEventQ env) $ EventDyns $ Dyns dyns
             return $ ResDrawState ds'
           LoadCmdNewElem name elem → do
             let wins = dsWins ds
