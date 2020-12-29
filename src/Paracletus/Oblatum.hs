@@ -15,6 +15,7 @@ import Artos.Except
 import Artos.Var
 import Paracletus.Data
 import Paracletus.Oblatum.Callback
+import Paracletus.Oblatum.Event
 import Paracletus.Oblatum.GLFW (WindowHint(..),ClientAPI(..))
 import Paracletus.Oblatum.Mouse
 import qualified Paracletus.Oblatum.GLFW as GLFW
@@ -121,6 +122,9 @@ processInput ∷ Anamnesis ε σ ()
 processInput = do
   st ← get
   let is = stInput st
+      ks = keySt   is
+  if ((keyUp ks) ∨ (keyLeft ks) ∨ (keyDown ks) ∨ (keyRight ks) ∨ (((abs (fst (keyAccel ks))) > 0.0) ∨ (abs (snd (keyAccel ks)) > 0.0))) then moveCamWithKeys
+  else return ()
   case (mouse1 is) of
     Just _  → if ((sliderPressed is) > 0) then do
                 moveSliderWithMouse is

@@ -45,6 +45,7 @@ processEvent event = case event of
       Just win → liftIO $ GLFW.setWindowShouldClose win True
       Nothing  → liftIO $ exitWith ExitSuccess
   (EventKey win k _ ks mk) → evalKey win k ks mk
+  (EventMoveCam (x,y,z)) → modify $ \s → s { stCam = (x,y,z) }
   (EventMouseButton win mb mbs mk) → evalMouse win mb mbs mk
   (EventDyns dyns) → modify $ \s → s { stDynData = dyns }
   (EventVerts verts) → modify $ \s → s { stVerts = verts

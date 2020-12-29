@@ -26,6 +26,7 @@ data State = State { stStatus   ∷ AExcept
                    , stLogFunc  ∷ Logger.Loc → Logger.LogSource → Logger.LogLevel → Logger.LogStr → IO ()
                    , stWindow   ∷ !(Maybe GLFW.Window)
                    , stReload   ∷ !ReloadState
+                   , stCam      ∷ !(Float,Float,Float)
                    , stVerts    ∷ !Verts
                    , stDynData  ∷ !Dyns
                    , stSettings ∷ !Settings

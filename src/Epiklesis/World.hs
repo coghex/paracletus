@@ -6,4 +6,4 @@ import Epiklesis.Data
 import Paracletus.Data
 
 calcSpots ∷ WorldParams → WorldData → [Tile]
-calcSpots wp wd = [GTile (0,0) (1,1) (0,0) (1,1) 2]
+calcSpots wp wd = [MTile (0,0) (1,1) (0,0) (1,1) 2]

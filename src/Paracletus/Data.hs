@@ -45,15 +45,19 @@ data InputState = InputState { mouse1   ∷ Maybe (Float,Float)
                              , mouse3   ∷ Maybe (Float,Float)
                              , isElems  ∷ [InputElem]
                              , inpCap   ∷ Bool
-                             , keyUp    ∷ Bool
-                             , keyLeft  ∷ Bool
-                             , keyDown  ∷ Bool
-                             , keyRight ∷ Bool
-                             , keyAccel ∷ (Float,Float)
+                             , keySt    ∷ ISKeys
                              } deriving (Show, Eq)
 
 -- input state related to various winelems
 data InputElem = IESlider Bool Int | IESelect Bool Int | IENULL deriving (Show, Eq)
+
+-- certain keys state
+data ISKeys = ISKeys { keyUp    ∷ Bool
+                     , keyLeft  ∷ Bool
+                     , keyDown  ∷ Bool
+                     , keyRight ∷ Bool
+                     , keyAccel ∷ (Float,Float)
+                     } deriving (Show, Eq)
 
 -- all the data required for a set of textures
 data TextureData = TextureData
@@ -94,6 +98,8 @@ data SwapchainSupportDetails = SwapchainSupportDetails
   , presentModes ∷ [VkPresentModeKHR]
   } deriving (Eq, Show)
 
+data Cardinal = North | South | West | East | NorthWest | NorthEast | SouthWest | SouthEast | CardNULL deriving (Show, Eq)
+
 -- no need to load in every concievable size
 data TextSize = TextSize16px | TextSize30px deriving (Show, Eq)
 -- TTF characters come in different sizes
@@ -105,6 +111,7 @@ data TTFData = TTFData
   , chX     ∷ Double
   , chY     ∷ Double
   } deriving (Show, Eq)
+
 -- these pattern matches translate to
 -- a giant case statement where we find
 -- the index and horizontal offset of

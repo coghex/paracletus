@@ -43,6 +43,7 @@ initState env = do
                              , stLogFunc  = lf
                              , stWindow   = Nothing
                              , stReload   = RSNULL
+                             , stCam      = (0.0,0.0,(-1.0))
                              , stVerts    = VertsNULL
                              , stDynData  = Dyns []
                              , stSettings = settings
@@ -59,7 +60,8 @@ initInputState = InputState { mouse1   = Nothing
                             , mouse3   = Nothing
                             , isElems  = []
                             , inpCap   = False
-                            , keyUp    = False
+                            , keySt    = initKS }
+  where initKS = ISKeys     { keyUp    = False
                             , keyLeft  = False
                             , keyDown  = False
                             , keyRight = False

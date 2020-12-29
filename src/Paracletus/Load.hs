@@ -146,6 +146,16 @@ processCommand env ds cmd = case cmd of
         ds'    = ds { dsFPS = fps }
     atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
     return $ ResDrawState ds'
+  LoadCmdMoveCam (x,y,z) → case (currentWin ds) of
+    Nothing  → return $ ResError "no window"
+    Just win → do
+      let eventQ     = envEventQ env
+          (cx,cy,cz) = winCursor win
+          newCam     = (x+cx,y+cy,z+cz)
+          newWin     = win { winCursor = newCam }
+          ds'        = ds { dsWins = replaceWin newWin (dsWins ds) }
+      atomically $ writeQueue eventQ $ EventMoveCam newCam
+      return $ ResDrawState ds'
   LoadCmdShell shCmd → case shCmd of
     ShellCmdTab → return $ ResDrawState ds'
       where ds' = ds { dsShell = tabShell (dsShell ds) $ dsCmds ds

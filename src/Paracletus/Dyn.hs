@@ -13,6 +13,7 @@ loadDyns ds = reverse $ loadDynData ds $ dsTiles ds
 loadDynData ∷ DrawState → [Tile] → [DynData]
 loadDynData _  []                     = []
 loadDynData ds ((GTile _ _ _ _ _):ts) = [] ⧺ loadDynData ds ts
+loadDynData ds ((MTile _ _ _ _ _):ts) = [] ⧺ loadDynData ds ts
 loadDynData ds ((DTile (DMFPS n) _ _ _ _ _):ts) = [DynData dig (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
   where dig = calcDiglet n $ dsFPS ds
 loadDynData ds ((DTile (DMSliderVal n d) _ _ _ _ _):ts) = [DynData dig (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
