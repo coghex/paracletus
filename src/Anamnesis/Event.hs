@@ -49,11 +49,13 @@ processEvent event = case event of
   (EventMouseButton win mb mbs mk) → evalMouse win mb mbs mk
   (EventDyns dyns) → modify $ \s → s { stDynData = dyns }
   (EventVerts verts) → do
+    env ← ask
     stRel ← gets stReload
     case stRel of
       RSRecreate → modify $ \s → s { stVerts = verts }
       _          → modify $ \s → s { stVerts = verts
                                    , stReload = RSReload }
+    liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdWorld
   (EventNewInput link) → do
     st ← get
     let oldIS = stInput st
@@ -69,7 +71,8 @@ processEvent event = case event of
     let oldIS = stInput st
         newIS = oldIS { inpCap = cap }
     modify $ \s → s { stInput = newIS }
-  (EventModTexs modTexs) → modify $ \s → s { stModTexs = modTexs }
+  (EventModTexs modTexs) → modify $ \s → s { stModTexs = modTexs
+                                           , stReload = RSRecreate }
   (EventRecreate) → modify $ \s → s { stReload = RSRecreate }
   (EventReload) → do
     stRel ← gets stReload

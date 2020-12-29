@@ -14,6 +14,7 @@ import Anamnesis.Data
 import Epiklesis.Data
 import Epiklesis.Shell
 import Epiklesis.Window
+import Epiklesis.World (loadWorld)
 import Paracletus.Buff
 import Paracletus.Data
 import Paracletus.Draw
@@ -92,6 +93,10 @@ processCommands env ds = do
               atomically $ writeQueue loadQ $ LoadCmdDyns
               processCommands env ds''
                 where ds'' = ds' { dsStatus = DSSNULL }
+            DSSLoadWorld → do
+              atomically $ writeQueue (envLoadQ env) $ LoadCmdWorld
+              processCommands env ds''
+                where ds'' = ds' { dsStatus = DSSNULL }
             DSSLoadVerts → do
               atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
               processCommands env ds''
@@ -146,6 +151,9 @@ processCommand env ds cmd = case cmd of
           win    = moveSlider x n w
       atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
       return $ ResDrawState ds'
+  LoadCmdSetNDefTex nDefTex → do
+    return $ ResDrawState ds'
+    where ds' = ds { dsNDefTex = nDefTex }
   LoadCmdSetFPS fps → do
     let eventQ = envEventQ env
         dyns   = loadDyns ds'
@@ -200,11 +208,14 @@ processCommand env ds cmd = case cmd of
     ShellCmdNULL  → return $ ResNULL
   LoadCmdNewWin win → return $ ResDrawState ds'
     where ds' = ds { dsWins = win:(dsWins ds) }
+  -- TODO: get rid of winI, use head
   LoadCmdSwitchWin win → do
     let eventQ = envEventQ env
-    atomically $ writeQueue eventQ $ EventRecreate
     case (findWinI win (dsWins ds)) of
-      Just n  → return $ ResDrawState $ changeWin n ds
+      Just n  → do
+        let ds'  = changeWin n ds
+        atomically $ writeQueue (envEventQ env) $ EventModTexs $ calcWinModTexs $ head $ dsWins ds'
+        return $ ResDrawState ds'
       Nothing → return $ ResError $ "window " ⧺ win ⧺ " not found"
   LoadCmdLink pos → return $ ResDrawState ds'
     where ds' = linkTest pos ds
@@ -230,7 +241,6 @@ processCommand env ds cmd = case cmd of
             win'   = win { winElems = elems }
             elems  = elem:(winElems win)
             eventQ = envEventQ env
-        atomically $ writeQueue (envEventQ env) $ EventModTexs $ calcWinModTexs win'
         return $ ResDrawState ds'
   LoadCmdNewBit name pane bit → do
     let wins = dsWins ds
@@ -251,4 +261,12 @@ processCommand env ds cmd = case cmd of
             atomically $ writeQueue eventQ $ EventNewInput $ LinkSlider $ bitL
           _ → return ()
         return $ ResDrawState ds'
+  LoadCmdWorld → case (currentWin ds) of
+    Nothing  → return $ ResError "no window present"
+    Just win → do
+      if ((winType win) ≡ WinTypeGame) then do
+        let ds' = loadWorld ds
+        atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
+        return $ ResDrawState ds'
+      else return $ ResSuccess
   LoadCmdNULL → return ResNULL

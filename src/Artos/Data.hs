@@ -31,6 +31,7 @@ data Event = EventError !GLFW.Error !String
 data LoadCmd = LoadCmdNewWin Window
              | LoadCmdSwitchWin String
              | LoadCmdNewElem String WinElem
+             | LoadCmdSetNDefTex Int
              | LoadCmdLink (Double,Double)
              | LoadCmdNewBit String String PaneBit
              | LoadCmdMoveSlider Double Int
@@ -38,6 +39,7 @@ data LoadCmd = LoadCmdNewWin Window
              | LoadCmdMoveCam (Float,Float,Float)
              | LoadCmdVerts
              | LoadCmdDyns
+             | LoadCmdWorld
              | LoadCmdSetFPS FPS
              | LoadCmdToggleFPS
              | LoadCmdNULL

@@ -27,6 +27,8 @@ evalKey window k ks mk = do
   when (GLFW.keyCheck cap keyLayout k "SH") $ if (ks ≡ GLFW.KeyState'Pressed) then
     liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell ShellCmdOpen
     else return ()
+  when (GLFW.keyCheck cap keyLayout k "H") $ do
+    liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdWorld
   when (GLFW.keyCheck cap keyLayout k "UP") $ do
     let oldIS = stInput st
     if (keyUp (keySt oldIS)) then

@@ -20,6 +20,7 @@ data DrawState = DrawState { dsStatus  ∷ DSStatus
 -- us to return results of deeply nested
 -- pure functions
 data DSStatus = DSSLogDebug String
+              | DSSLoadWorld
               | DSSLoadDyns
               | DSSLoadVerts
               | DSSLoadInput LinkAction
@@ -107,6 +108,8 @@ data WinElem
 -- world parameters help generate world
 data WorldParams = WorldParams { wpSSize ∷ (Int,Int)
                                , wpZSize ∷ (Int,Int)
+                               , wpRands ∷ [((Int,Int),(Int,Int))]
+                               , wpConts ∷ [(Int,Int)]
                                } deriving (Show, Eq)
 -- data stored with each world
 data WorldData = WorldData { wdCam   ∷ (Float,Float)

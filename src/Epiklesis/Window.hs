@@ -25,7 +25,7 @@ findWinI name wins = findWinIFunc 0 name wins
 findWinIFunc _ _    []         = Nothing
 findWinIFunc n name (win:wins)
   | winTitle win ≡ name = Just n
-  | otherwise = findWinIFunc (n+1) name wins
+  | otherwise = findWinIFunc (n + 1) name wins
 
 -- its ok to have !! here since
 -- currwin and wins are created
@@ -39,9 +39,8 @@ currentWin ds
 changeWin ∷ Int → DrawState → DrawState
 changeWin n ds = ds { dsWinI   = n
                     , dsLastI  = n'
-                    , dsStatus = DSSRecreate }
+                    , dsStatus = DSSLoadVerts }
   where n' = dsWinI ds
-        nname = winTitle $ (dsWins ds) !! n
 
 loadNewBit ∷ String → [WinElem] → PaneBit → [WinElem]
 loadNewBit _    []       _   = []
@@ -58,4 +57,4 @@ calcWinModTexs win = calcWinElemModTexs $ winElems win
 calcWinElemModTexs ∷ [WinElem] → [String]
 calcWinElemModTexs [] = []
 calcWinElemModTexs ((WinElemWorld _ _ dps):wes) = dps ⧺ calcWinElemModTexs wes
-calcWinElemModTexs (we:wes) = []
+calcWinElemModTexs (we:wes) = calcWinElemModTexs wes

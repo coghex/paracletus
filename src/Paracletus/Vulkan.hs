@@ -77,16 +77,16 @@ runParacVulkan = do
     liftIO $ atomically $ writeChan (envLoadCh env) TStart
     -- swapchain recreation loop
     loop $ do
+      newSt ← get
       firstTick ← liftIO getCurTick
       scsd ← querySwapchainSupport pdev vulkanSurface
       recr ← gets stReload
       case recr of
         -- recreation loads new textures
         RSRecreate → do
-          newSt ← get
           let modTexs = stModTexs newSt
-          logDebug $ "recreating swapchain " ⧺ (show (length modTexs))
           newTexData ← loadVulkanTextures gqdata modTexs
+          liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdSetNDefTex $ stNDefTex newSt
           modify $ \s → s { stReload = RSNULL
                           , stTick   = Just firstTick }
           let vulkLoopData' = VulkanLoopData {..}
