@@ -23,9 +23,11 @@ function initMod ()
     pane1:initPane(-7.0,4.0,"wparams")
     menu2:addPane(pane1)
     menu2:newLink(-6.0,-4.0,"Back",back)
+    menu2:newLink(0.0,-4.0,"Create World",link("game1"))
 
     local game1 = window:new ()
     game1:initGame("game1")
+    game1:newWorld(12,8,4,3,"dat/tex/world")
 
     menu1:switchWindow ()
     toggleFPS ()

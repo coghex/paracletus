@@ -18,6 +18,9 @@ function window:initGame (n)
     self.lwName = n
     rawNewWindow (n,"game")
 end
+function window:newWorld (sw,sh,zw,zh,dp)
+    rawNewWorld ((self.lwName),sw,sh,zw,zh,dp)
+end
 function window:switchWindow ()
     rawSwitchWindow (self.lwName)
 end

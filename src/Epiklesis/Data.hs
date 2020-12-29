@@ -4,15 +4,16 @@ import Paracletus.Data
 
 -- draw state is kept in a seperate thread
 -- and calculated into verticies
-data DrawState = DrawState { dsStatus ∷ DSStatus
-                           , dsShell  ∷ Shell
-                           , dsCmds   ∷ [String]
-                           , dsWins   ∷ [Window]
-                           , dsWinI   ∷ Int
-                           , dsLastI  ∷ Int
-                           , dsTiles  ∷ [Tile]
-                           , dsFPS    ∷ FPS
-                           , dsBuff   ∷ [Dyns]
+data DrawState = DrawState { dsStatus  ∷ DSStatus
+                           , dsShell   ∷ Shell
+                           , dsCmds    ∷ [String]
+                           , dsWins    ∷ [Window]
+                           , dsWinI    ∷ Int
+                           , dsLastI   ∷ Int
+                           , dsTiles   ∷ [Tile]
+                           , dsFPS     ∷ FPS
+                           , dsBuff    ∷ [Dyns]
+                           , dsNDefTex ∷ Int
                            } deriving (Show, Eq)
 
 -- status of the loading thread, allowing
@@ -91,7 +92,35 @@ data WinElem
   | WinElemPane { panePos  ∷ (Double,Double)
                 , paneName ∷ String
                 , paneBits ∷ [(Int,PaneBit)] }
+  | WinElemWorld { wParams ∷ WorldParams
+                 , wData   ∷ WorldData
+                 , wDir    ∷ [String] }
   | WinElemNULL deriving (Show, Eq)
+
+
+-- world parameters help generate world
+data WorldParams = WorldParams { wpSSize ∷ (Int,Int)
+                               , wpZSize ∷ (Int,Int)
+                               } deriving (Show, Eq)
+-- data stored with each world
+data WorldData = WorldData { wdCam   ∷ (Float,Float)
+                           , wdZones ∷ [Zone]
+                           } deriving (Show, Eq)
+-- zones are infinite, but slow
+data Zone = Zone { zoneIndex ∷ (Int,Int)
+                 , zoneSegs  ∷ [[Segment]]
+                 } deriving (Show, Eq)
+-- segments are finite, thus faster
+data Segment = SegmentNULL
+             | Segment { segGrid ∷ [[Spot]]
+                       } deriving (Show, Eq)
+
+-- spots can be of a certain image,
+-- with a certain atlas subtile
+data Spot = SpotNULL
+          | Spot { spotCont ∷ Int
+                 , spotTile ∷ Int
+                 } deriving (Show, Eq)
 
 -- possible bits in a pane
 data PaneBit

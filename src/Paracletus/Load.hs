@@ -38,7 +38,7 @@ loadParacletus env _        = atomically $ writeQueue ec $ EventLogDebug "dont k
 loadParacVulkan ∷ Env → IO ()
 loadParacVulkan env = do
   runLoadLoop env initDS TStop
-  where initDS  = DrawState DSSNULL initShell cmds [] (-1) (-1) [] (FPS 30.0 30 False) [initBuff]
+  where initDS  = DrawState DSSNULL initShell cmds [] (-1) (-1) [] (FPS 30.0 30 False) [initBuff] 0
         cmds    = ["newWindow", "newText", "newMenu", "newMenuBit", "newLink", "newWorld", "switchWindow", "setBackground", "luaModule", "newDynObj", "resizeWindow", "toggleFPS"]
 
 -- load loop runs with a delay so that
@@ -207,9 +207,11 @@ processCommand env ds cmd = case cmd of
     case (findWin name wins) of
       Nothing  → return $ ResError $ "no window " ⧺ name ⧺ " yet present"
       Just win → do
-        let ds'   = ds { dsWins = replaceWin win' wins }
-            win'  = win { winElems = elems }
-            elems = elem:(winElems win)
+        let ds'    = ds { dsWins = replaceWin win' wins }
+            win'   = win { winElems = elems }
+            elems  = elem:(winElems win)
+            eventQ = envEventQ env
+        atomically $ writeQueue (envEventQ env) $ EventModTexs $ calcWinModTexs win'
         return $ ResDrawState ds'
   LoadCmdNewBit name pane bit → do
     let wins = dsWins ds

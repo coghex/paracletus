@@ -46,6 +46,7 @@ initState env = do
                              , stVerts    = VertsNULL
                              , stDynData  = Dyns []
                              , stSettings = settings
+                             , stModTexs  = []
                              , stNDefTex  = 0
                              , stInput    = is
                              , stStartT   = st

@@ -84,7 +84,8 @@ runParacVulkan = do
         -- recreation loads new textures
         RSRecreate → do
           newSt ← get
-          newTexData ← loadVulkanTextures gqdata []
+          let modTexs = stModTexs newSt
+          newTexData ← loadVulkanTextures gqdata modTexs
           modify $ \s → s { stReload = RSNULL
                           , stTick   = Just firstTick }
           let vulkLoopData' = VulkanLoopData {..}

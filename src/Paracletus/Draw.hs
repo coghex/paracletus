@@ -13,13 +13,14 @@ import Paracletus.Oblatum.Font
 loadTiles ∷ DrawState → [Tile]
 loadTiles ds = winTiles ⧺ shTiles ⧺ fpsTiles ⧺ buffTiles
   where winTiles  = case (currentWin ds) of
-                      Just win → loadWindow win
+                      Just win → loadWindow nDefTex win
                       Nothing  → []
         fpsTiles  = case (dsFPS ds) of
                       FPS _ _ True  → genFPSTiles
                       FPS _ _ False → []
         shTiles   = loadShell (dsShell ds)
         buffTiles = loadTileBuff
+        nDefTex   = dsNDefTex ds
 
 genFPSTiles ∷ [Tile]
 genFPSTiles = [tile1,tile2,tile3,tile4]

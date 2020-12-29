@@ -2,8 +2,11 @@ module Epiklesis.Command where
 -- commands for lua are defined
 import Prelude()
 import UPrelude
+import Data.List (sort)
 import Data.List.Split (splitOn)
 import qualified Foreign.Lua as Lua
+import System.Directory (getDirectoryContents)
+import System.FilePath (combine)
 import Anamnesis.Data
 import Artos.Data
 import Artos.Queue
@@ -84,5 +87,16 @@ hsNewLink env name x y args func = case (head (splitOn ":" func)) of
     Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewElem name $ WinElemLink (x,y) (w,h) $ LinkLink $ last $ splitOn ":" func
   _      → hsLogDebug env $ "no known link function " ⧺ func
 
-hsCreateWorld ∷ Env → Lua.Lua ()
-hsCreateWorld env = hsLogDebug env $ "create world callback"
+hsNewWorld ∷ Env → String → Int → Int → Int → Int → String → Lua.Lua ()
+hsNewWorld env win sx sy zx zy dp = do
+  let loadQ = envLoadQ env
+  rawdp ← Lua.liftIO $ getDirectoryContents dp
+  let dps = map (combine dp) $ sort $ filter filterOutPathJunk rawdp
+      filterOutPathJunk ∷ FilePath → Bool
+      filterOutPathJunk "."  = False
+      filterOutPathJunk ".." = False
+      filterOutPathJunk _    = True
+      wp = WorldParams (sx,sy) (zx,zy)
+      wd = WorldData (1.0,1.0) [Zone (0,0) initSegs]
+      initSegs = take zy (repeat (take zx (repeat (SegmentNULL))))
+  Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewElem win (WinElemWorld wp wd dps)

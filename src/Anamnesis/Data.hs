@@ -29,6 +29,7 @@ data State = State { stStatus   ∷ AExcept
                    , stVerts    ∷ !Verts
                    , stDynData  ∷ !Dyns
                    , stSettings ∷ !Settings
+                   , stModTexs  ∷ ![String]
                    , stNDefTex  ∷ !Int
                    , stInput    ∷ !InputState
                    , stStartT   ∷ !SystemTime

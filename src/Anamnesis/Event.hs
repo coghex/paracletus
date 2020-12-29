@@ -64,6 +64,7 @@ processEvent event = case event of
     let oldIS = stInput st
         newIS = oldIS { inpCap = cap }
     modify $ \s → s { stInput = newIS }
+  (EventModTexs modTexs) → modify $ \s → s { stModTexs = modTexs }
   (EventRecreate) → modify $ \s → s { stReload = RSRecreate }
   (EventReload) → modify $ \s → s { stReload = RSReload }
   (EventToggleFPS) → do

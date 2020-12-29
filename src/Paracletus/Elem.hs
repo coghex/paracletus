@@ -4,28 +4,30 @@ import Prelude()
 import UPrelude
 import Data.List.Split (splitOn)
 import Epiklesis.Data
+import Epiklesis.World
 import Paracletus.Data
 import Paracletus.Oblatum.Font
 
 -- finds tiles from a window
-loadWindow ∷ Window → [Tile]
-loadWindow win = loadWinElems $ winElems win
+loadWindow ∷ Int → Window → [Tile]
+loadWindow nDefTex win = loadWinElems nDefTex $ winElems win
 
-loadWinElems ∷ [WinElem] → [Tile]
-loadWinElems []       = []
-loadWinElems (we:wes) = loadWinElem we ⧺ loadWinElems wes
-loadWinElem ∷ WinElem → [Tile]
-loadWinElem (WinElemText pos True  str) = (calcTextBox size posOffset s) ⧺ calcText size (fst pos) pos str
+loadWinElems ∷ Int → [WinElem] → [Tile]
+loadWinElems _       []       = []
+loadWinElems nDefTex (we:wes) = loadWinElem nDefTex we ⧺ loadWinElems nDefTex wes
+loadWinElem ∷ Int → WinElem → [Tile]
+loadWinElem _ (WinElemText pos True  str) = (calcTextBox size posOffset s) ⧺ calcText size (fst pos) pos str
   where s = calcTextBoxSize size str
         posOffset = ((fst pos) - 0.5, (snd pos) + 0.5)
         size = TextSize30px
-loadWinElem (WinElemText pos False str) = calcText TextSize30px (fst pos) pos str
-loadWinElem (WinElemPane pos _ bits)    = (calcTextBox size posOffset s) ⧺ calcPaneTiles pos bits
+loadWinElem _ (WinElemText pos False str) = calcText TextSize30px (fst pos) pos str
+loadWinElem _ (WinElemPane pos _ bits)    = (calcTextBox size posOffset s) ⧺ calcPaneTiles pos bits
   where s = calcPaneBoxSize size bits
         posOffset = ((fst pos) - 0.5, (snd pos) + 0.5)
         size = TextSize30px
-loadWinElem (WinElemLink _ _ _)         = []
-loadWinElem (WinElemNULL)               = []
+loadWinElem nDefTex (WinElemWorld wp wd _)      = calcSpots wp wd
+loadWinElem _ (WinElemLink _ _ _)         = []
+loadWinElem _ (WinElemNULL)               = []
 
 -- finds tiles for window pane
 calcPaneTiles ∷ (Double,Double) → [(Int,PaneBit)] → [Tile]

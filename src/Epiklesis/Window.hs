@@ -52,3 +52,10 @@ loadNewBit pane (we:wes) bit = case we of
     where bits' = bits ⧺ [((length bits),bit)]
   we                        → [we] ⧺ loadNewBit pane wes bit
 
+-- returns requred extra textures
+calcWinModTexs ∷ Window → [String]
+calcWinModTexs win = calcWinElemModTexs $ winElems win
+calcWinElemModTexs ∷ [WinElem] → [String]
+calcWinElemModTexs [] = []
+calcWinElemModTexs ((WinElemWorld _ _ dps):wes) = dps ⧺ calcWinElemModTexs wes
+calcWinElemModTexs (we:wes) = []

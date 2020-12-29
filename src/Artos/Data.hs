@@ -20,6 +20,7 @@ data Event = EventError !GLFW.Error !String
            | EventNewInput !LinkAction
            | EventInput !LinkAction
            | EventCap !Bool
+           | EventModTexs ![String]
            | EventToggleFPS
            | EventRecreate
            | EventReload
