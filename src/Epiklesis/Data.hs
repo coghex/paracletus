@@ -24,6 +24,7 @@ data DSStatus = DSSLogDebug String
               | DSSLoadVerts
               | DSSLoadInput LinkAction
               | DSSLoadCap Bool
+              | DSSRecreate
               | DSSExit
               | DSSNULL deriving (Show, Eq)
 

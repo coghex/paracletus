@@ -39,7 +39,7 @@ currentWin ds
 changeWin ∷ Int → DrawState → DrawState
 changeWin n ds = ds { dsWinI   = n
                     , dsLastI  = n'
-                    , dsStatus = DSSLoadVerts }
+                    , dsStatus = DSSRecreate }
   where n' = dsWinI ds
         nname = winTitle $ (dsWins ds) !! n
 

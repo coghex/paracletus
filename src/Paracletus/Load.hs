@@ -97,6 +97,12 @@ processCommands env ds = do
               processCommands env ds''
                 where ds'' = ds' { dsStatus = DSSNULL
                                  , dsBuff   = genShBuff (dsBuff ds) 0 $ dsShell ds' }
+            DSSRecreate → do
+              atomically $ writeQueue (envEventQ env) $ EventRecreate
+              atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
+              processCommands env ds''
+                where ds'' = ds' { dsStatus = DSSNULL
+                                 , dsBuff   = genShBuff (dsBuff ds) 0 $ dsShell ds' }
             DSSLoadDyns → do
               atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
               processCommands env ds''
@@ -194,9 +200,12 @@ processCommand env ds cmd = case cmd of
     ShellCmdNULL  → return $ ResNULL
   LoadCmdNewWin win → return $ ResDrawState ds'
     where ds' = ds { dsWins = win:(dsWins ds) }
-  LoadCmdSwitchWin win → case (findWinI win (dsWins ds)) of
-    Just n  → return $ ResDrawState $ changeWin n ds
-    Nothing → return $ ResError $ "window " ⧺ win ⧺ " not found"
+  LoadCmdSwitchWin win → do
+    let eventQ = envEventQ env
+    atomically $ writeQueue eventQ $ EventRecreate
+    case (findWinI win (dsWins ds)) of
+      Just n  → return $ ResDrawState $ changeWin n ds
+      Nothing → return $ ResError $ "window " ⧺ win ⧺ " not found"
   LoadCmdLink pos → return $ ResDrawState ds'
     where ds' = linkTest pos ds
   LoadCmdDyns → do

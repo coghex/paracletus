@@ -48,8 +48,12 @@ processEvent event = case event of
   (EventMoveCam (x,y,z)) → modify $ \s → s { stCam = (x,y,z) }
   (EventMouseButton win mb mbs mk) → evalMouse win mb mbs mk
   (EventDyns dyns) → modify $ \s → s { stDynData = dyns }
-  (EventVerts verts) → modify $ \s → s { stVerts = verts
-                                       , stReload = RSReload }
+  (EventVerts verts) → do
+    stRel ← gets stReload
+    case stRel of
+      RSRecreate → modify $ \s → s { stVerts = verts }
+      _          → modify $ \s → s { stVerts = verts
+                                   , stReload = RSReload }
   (EventNewInput link) → do
     st ← get
     let oldIS = stInput st
@@ -67,7 +71,12 @@ processEvent event = case event of
     modify $ \s → s { stInput = newIS }
   (EventModTexs modTexs) → modify $ \s → s { stModTexs = modTexs }
   (EventRecreate) → modify $ \s → s { stReload = RSRecreate }
-  (EventReload) → modify $ \s → s { stReload = RSReload }
+  (EventReload) → do
+    stRel ← gets stReload
+    logDebug $ show stRel
+    case stRel of
+      RSRecreate → return ()
+      _          → modify $ \s → s { stReload = RSReload }
   (EventToggleFPS) → do
     fps ← gets stFPS
     env ← ask

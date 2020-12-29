@@ -85,6 +85,7 @@ runParacVulkan = do
         RSRecreate → do
           newSt ← get
           let modTexs = stModTexs newSt
+          logDebug $ "recreating swapchain " ⧺ (show (length modTexs))
           newTexData ← loadVulkanTextures gqdata modTexs
           modify $ \s → s { stReload = RSNULL
                           , stTick   = Just firstTick }
@@ -133,7 +134,10 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
   shouldExit ← loadLoop window $ do
     cmdBP0 ← genCommandBuffs dev pdev commandPool queues graphicsPipeline renderPass texData swapInfo framebuffers descriptorSets
     -- main loop runs draw loop and trans functions
-    modify $ \s → s { stReload = RSNULL }
+    st ← get
+    case (stReload st) of
+      RSReload → modify $ \s → s { stReload = RSNULL }
+      _        → return ()
     shouldLoad ← glfwMainLoop window $ do
       stNew ← get
       let camNew        = stCam stNew
@@ -188,8 +192,8 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
       return $ if needRecreation ∨ sizeChanged ∨ stateReload then AbortLoop else ContinueLoop
     stateRec ← gets stReload
     let stateRecreate = case (stateRec) of
-                          RSNULL → False
-                          _      → True
+                          RSRecreate → True
+                          _          → False
     sizeChanged ← liftIO $ atomically $ readTVar windowSizeChanged
     return $ if shouldLoad ∨ sizeChanged ∨ stateRecreate then AbortLoop else ContinueLoop
   return $ if shouldExit then AbortLoop else ContinueLoop
