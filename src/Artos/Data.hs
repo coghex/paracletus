@@ -12,6 +12,7 @@ data TState = TStart | TStop | TPause | TNULL deriving (Show, Eq)
 -- events processed by the main thread
 data Event = EventError !GLFW.Error !String
            | EventLogDebug !String
+           | EventPrint !PrintArg
            | EventExit
            | EventKey !GLFW.Window !GLFW.Key !Int !GLFW.KeyState !GLFW.ModifierKeys
            | EventMouseButton !GLFW.Window !GLFW.MouseButton !GLFW.MouseButtonState !GLFW.ModifierKeys

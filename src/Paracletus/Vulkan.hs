@@ -85,6 +85,7 @@ runParacVulkan = do
         -- recreation loads new textures
         RSRecreate → do
           let modTexs = stModTexs newSt
+          logDebug $ "creating swapchain.."
           newTexData ← loadVulkanTextures gqdata modTexs
           liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdSetNDefTex $ stNDefTex newSt
           modify $ \s → s { stReload = RSNULL
@@ -93,6 +94,7 @@ runParacVulkan = do
               vulkLoopData  = vulkLoopData' { texData = newTexData }
           vulkLoop vulkLoopData
         _ → do
+          logDebug $ "loading swapchain.."
           let vulkLoopData = VulkanLoopData {..}
           vulkLoop vulkLoopData
             

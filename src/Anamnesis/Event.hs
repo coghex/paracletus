@@ -39,6 +39,9 @@ processEvent event = case event of
       Just win → liftIO $ GLFW.setWindowShouldClose win True
       Nothing  → logWarn $ "no glfw window to close"
   (EventLogDebug str) → logDebug str
+  (EventPrint PrintCam) → do
+    st ← get
+    logDebug $ "> " ⧺ (show (stCam st))
   (EventExit) → do
     st ← get
     case stWindow st of

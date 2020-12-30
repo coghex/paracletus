@@ -12,7 +12,7 @@ import Artos.Data
 import Artos.Queue
 import Artos.Var
 import Epiklesis.Data
-import Paracletus.Data (TextSize(..))
+import Paracletus.Data (TextSize(..),PrintArg(..))
 import Paracletus.Elem (calcTextBoxSize)
 
 hsExit ∷ Env → Lua.Lua ()
@@ -24,6 +24,12 @@ hsLogDebug ∷ Env → String → Lua.Lua ()
 hsLogDebug env str = do
   let eventQ = envEventQ env
   Lua.liftIO $ atomically $ writeQueue eventQ $ EventLogDebug str
+
+hsPrintHs ∷ Env → String → Lua.Lua ()
+hsPrintHs env "cam" = do
+  let eventQ = envEventQ env
+  Lua.liftIO $ atomically $ writeQueue eventQ $ EventPrint PrintCam
+hsPrintHs env str = hsLogDebug env ("value " ⧺ str ⧺ " not known")
 
 hsToggleFPS ∷ Env → Lua.Lua ()
 hsToggleFPS env = do

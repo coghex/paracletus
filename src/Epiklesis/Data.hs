@@ -175,3 +175,4 @@ data Shell = Shell { shPrompt ∷ String
                    , shOutStr ∷ String
                    , shHistI  ∷ Int
                    , shHist   ∷ [String] } deriving (Show, Eq)
+

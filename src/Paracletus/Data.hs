@@ -35,6 +35,9 @@ data Dyns = Dyns [DynData] deriving (Show, Eq)
 -- corresponding reference to lua state
 data DDRef = DDFPS | DDSlider Int | DDNULL deriving (Show, Eq)
 
+data PrintArg = PrintCam
+              | PrintNULL deriving (Show, Eq)
+
 -- fps defined as actual and desired,
 -- and whether or not to display
 data FPS = FPS Double Int Bool deriving (Show, Eq)
