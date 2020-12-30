@@ -104,7 +104,7 @@ moveCamWithKeys = do
       dir      = case (findDir (keySt oldIS)) of
                    Just d  → d
                    Nothing → CardNULL
-      loadQ    = envLoadQ env 
+  let loadQ    = envLoadQ env 
   liftIO $ atomically $ writeQueue loadQ $ LoadCmdMoveCam $ addZ newaccel (-1.0)
   modify' $ \s → s { stInput = newIS }
 

@@ -58,7 +58,7 @@ processEvent event = case event of
       RSRecreate → modify $ \s → s { stVerts = verts }
       _          → modify $ \s → s { stVerts = verts
                                    , stReload = RSReload }
-    liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdWorld
+    --liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdWorld
   (EventNewInput link) → do
     st ← get
     let oldIS = stInput st

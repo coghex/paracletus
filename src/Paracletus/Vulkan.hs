@@ -94,7 +94,6 @@ runParacVulkan = do
               vulkLoopData  = vulkLoopData' { texData = newTexData }
           vulkLoop vulkLoopData
         _ → do
-          logDebug $ "loading swapchain.."
           let vulkLoopData = VulkanLoopData {..}
           vulkLoop vulkLoopData
             
@@ -135,11 +134,13 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
   -- but still stutterry
   shouldExit ← loadLoop window $ do
     cmdBP0 ← genCommandBuffs dev pdev commandPool queues graphicsPipeline renderPass texData swapInfo framebuffers descriptorSets
+    logDebug $ "loading swapchain.."
     -- main loop runs draw loop and trans functions
-    st ← get
-    case (stReload st) of
-      RSReload → modify $ \s → s { stReload = RSNULL }
-      _        → return ()
+    --st ← get
+    modify $ \s → s { stReload = RSNULL }
+    --case (stReload st) of
+    --  RSReload → modify $ \s → s { stReload = RSNULL }
+    --  _        → return ()
     shouldLoad ← glfwMainLoop window $ do
       stNew ← get
       let camNew        = stCam stNew
