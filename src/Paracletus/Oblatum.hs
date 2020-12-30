@@ -71,6 +71,7 @@ glfwMainLoop w action = go
             reload ← gets stReload
             case reload of
               RSNULL → do
+                -- TODO: PID loop
                 FPS fps dfps disp ← gets stFPS
                 let deltafps = 0.1
                 liftIO $ whileM_ ((\cur → (cur - (newtick)) < (1.0/fps)) <$> getCurTick) (liftIO (threadDelay 1000))

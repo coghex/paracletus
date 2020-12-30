@@ -4,11 +4,13 @@ module Epiklesis
 import Prelude()
 import UPrelude
 import Data.List (sort)
+import Data.Time.Clock
 import qualified Foreign.Lua as Lua
 import System.Directory (getDirectoryContents)
 import System.FilePath (combine)
 import Anamnesis.Data
 import Artos.Data
+import Artos.Thread
 import Artos.Queue
 import Artos.Var
 import Epiklesis.Command
@@ -41,7 +43,36 @@ loadEpiklesis env = do
         loadQ  = envLoadQ  env
     atomically $ writeQueue eventQ $ EventRecreate
     atomically $ writeQueue loadQ  $ LoadCmdVerts
-    return ()
+    epiklesisLoop TStart env modFiles
+
+-- the loop runs lua commands every game tick
+epiklesisLoop ∷ TState → Env → String → IO ()
+epiklesisLoop TPause env modFiles = do
+  let timerChan = envLuaCh env
+  tsNew ← atomically $ readChan timerChan
+  epiklesisLoop tsNew env modFiles
+epiklesisLoop TStart env modFiles = do
+  let timerChan = envLuaCh env
+  start ← getCurrentTime
+  tsMby ← (atomically $ tryReadChan timerChan)
+  let tsNew = case (tsMby) of
+                Nothing → TStart
+                Just x  → x
+  let ls = envLuaSt env 
+  _ ← Lua.runWith ls $ do
+    Lua.openlibs
+    _ ← Lua.dofile $ "mod/base/game.lua"
+    ret ← Lua.callFunc "runParacletus" modFiles
+    return (ret∷Int)
+  end ← getCurrentTime
+  let diff  = diffUTCTime end start
+      usecs = floor (toRational diff * 1000000) ∷ Int
+      delay = n*1000 - usecs
+      n     = 1000
+  if delay > 0 then threadDelay delay else return ()
+  epiklesisLoop TStop env modFiles
+epiklesisLoop TStop env modFiles = return ()
+epiklesisLoop TNULL env modFiles = return ()
 
 findModFiles ∷ String → IO (String)
 findModFiles path = do

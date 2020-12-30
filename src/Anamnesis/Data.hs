@@ -19,6 +19,7 @@ data LoopControl = ContinueLoop | AbortLoop deriving Eq
 data Env = Env { envEventQ ∷ Queue Event
                , envLoadQ  ∷ Queue LoadCmd
                , envLoadCh ∷ TChan TState
+               , envLuaCh  ∷ TChan TState
                , envLuaSt  ∷ Lua.State }
 -- state holds mutable data, and the
 -- current status of the whole App

@@ -43,7 +43,7 @@ pickPhysicalDevice ∷ VkInstance → Maybe VkSurfaceKHR → Anamnesis ε σ (Ma
 pickPhysicalDevice vkInstance mVkSurf = do
   devs ← asListVk $ \x → runVk ∘ vkEnumeratePhysicalDevices vkInstance x
   when (null devs) $ logExcept VulkanError ExParacletus "zero device count"
-  logInfo $ "found " ⧺ show (length devs) ⧺ " devices"
+  logDebug $ "found " ⧺ show (length devs) ⧺ " devices"
   selectFirstSuitable devs
   where selectFirstSuitable [] = logExcept VulkanError ExParacletus "no suitable devices..."
         selectFirstSuitable (x:xs) = do

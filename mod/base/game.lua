@@ -7,3 +7,12 @@ function initParacletus (files)
     end
     return 0
 end
+-- this runs every tick
+function runParacletus (files)
+    for file,k in string.gmatch(files, "([^;]*)") do
+      local f = assert(loadfile(file))
+      f ()
+      runMod ()
+    end
+    return 0
+end

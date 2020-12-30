@@ -34,3 +34,5 @@ function initMod ()
 
     return 0
 end
+function runMod ()
+end

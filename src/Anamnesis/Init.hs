@@ -25,10 +25,12 @@ initEnv = do
   newQ1 ← newQueue
   newQ2 ← newCmdQueue
   newC1 ← newTChan
+  newC2 ← newTChan
   newLS ← Lua.newstate
   let env = Env { envEventQ = newQ1
                 , envLoadQ  = newQ2
                 , envLoadCh = newC1
+                , envLuaCh  = newC2
                 , envLuaSt  = newLS }
   envChan ← atomically $ newTVar env
   return (envChan,env)

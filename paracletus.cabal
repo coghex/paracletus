@@ -9,7 +9,7 @@ category: Game
 build-type: Simple
 
 flag dev
-    default: False
+    default: True
 
 executable paracletus
     main-is: Main.hs
@@ -24,6 +24,7 @@ executable paracletus
                    Artos
                    Artos.Data
                    Artos.Except
+                   Artos.Thread
                    Artos.Queue
                    Artos.Var
                    Epiklesis
