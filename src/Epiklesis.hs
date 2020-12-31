@@ -70,7 +70,7 @@ epiklesisLoop TStart env modFiles = do
       delay = n*1000 - usecs
       n     = 1000
   if delay > 0 then threadDelay delay else return ()
-  epiklesisLoop TStop env modFiles
+  epiklesisLoop tsNew env modFiles
 epiklesisLoop TStop env modFiles = return ()
 epiklesisLoop TNULL env modFiles = return ()
 
