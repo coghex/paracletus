@@ -268,5 +268,7 @@ processCommand env ds cmd = case cmd of
         let ds' = loadWorld ds
         atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
         return $ ResDrawState ds'
-      else return $ ResSuccess
+      else do
+        atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
+        return $ ResSuccess
   LoadCmdNULL → return ResNULL

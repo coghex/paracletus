@@ -39,7 +39,7 @@ currentWin ds
 changeWin ∷ Int → DrawState → DrawState
 changeWin n ds = ds { dsWinI   = n
                     , dsLastI  = n'
-                    , dsStatus = DSSLoadVerts }
+                    , dsStatus = DSSLoadWorld }
   where n' = dsWinI ds
 
 loadNewBit ∷ String → [WinElem] → PaneBit → [WinElem]
