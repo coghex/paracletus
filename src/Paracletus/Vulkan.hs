@@ -134,7 +134,7 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
   -- but still stutterry
   shouldExit ← loadLoop window $ do
     cmdBP0 ← genCommandBuffs dev pdev commandPool queues graphicsPipeline renderPass texData swapInfo framebuffers descriptorSets
-    logDebug $ "loading swapchain.."
+    --logDebug $ "loading swapchain.."
     -- main loop runs draw loop and trans functions
     --st ← get
     modify $ \s → s { stReload = RSNULL }

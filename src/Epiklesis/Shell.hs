@@ -7,6 +7,7 @@ import Data.List (isPrefixOf)
 import Data.List.Split (splitOn)
 import Anamnesis.Data
 import Epiklesis.Data
+import Epiklesis.ShCmd
 import Paracletus.Buff (clearBuff)
 import Paracletus.Data
 import Paracletus.Elem (calcTextBox, calcText)
@@ -16,7 +17,7 @@ import qualified Foreign.Lua as Lua
 
 -- empty shell
 initShell ∷ Shell
-initShell = Shell "$> " False Nothing 1 False "" "" "" (-1) []
+initShell = Shell "$> " False Nothing 1 False "" "" "" "" (-1) []
 
 openShell ∷ Shell → Shell
 openShell sh = sh { shOpen = True }
@@ -50,9 +51,11 @@ loadShell ∷ Shell → [Tile]
 loadShell sh
   | shOpen sh = tiles
   | otherwise = []
-  where tiles      = textBox ⧺ text ⧺ cursorTile
+  where tiles      = textBox ⧺ text ⧺ retText ⧺ cursorTile
         textBox    = calcTextBox TextSize30px (-8.0, 4.5) (32,18)
         text       = calcText TextSize30px (-7) (-7,4) $ genShellStr sh
+        retText    = calcText TextSize30px (-6) (-6.1,6 - i) $ shRet sh
+        i          = fromIntegral $ length $ splitOn "\n" $ shOutStr sh
         cursorTile = [DTile (DMShCursor) (-7,4) (0.05,0.5) (0,0) (1,1) 112]
 
 genShellStr ∷ Shell → String
@@ -95,14 +98,23 @@ delShell sh = sh { shInpStr = newStr
 evalShell ∷ Env → DrawState → IO DrawState
 evalShell env ds = do
   let oldSh = dsShell ds
+  loadShCmds env
   (ret,outbuff) ← execShell (envLuaSt env) (shInpStr oldSh)
-  let retstring = (shOutStr oldSh) ⧺ (shPrompt oldSh) ⧺ (shInpStr oldSh) ⧺ "\n" ⧺ (show ret) ⧺ " > " ⧺ outbuff ⧺ "\n"
-      newSh = oldSh { shInpStr = ""
-                    , shOutStr = retstring
-                    , shTabbed = Nothing
-                    , shHistI  = -1
-                    , shHist   = ([shInpStr oldSh] ⧺ shHist oldSh)
-                    , shCursor = 0 }
+  let retstring = if (length (shOutStr oldSh) ≡ 0)
+          then case (outbuff) of
+            "nil" → (shOutStr oldSh) ⧺ (shPrompt oldSh) ⧺ (shInpStr oldSh) ⧺ "\n" ⧺ (show ret) ⧺ "\n"
+            _     → (shOutStr oldSh) ⧺ (shPrompt oldSh) ⧺ (shInpStr oldSh) ⧺ "\n" ⧺ (show ret) ⧺ " > " ⧺ outbuff ⧺ "\n"
+          else case (outbuff) of
+            "nil" → (init (shOutStr oldSh)) ⧺ " " ⧺ (shRet oldSh) ⧺ "\n" ⧺ (shPrompt oldSh) ⧺ (shInpStr oldSh) ⧺ "\n" ⧺ (show ret) ⧺ "\n"
+            _     → (init (shOutStr oldSh)) ⧺ " " ⧺ (shRet oldSh) ⧺ "\n" ⧺ (shPrompt oldSh) ⧺ (shInpStr oldSh) ⧺ "\n" ⧺ (show ret) ⧺ " > " ⧺ outbuff ⧺ "\n"
+
+
+      newSh    = oldSh { shInpStr = ""
+                       , shOutStr = retstring
+                       , shTabbed = Nothing
+                       , shHistI  = -1
+                       , shHist   = ([shInpStr oldSh] ⧺ shHist oldSh)
+                       , shCursor = 0 }
   return $ ds { dsShell  = newSh
               , dsBuff   = clearBuff (dsBuff ds) 0
               , dsStatus = DSSLoadVerts }

@@ -13,13 +13,14 @@ loadWorld ds = case (currentWin ds) of
     where win' = case (findWorldData win) of
                    Nothing      → win
                    Just (wp,wd) → win { winElems = replaceWorldWinElem wd' (winElems win) }
-                     where zoneInd  = (0,0)
-                           wd'      = wd { wdZones = replaceZones newSegs zoneInd zoneSize (wdZones wd) }
-                           newSegs  = genSegs wpGen $ evalScreenCursor segSize cam
-                           segSize  = wpSSize wp
-                           zoneSize = wpZSize wp
-                           wpGen    = wp
-                           cam      = wdCam wd
+                     where zoneInd   = (0,0)
+                           wd'       = wd { wdZones = replaceZones newSegs zoneInd zoneSize (wdZones wd) }
+                           newSegs   = genSegs wpGen $ evalScreenCursor segSize cam
+                           segSize   = wpSSize wp
+                           zoneSize  = wpZSize wp
+                           wpGen     = wp
+                           (cx,cy,_) = winCursor win
+                           cam       = (cx,cy)
 
 replaceZones ∷ [((Int,Int),Segment)] → (Int,Int) → (Int,Int) → [Zone] → [Zone]
 replaceZones _    _       _        []     = []

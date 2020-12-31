@@ -152,6 +152,7 @@ data LinkAction = LinkExit
 data ShellCmd = ShellCmdOpen
               | ShellCmdClose
               | ShellCmdControl ShellControl
+              | ShellCmdRet String
               | ShellCmdString String
               | ShellCmdExec
               | ShellCmdDelete
@@ -173,6 +174,7 @@ data Shell = Shell { shPrompt ∷ String
                    , shInpStr ∷ String
                    , shCache  ∷ String
                    , shOutStr ∷ String
+                   , shRet    ∷ String
                    , shHistI  ∷ Int
                    , shHist   ∷ [String] } deriving (Show, Eq)
 

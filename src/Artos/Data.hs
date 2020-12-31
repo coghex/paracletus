@@ -43,4 +43,5 @@ data LoadCmd = LoadCmdNewWin Window
              | LoadCmdWorld
              | LoadCmdSetFPS FPS
              | LoadCmdToggleFPS
+             | LoadCmdPrint !PrintArg
              | LoadCmdNULL
