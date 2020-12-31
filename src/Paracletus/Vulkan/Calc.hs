@@ -56,6 +56,17 @@ vertices ts = fromList $ combineVertices (1∷Int) ts
           withTC f = map (\(S v) → S v { texCoord = f $ texCoord v })
           withScale f = map (\(S v) → S v { pos = f $ pos v })
           withMove f = map (\(S v) → S v { move = f $ move v })
+        combineVertices nTile ((DMTile _ (x',y') (xscale',yscale') (ax',ay') (sx,sy) t'):tts) = withMove (+ vec3 1 dyn 1) (withTC (indexAtlas ax ay sx sy) (withTC (+ vec3 0 0 t) (withPos (+ vec4 x0 y0 0 0) (withScale (* vec3 xscale yscale 1) vertsqs)))) ⧺ combineVertices (nTile+1) tts where
+          (x0,y0) = (realToFrac(2*x'), realToFrac(2*y'))
+          ( ax,  ay) = (fromIntegral ax', fromIntegral ay')
+          (xscale, yscale)  = (realToFrac xscale', realToFrac yscale')
+          t = fromIntegral t'
+          dyn = fromIntegral nTile
+          withPos f = map (\(S v) → S v { pos = fromHom ∘ f ∘ toHomPoint $ pos v })
+          withTC f = map (\(S v) → S v { texCoord = f $ texCoord v })
+          withScale f = map (\(S v) → S v { pos = f $ pos v })
+          withMove f = map (\(S v) → S v { move = f $ move v })
+
 
 
 indices ∷ [Tile] → DataFrame Word32 '[XN 3]

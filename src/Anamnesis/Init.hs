@@ -54,7 +54,7 @@ initState env = do
                              , stInput    = is
                              , stStartT   = st
                              , stTick     = Nothing
-                             , stFPS      = FPS 30.0 30 False }
+                             , stFPS      = FPS 60.0 60 False }
 
 initInputState ∷ InputState
 initInputState = InputState { mouse1   = Nothing

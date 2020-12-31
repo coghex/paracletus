@@ -5,14 +5,27 @@ import Prelude ()
 import UPrelude
 import Data.List.Split (splitOn)
 import Epiklesis.Data
+import Epiklesis.Window
 import Paracletus.Data
 import Paracletus.Oblatum.Font
 
-initBuff ∷ Dyns
-initBuff = Dyns $ take 64 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
+initBuff ∷ [Dyns]
+initBuff = [shDyns,wDyns]
+  where shDyns = Dyns $ take 64 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
+        wDyns  = Dyns $ take 256 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
 
 loadTileBuff ∷ [Tile]
 loadTileBuff = makeTileBuff 0 64
+
+loadWorldBuff ∷ WorldParams → [Tile]
+loadWorldBuff wp = makeWTileBuff 1 $ 2*w*h
+  where (w,h)    = wpSSize wp
+
+makeWTileBuff ∷ Int → Int → [Tile]
+makeWTileBuff b n
+  | (n ≡ 0)   = []
+  | otherwise = makeWTileBuff b (n - 1) ⧺ [tile]
+  where tile = DMTile (DMBuff b (n - 1)) (0,0) (1,1) (0,0) (3,15) 0
 
 makeTileBuff ∷ Int → Int → [Tile]
 makeTileBuff b n
@@ -36,6 +49,13 @@ clearDyns ∷ [Dyns] → [Dyns]
 clearDyns dyns = map clearDDs dyns
 clearDDs ∷ Dyns → Dyns
 clearDDs (Dyns dds) = Dyns $ take (length dds) $ repeat $ DynData 0 (0,0) (1,1) (0,0)
+
+-- set a buff to the current world screen
+genWorldBuff ∷ [Dyns] → Int → WorldData → [Dyns]
+genWorldBuff buff b wd = setTileBuff b dyns buff
+  where dyns = genWorldDyns (buff !! b)
+genWorldDyns ∷ Dyns → Dyns
+genWorldDyns dyns = dyns
 
 -- set a buff to equal a string
 genShBuff ∷ [Dyns] → Int → Shell → [Dyns]

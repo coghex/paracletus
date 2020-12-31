@@ -5,12 +5,18 @@ import UPrelude
 import Epiklesis.Data
 import Epiklesis.Window
 import Paracletus.Data
+import Paracletus.Buff
 
 loadWorld ∷ DrawState → DrawState
 loadWorld ds = case (currentWin ds) of
   Nothing  → ds
-  Just win → ds { dsWins = replaceWin win' (dsWins ds) }
-    where win' = case (findWorldData win) of
+  Just win → ds { dsWins = replaceWin win' (dsWins ds)
+                , dsBuff = buffer }
+    where buffer = case (findWorldData win') of
+                     Nothing      → dsBuff ds
+                     Just (wp,wd) → setTileBuff 1 dyns (dsBuff ds)
+                       where dyns = calcWorldBuff (dsNDefTex ds) wp wd
+          win' = case (findWorldData win) of
                    Nothing      → win
                    Just (wp,wd) → win { winElems = replaceWorldWinElem wd' (winElems win) }
                      where zoneInd   = (0,0)
@@ -20,6 +26,16 @@ loadWorld ds = case (currentWin ds) of
                            zoneSize  = wpZSize wp
                            wpGen     = wp
                            (cx,cy,_) = winCursor win
+
+-- calculates dyns of the world tiles
+--calcWorldDSBuff ∷ WorldParams → Dyns → Dyns
+--calcWorldDSBuff wp (Dyns dyns)
+--  | (length dyns) ≢ (w*h) = Dyns $ take (w*h) $ repeat $ DynData 0 (0,0) (1,1) (0,0)
+--  | otherwise             = Dyns dyns
+--  where (w,h) = wpSSize wp
+
+calcWorldBuff ∷ Int → WorldParams → WorldData → Dyns
+calcWorldBuff nDefTex wp wd = Dyns $ calcSpots nDefTex wp wd
 
 printSegs ∷ [((Int,Int),((Int,Int),Segment))] → String
 printSegs [] = ""
@@ -154,49 +170,49 @@ seedDistance x1 y1 x2 y2 x3 y3 = do
 
 
 -- world generation
-calcSpots ∷ Int → WorldParams → WorldData → [Tile]
+calcSpots ∷ Int → WorldParams → WorldData → [DynData]
 calcSpots nDefTex wp wd = calcWorldTiles nDefTex wp cam zs
   where cam = wdCam   wd
         zs  = wdZones wd
 
-calcWorldTiles ∷ Int → WorldParams → (Float,Float) → [Zone] → [Tile]
+calcWorldTiles ∷ Int → WorldParams → (Float,Float) → [Zone] → [DynData]
 calcWorldTiles _       _  _   []                 = []
 calcWorldTiles nDefTex wp cam ((Zone ind segs):zs) = z' ⧺ calcWorldTiles nDefTex wp cam zs
   where z'    = flatten $ map (calcZoneRows nDefTex wp cam ind) (zip yinds segs)
         yinds = take (fst segS) [0..]
         segS  = wpZSize wp
 
-calcZoneRows ∷ Int → WorldParams → (Float,Float) → (Int,Int) → (Integer,[Segment]) → [Tile]
+calcZoneRows ∷ Int → WorldParams → (Float,Float) → (Int,Int) → (Integer,[Segment]) → [DynData]
 calcZoneRows nDefTex wp cam ind (j,segs) = flatten $ map (calcZoneSpot nDefTex j' wp cam ind) (zip xinds segs)
   where xinds = take (snd segS) [0..]
         segS  = wpZSize wp
         j'    = fromIntegral j
 
-calcZoneSpot ∷ Int → Int → WorldParams → (Float,Float) → (Int,Int) → (Integer,Segment) → [Tile]
+calcZoneSpot ∷ Int → Int → WorldParams → (Float,Float) → (Int,Int) → (Integer,Segment) → [DynData]
 calcZoneSpot nDefTex j wp cam ind (i,seg) = calcSegTiles nDefTex (i',j) wp roundCam ind seg
   where roundCam = ((round (fst cam)),(round (snd cam)))
         i' = fromIntegral i
 
-calcSegTiles ∷ Int → (Int,Int) → WorldParams → (Int,Int) → (Int,Int) → Segment → [Tile]
+calcSegTiles ∷ Int → (Int,Int) → WorldParams → (Int,Int) → (Int,Int) → Segment → [DynData]
 calcSegTiles _       _     _  _   _   (SegmentNULL)  = []
 calcSegTiles nDefTex (i,j) wp cam ind (Segment grid) = flatten $ calcSegRow nDefTex cam (x,y) grid
   where (x,y)   = (sw*(i + ((zw - 1)*(fst ind))),sh*(j + (zh*(snd ind))))
         (sw,sh) = wpSSize wp
         (zw,zh) = wpZSize wp
 
-calcSegRow ∷ Int → (Int,Int) → (Int,Int) → [[Spot]] → [[Tile]]
+calcSegRow ∷ Int → (Int,Int) → (Int,Int) → [[Spot]] → [[DynData]]
 calcSegRow _       _       _     [[]]         = [[]]
 calcSegRow _       _       _     []           = []
 calcSegRow nDefTex (cx,cy) (x,y) (grow:grows) = [rowTiles] ⧺ calcSegRow nDefTex (cx,cy) (x,(y+1)) grows
   where rowTiles = calcSegSpot nDefTex (cx,cy) (x,y) grow
 
-calcSegSpot ∷ Int → (Int,Int) → (Int,Int) → [Spot] → [Tile]
+calcSegSpot ∷ Int → (Int,Int) → (Int,Int) → [Spot] → [DynData]
 calcSegSpot _       _       _     [] = []
-calcSegSpot nDefTex (cx,cy) (x,y) ((Spot t c):gspots) = [tile] ⧺ calcSegSpot nDefTex (cx,cy) ((x + 1),y) gspots
-  where tile = MTile (x',y') (1,1) (ix,iy) (3,15) c'
+calcSegSpot nDefTex (cx,cy) (x,y) ((Spot t c):gspots) = [dd] ⧺ calcSegSpot nDefTex (cx,cy) ((x + 1),y) gspots
+  --where tile = MTile (x',y') (1,1) (ix,iy) (3,15) c'
+  where dd = DynData c' (2*x',2*y') (1,1) (ix,iy)
         x' = fromIntegral x - 1
         y' = fromIntegral y - 1
         ix = t `mod` 3
         iy = t `div` 3
         c' = c + nDefTex
-

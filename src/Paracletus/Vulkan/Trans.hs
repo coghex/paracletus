@@ -91,12 +91,12 @@ updateTransTex nDyn (dd:dds) device extent uniBuf = do
   let nDyn'   = (fromIntegral nDyn) - 1
   uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf (nDyn'*(bSizeOf @DynTexTransObject undefined)) (bSizeOf @DynTexTransObject undefined) VK_ZERO_FLAGS
   -- TODO: dyndata should have atlas size,
-  -- right now only works for text
+  -- right now only works for world
   let dtexi = DF4
                  (DF4 1 0 0 0)
                  (DF4 0 1 0 0)
                  (DF4 0 0 1 0)
-                 (DF4 (x/16.0) (y/6.0) n 1)
+                 (DF4 (x/3.0) (y/15.0) n 1)
       (x ,y)  = (fromIntegral x', fromIntegral y')
       (x',y') = ddTIndex dd
       n       = fromIntegral $ ddTex dd

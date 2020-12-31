@@ -14,7 +14,7 @@ import Anamnesis.Data
 import Epiklesis.Data
 import Epiklesis.Shell
 import Epiklesis.Window
-import Epiklesis.World (loadWorld)
+import Epiklesis.World (loadWorld,findWorldData)
 import Paracletus.Buff
 import Paracletus.Data
 import Paracletus.Draw
@@ -40,7 +40,7 @@ loadParacletus env _        = atomically $ writeQueue ec $ EventLogDebug "dont k
 loadParacVulkan ∷ Env → IO ()
 loadParacVulkan env = do
   runLoadLoop env initDS TStop
-  where initDS  = DrawState DSSNULL initShell cmds [] (-1) (-1) [] (FPS 30.0 30 False) [initBuff] 0
+  where initDS  = DrawState DSSNULL initShell cmds [] (-1) (-1) [] (FPS 30.0 30 False) initBuff 0
         cmds    = ["newWindow", "newText", "newMenu", "newMenuBit", "newLink", "newWorld", "switchWindow", "setBackground", "luaModule", "newDynObj", "resizeWindow", "toggleFPS"]
 
 -- load loop runs with a delay so that
@@ -102,18 +102,18 @@ processCommands env ds = do
               atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
               processCommands env ds''
                 where ds'' = ds' { dsStatus = DSSNULL
-                                 , dsBuff   = genShBuff (dsBuff ds) 0 $ dsShell ds' }
+                                 , dsBuff   = genDynBuffs ds' }
             DSSRecreate → do
               atomically $ writeQueue (envEventQ env) $ EventRecreate
               atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
               processCommands env ds''
                 where ds'' = ds' { dsStatus = DSSNULL
-                                 , dsBuff   = genShBuff (dsBuff ds) 0 $ dsShell ds' }
+                                 , dsBuff   = genDynBuffs ds' }
             DSSLoadDyns → do
               atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
               processCommands env ds''
                 where ds'' = ds' { dsStatus = DSSNULL
-                                 , dsBuff   = genShBuff (dsBuff ds) 0 $ dsShell ds' }
+                                 , dsBuff   = genDynBuffs ds' }
             DSSLoadCap cap → do
               atomically $ writeQueue (envEventQ env) $ EventCap cap
               atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
@@ -277,9 +277,20 @@ processCommand env ds cmd = case cmd of
     Just win → do
       if ((winType win) ≡ WinTypeGame) then do
         let ds' = loadWorld ds
-        atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
+        atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
         return $ ResDrawState ds'
       else do
-        atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
+        atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
         return $ ResSuccess
   LoadCmdNULL → return ResNULL
+
+genDynBuffs ∷ DrawState → [Dyns]
+genDynBuffs ds = dyns1
+  where dyns0 = dsBuff ds
+        dyns1 = genShBuff dyns0 0 $ dsShell ds
+        dyns2 = case (currentWin ds) of
+                  Nothing → dyns1
+                  Just w  → case (findWorldData w) of
+                      Nothing      → dyns1
+                      Just (wp,wd) → genWorldBuff dyns1 1 wd
+

@@ -36,15 +36,21 @@ data Tile = GTile { tPos   ∷ (Double,Double)
                   , tSize  ∷ (Int,Int)
                   , tT     ∷ Int }
 -- dtiles represent dynamic tiles,
--- ones that can move and change texture
+-- ones that can change texture
           | DTile { tDyn   ∷ DynMap
                   , tPos   ∷ (Double,Double)
                   , tScale ∷ (Double,Double)
                   , tInd   ∷ (Int,Int)
                   , tSize  ∷ (Int,Int)
                   , tT     ∷ Int }
--- mtiles can move with the cam
+-- mtiles and dmtiles can move with the cam
           | MTile { tPos   ∷ (Double,Double)
+                  , tScale ∷ (Double,Double)
+                  , tInd   ∷ (Int,Int)
+                  , tSize  ∷ (Int,Int)
+                  , tT     ∷ Int }
+          | DMTile { tDyn  ∷ DynMap
+                  , tPos   ∷ (Double,Double)
                   , tScale ∷ (Double,Double)
                   , tInd   ∷ (Int,Int)
                   , tSize  ∷ (Int,Int)
