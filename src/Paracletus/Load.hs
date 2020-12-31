@@ -173,7 +173,7 @@ processCommand env ds cmd = case cmd of
           newWin     = win { winCursor = newCam
                            , winAccel  = newAccel }
           ds'        = ds { dsWins = replaceWin newWin (dsWins ds) }
-      if (((abs (fst newAccel)) ≤ 0.0) ∨ ((abs (snd newAccel)) ≤ 0.0)) then atomically $ writeQueue eventQ $ EventAccel False else return ()
+      --if (((abs (fst newAccel)) ≤ 0.0) ∨ ((abs (snd newAccel)) ≤ 0.0)) then atomically $ writeQueue eventQ $ EventAccel False else return ()
       atomically $ writeQueue eventQ $ EventMoveCam newCam
       return $ ResDrawState ds'
   LoadCmdShell shCmd → case shCmd of
