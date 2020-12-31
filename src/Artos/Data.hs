@@ -17,7 +17,7 @@ data Event = EventError !GLFW.Error !String
            | EventKey !GLFW.Window !GLFW.Key !Int !GLFW.KeyState !GLFW.ModifierKeys
            | EventMouseButton !GLFW.Window !GLFW.MouseButton !GLFW.MouseButtonState !GLFW.ModifierKeys
            | EventMoveCam !(Float,Float,Float)
-           | EventAccel !Bool
+           | EventAccel
            | EventVerts !Verts
            | EventDyns !Dyns
            | EventNewInput !LinkAction

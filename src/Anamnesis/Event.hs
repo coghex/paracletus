@@ -51,7 +51,7 @@ processEvent event = case event of
       Nothing  → liftIO $ exitWith ExitSuccess
   (EventKey win k _ ks mk) → evalKey win k ks mk
   (EventMoveCam (x,y,z)) → modify $ \s → s { stCam = (x,y,z) }
-  (EventAccel acc) → modify $ \s → s { stInput = (stInput s) { inpCap = acc } }
+  (EventAccel) → modify $ \s → s { stInput = (stInput s) { accelCap = False } }
   (EventMouseButton win mb mbs mk) → evalMouse win mb mbs mk
   (EventDyns dyns) → modify $ \s → s { stDynData = dyns }
   (EventVerts verts) → do
