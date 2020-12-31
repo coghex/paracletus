@@ -180,7 +180,11 @@ processCommand env ds cmd = case cmd of
     ShellCmdExec → do
       ds' ← evalShell env ds
       return $ ResDrawState ds'
-    ShellCmdRet str → return $ ResDrawState $ ds { dsShell = (dsShell ds) { shRet = str }}
+    ShellCmdRet "cam" → return $ ResDrawState $ ds { dsShell = (dsShell ds) { shRet = str }}
+      where str = case (currentWin ds) of
+                    Nothing → "no window"
+                    Just w  → show $ winCursor w
+    ShellCmdRet str → return $ ResDrawState $ ds { dsShell = (dsShell ds) { shRet = "value '" ⧺ str ⧺ "' not known" }}
     ShellCmdString ch → do
       return $ ResDrawState ds'
       where ds' = ds { dsShell  = stringShell ch (dsShell ds)
@@ -272,8 +276,4 @@ processCommand env ds cmd = case cmd of
       else do
         atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
         return $ ResSuccess
-  LoadCmdPrint arg → case arg of
-    PrintCam → do
-        return $ ResSuccess
-    PrintNULL → return ResNULL
   LoadCmdNULL → return ResNULL
