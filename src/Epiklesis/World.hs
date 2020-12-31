@@ -14,33 +14,70 @@ loadWorld ds = case (currentWin ds) of
                    Nothing      → win
                    Just (wp,wd) → win { winElems = replaceWorldWinElem wd' (winElems win) }
                      where zoneInd   = (0,0)
-                           wd'       = wd { wdZones = replaceZones newSegs zoneInd zoneSize (wdZones wd) }
-                           newSegs   = genSegs wpGen $ evalScreenCursor segSize (-0.05*cx,-0.05*cy)
+                           wd'       = wd { wdZones = replaceZones newSegs zoneSize (wdZones wd) }
+                           newSegs   = fixSegs wpGen $ genSegs wpGen $ evalScreenCursor segSize (-0.05*cx,-0.05*cy)
                            segSize   = wpSSize wp
                            zoneSize  = wpZSize wp
                            wpGen     = wp
                            (cx,cy,_) = winCursor win
 
-replaceZones ∷ [((Int,Int),Segment)] → (Int,Int) → (Int,Int) → [Zone] → [Zone]
-replaceZones _    _       _        []     = []
-replaceZones segs zoneInd zoneSize (z:zs)
-  | (zoneIndex z) ≡ zoneInd = [replaceSegs segs zoneSize z] ⧺ replaceZones segs zoneInd zoneSize zs
-  | otherwise               = [z] ⧺ replaceZones segs zoneInd zoneSize zs
+printSegs ∷ [((Int,Int),((Int,Int),Segment))] → String
+printSegs [] = ""
+printSegs ((zoneInd,(ind,_)):segs) = str ⧺ printSegs segs
+  where str = "(" ⧺ (show zoneInd) ⧺ ", " ⧺ (show ind) ⧺ "), "
 
-replaceSegs ∷ [((Int,Int),Segment)] → (Int,Int) → Zone → Zone
-replaceSegs []                _        z                   = z
-replaceSegs ((segInd,seg):ss) zoneSize (Zone zoneInd segs) = replaceSegs ss zoneSize $ Zone zoneInd $ segs'
-  where segs' = replaceSeg zoneSize segInd seg segs
-replaceSeg ∷ (Int,Int) → (Int,Int) → Segment → [[Segment]] → [[Segment]]
-replaceSeg zoneSize segInd newSeg segs = map (findAndReplaceSegmentRow zoneSize segInd newSeg) (zip yinds segs)
-  where yinds = take (fst zoneSize) [0..]
-findAndReplaceSegmentRow ∷ (Int,Int) → (Int,Int) → Segment → (Int,[Segment]) → [Segment]
-findAndReplaceSegmentRow zoneSize segInd newSeg (j,segs) = map (findAndReplaceSegmentSpot segInd newSeg j) (zip xinds segs)
-  where xinds = take (snd zoneSize) [0..]
+fixSegs ∷ WorldParams → [((Int,Int),Segment)] → [((Int,Int),((Int,Int),Segment))]
+fixSegs _ [] = []
+fixSegs wp (((i,j),seg):segs) = [((zi,zj),((i',j'),seg))] ⧺ fixSegs wp segs
+  where zi      = -1 + ((i + zw) `div` zw)
+        zj      = -1 + ((j + zh) `div` zh)
+        i'      = (i + zw) `mod` zw
+        j'      = (j + zh) `mod` zh
+        (zw,zh) = wpZSize wp
+
+replaceZones ∷ [((Int,Int),((Int,Int),Segment))] → (Int,Int) → [Zone] → [Zone]
+replaceZones []     _        zs = zs
+replaceZones (s:ss) zoneSize zs = replaceZones ss zoneSize $ replaceSegs False s zoneSize zs
+replaceSegs ∷ Bool → ((Int,Int),((Int,Int),Segment)) → (Int,Int) → [Zone] → [Zone]
+replaceSegs True  _                   _        []     = []
+replaceSegs False (zoneInd,(ind,seg)) zoneSize []     = replaceZones [(zoneInd,(ind,seg))] zoneSize $ [Zone zoneInd (initSegs)]
+  where (w,h) = zoneSize
+        initSegs = take h $ repeat $ take w $ repeat $ SegmentNULL
+replaceSegs bool  (zoneInd,(ind,seg)) zoneSize ((Zone zind segs):zs)
+  | zind ≡ zoneInd = [Zone zind (replaceSeg ind seg segs)] ⧺ replaceSegs True (zoneInd,(ind,seg)) zoneSize zs
+  | otherwise      = [Zone zind segs] ⧺ replaceSegs bool (zoneInd,(ind,seg)) zoneSize zs
+
+replaceSeg ∷ (Int,Int) → Segment → [[Segment]] → [[Segment]]
+replaceSeg ind seg segs = map (findAndReplaceSegmentRow ind seg) (zip yinds segs)
+  where yinds = take (length segs) [0..]
+findAndReplaceSegmentRow ∷ (Int,Int) → Segment → (Int,[Segment]) → [Segment]
+findAndReplaceSegmentRow ind seg (j,segs) = map (findAndReplaceSegmentSpot ind seg j) (zip xinds segs)
+  where xinds = take (length segs) [0..]
 findAndReplaceSegmentSpot ∷ (Int,Int) → Segment → Int → (Int,Segment) → Segment
-findAndReplaceSegmentSpot segInd newSeg j (i,seg)
-  | (i,j) ≡ segInd = newSeg
-  | otherwise      = seg
+findAndReplaceSegmentSpot ind seg0 j (i,seg)
+  | (i,j) ≡ ind = seg0
+  | otherwise   = seg
+
+--replaceZones ∷ [((Int,Int),((Int,Int),Segment))] → (Int,Int) → (Int,Int) → [Zone] → [Zone]
+--replaceZones _    _       _        []     = []
+--replaceZones segs zoneInd zoneSize (z:zs)
+--  | (zoneIndex z) ≡ zoneInd = [replaceSegs segs zoneSize z] ⧺ replaceZones segs zoneInd zoneSize zs
+--  | otherwise               = [z] ⧺ replaceZones segs zoneInd zoneSize zs
+--
+--replaceSegs ∷ [((Int,Int),((Int,Int),Segment))] → (Int,Int) → Zone → Zone
+--replaceSegs []                _        z                   = z
+--replaceSegs ((_,(segInd,seg)):ss) zoneSize (Zone zoneInd segs) = replaceSegs ss zoneSize $ Zone zoneInd $ segs'
+--  where segs' = replaceSeg zoneSize segInd seg segs
+--replaceSeg ∷ (Int,Int) → (Int,Int) → Segment → [[Segment]] → [[Segment]]
+--replaceSeg zoneSize segInd newSeg segs = map (findAndReplaceSegmentRow zoneSize segInd newSeg) (zip yinds segs)
+--  where yinds = take (fst zoneSize) [0..]
+--findAndReplaceSegmentRow ∷ (Int,Int) → (Int,Int) → Segment → (Int,[Segment]) → [Segment]
+--findAndReplaceSegmentRow zoneSize segInd newSeg (j,segs) = map (findAndReplaceSegmentSpot segInd newSeg j) (zip xinds segs)
+--  where xinds = take (snd zoneSize) [0..]
+--findAndReplaceSegmentSpot ∷ (Int,Int) → Segment → Int → (Int,Segment) → Segment
+--findAndReplaceSegmentSpot segInd newSeg j (i,seg)
+--  | (i,j) ≡ segInd = newSeg
+--  | otherwise      = seg
 
 replaceWorldWinElem ∷ (WorldData) → [WinElem] → [WinElem]
 replaceWorldWinElem _   [] = []
@@ -57,14 +94,20 @@ findWorldDataElems (_:wes) = findWorldDataElems wes
 -- returns the list of indecies
 -- of segments to generate
 evalScreenCursor ∷ (Int,Int) → (Float,Float) → [(Int,Int)]
-evalScreenCursor (w,h) (cx,cy) = [pos,posn,pose]
-  where pos  = (x,y)
-        posn = (x,y + 1)
-        pose = (x + 1,y)
-        x    = floor $ cx / w'
-        y    = floor $ cy / h'
-        w'   = fromIntegral w
-        h'   = fromIntegral h
+evalScreenCursor (w,h) (cx,cy) = [pos,posn,pose,poss,posw,posnw,posne,posse,possw]
+  where pos   = (x,y)
+        posn  = (x,y + 1)
+        poss  = (x,y - 1)
+        posw  = (x - 1,y)
+        pose  = (x + 1,y)
+        posnw = (x - 1,y - 1)
+        posne = (x + 1,y - 1)
+        possw = (x - 1,y + 1)
+        posse = (x + 1,y + 1)
+        x     = (-1) + (floor $ cx / w')
+        y     = (-1) + (floor $ cy / h')
+        w'    = fromIntegral w
+        h'    = fromIntegral h
 
 -- generates the segments that are
 -- required by evalScreenCursor
@@ -137,8 +180,9 @@ calcZoneSpot nDefTex j wp cam ind (i,seg) = calcSegTiles nDefTex (i',j) wp round
 calcSegTiles ∷ Int → (Int,Int) → WorldParams → (Int,Int) → (Int,Int) → Segment → [Tile]
 calcSegTiles _       _     _  _   _   (SegmentNULL)  = []
 calcSegTiles nDefTex (i,j) wp cam ind (Segment grid) = flatten $ calcSegRow nDefTex cam (x,y) grid
-  where (x,y)   = (sw*(i + (fst ind)),sh*(j + (snd ind)))
+  where (x,y)   = (sw*(i + ((zw - 1)*(fst ind))),sh*(j + (zh*(snd ind))))
         (sw,sh) = wpSSize wp
+        (zw,zh) = wpZSize wp
 
 calcSegRow ∷ Int → (Int,Int) → (Int,Int) → [[Spot]] → [[Tile]]
 calcSegRow _       _       _     [[]]         = [[]]
