@@ -15,12 +15,11 @@ loadWorld ds = case (currentWin ds) of
                    Just (wp,wd) → win { winElems = replaceWorldWinElem wd' (winElems win) }
                      where zoneInd   = (0,0)
                            wd'       = wd { wdZones = replaceZones newSegs zoneInd zoneSize (wdZones wd) }
-                           newSegs   = genSegs wpGen $ evalScreenCursor segSize cam
+                           newSegs   = genSegs wpGen $ evalScreenCursor segSize (-0.05*cx,-0.05*cy)
                            segSize   = wpSSize wp
                            zoneSize  = wpZSize wp
                            wpGen     = wp
                            (cx,cy,_) = winCursor win
-                           cam       = (cx,cy)
 
 replaceZones ∷ [((Int,Int),Segment)] → (Int,Int) → (Int,Int) → [Zone] → [Zone]
 replaceZones _    _       _        []     = []
@@ -58,12 +57,14 @@ findWorldDataElems (_:wes) = findWorldDataElems wes
 -- returns the list of indecies
 -- of segments to generate
 evalScreenCursor ∷ (Int,Int) → (Float,Float) → [(Int,Int)]
-evalScreenCursor (w,h) (cx,cy) = [pos]
-  where pos = (x,y)
-        x   = floor $ cx / w'
-        y   = floor $ cy / h'
-        w'  = fromIntegral w
-        h'  = fromIntegral h
+evalScreenCursor (w,h) (cx,cy) = [pos,posn,pose]
+  where pos  = (x,y)
+        posn = (x,y + 1)
+        pose = (x + 1,y)
+        x    = floor $ cx / w'
+        y    = floor $ cy / h'
+        w'   = fromIntegral w
+        h'   = fromIntegral h
 
 -- generates the segments that are
 -- required by evalScreenCursor
