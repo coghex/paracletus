@@ -4,7 +4,7 @@ module Paracletus.Oblatum.Event where
 import Prelude()
 import UPrelude
 import Control.Monad (when)
-import Control.Monad.State.Class (modify')
+import Control.Monad.State.Class (modify',gets)
 import Anamnesis
 import Anamnesis.Data
 import Anamnesis.Util (logDebug)
@@ -37,7 +37,8 @@ evalKey window k ks mk = do
         modify' $ \s → s { stInput = newIS }
       else return ()
     else if (ks ≡ GLFW.KeyState'Pressed) then do
-      let newIS = oldIS { keySt = (keySt oldIS) { keyUp = True } }
+      let newIS = oldIS { accelCap = True
+                        , keySt = (keySt oldIS) { keyUp = True } }
       modify' $ \s → s { stInput = newIS }
     else return ()
   when (GLFW.keyCheck cap keyLayout k "LFT") $ do
@@ -48,7 +49,8 @@ evalKey window k ks mk = do
         modify' $ \s → s { stInput = newIS }
       else return ()
     else if (ks ≡ GLFW.KeyState'Pressed) then do
-      let newIS = oldIS { keySt = (keySt oldIS) { keyLeft = True } }
+      let newIS = oldIS { accelCap = True
+                        , keySt = (keySt oldIS) { keyLeft = True } }
       modify' $ \s → s { stInput = newIS }
     else return ()
   when (GLFW.keyCheck cap keyLayout k "DWN") $ do
@@ -59,7 +61,8 @@ evalKey window k ks mk = do
         modify' $ \s → s { stInput = newIS }
       else return ()
     else if (ks ≡ GLFW.KeyState'Pressed) then do
-      let newIS = oldIS { keySt = (keySt oldIS) { keyDown = True } }
+      let newIS = oldIS { accelCap = True
+                        , keySt = (keySt oldIS) { keyDown = True } }
       modify' $ \s → s { stInput = newIS }
     else return ()
   when (GLFW.keyCheck cap keyLayout k "RGT") $ do
@@ -70,7 +73,8 @@ evalKey window k ks mk = do
         modify' $ \s → s { stInput = newIS }
       else return ()
     else if (ks ≡ GLFW.KeyState'Pressed) then do
-      let newIS = oldIS { keySt = (keySt oldIS) { keyRight = True } }
+      let newIS = oldIS { accelCap = True
+                        , keySt = (keySt oldIS) { keyRight = True } }
       modify' $ \s → s { stInput = newIS }
     else return ()
   when cap $ if (ks ≡ GLFW.KeyState'Pressed) then do
@@ -97,19 +101,22 @@ evalKey window k ks mk = do
 moveCamWithKeys ∷ Anamnesis ε σ ()
 moveCamWithKeys = do
   env ← ask
-  st  ← get
-  let oldIS    = stInput st
-      newIS    = oldIS { keySt = (keySt oldIS) { keyAccel = newaccel } }
-      newaccel = decell $ accelIS dir (keyAccel (keySt oldIS))
-      dir      = case (findDir (keySt oldIS)) of
-                   Just d  → d
-                   Nothing → CardNULL
+  is  ← gets stInput
   let loadQ    = envLoadQ env 
-  liftIO $ atomically $ writeQueue loadQ $ LoadCmdMoveCam $ addZ newaccel (-1.0)
-  modify' $ \s → s { stInput = newIS }
+  liftIO $ atomically $ writeQueue loadQ $ LoadCmdMoveCam (keySt is)
+  --st  ← get
+  --let oldIS    = stInput st
+  --    newIS    = oldIS { keySt = (keySt oldIS) { keyAccel = newaccel } }
+  --    newaccel = decell $ accelIS dir (keyAccel (keySt oldIS))
+  --    dir      = case (findDir (keySt oldIS)) of
+  --                 Just d  → d
+  --                 Nothing → CardNULL
+  --let loadQ    = envLoadQ env 
+  --liftIO $ atomically $ writeQueue loadQ $ LoadCmdMoveCam $ addZ newaccel (-1.0)
+  --modify' $ \s → s { stInput = newIS }
 
-addZ ∷ (Float,Float) → Float → (Float,Float,Float)
-addZ (x,y) z = (x,y,z)
+calcCam ∷ (Float,Float) → (Float,Float,Float) → (Float,Float,Float)
+calcCam (x,y) (cx,cy,cz) = (cx+x,cy+y,cz)
 
 -- accelerate the inputstate
 accelIS ∷ Cardinal → (Float,Float) → (Float,Float)

@@ -62,9 +62,10 @@ initInputState = InputState { mouse1   = Nothing
                             , mouse3   = Nothing
                             , isElems  = []
                             , inpCap   = False
+                            , accelCap = False
                             , keySt    = initKS }
   where initKS = ISKeys     { keyUp    = False
                             , keyLeft  = False
                             , keyDown  = False
-                            , keyRight = False
-                            , keyAccel = (0.0,0.0) }
+                            , keyRight = False}
+                            -- , keyAccel = (0.0,0.0) }

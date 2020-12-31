@@ -48,6 +48,7 @@ data InputState = InputState { mouse1   ∷ Maybe (Float,Float)
                              , mouse3   ∷ Maybe (Float,Float)
                              , isElems  ∷ [InputElem]
                              , inpCap   ∷ Bool
+                             , accelCap ∷ Bool
                              , keySt    ∷ ISKeys
                              } deriving (Show, Eq)
 
@@ -59,7 +60,7 @@ data ISKeys = ISKeys { keyUp    ∷ Bool
                      , keyLeft  ∷ Bool
                      , keyDown  ∷ Bool
                      , keyRight ∷ Bool
-                     , keyAccel ∷ (Float,Float)
+--                     , keyAccel ∷ (Float,Float)
                      } deriving (Show, Eq)
 
 -- all the data required for a set of textures

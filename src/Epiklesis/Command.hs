@@ -40,11 +40,11 @@ hsNewWindow ∷ Env → String → String → Lua.Lua ()
 hsNewWindow env name "menu" = do
   let loadQ = envLoadQ env
   Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewWin win
-  where win = Window name WinTypeMenu WinArgNULL (0,0,(-1)) []
+  where win = Window name WinTypeMenu WinArgNULL (0,0,(-1)) (0,0) []
 hsNewWindow env name "game" = do
   let eventQ = envLoadQ env
   Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewWin win
-  where win = Window name WinTypeGame WinArgNULL (0,0,(-1)) []
+  where win = Window name WinTypeGame WinArgNULL (0,0,(-1)) (0,0) []
 hsNewWindow env _    wintype = hsLogDebug env $ "window type " ⧺ wintype ⧺ " not known"
 
 hsSwitchWindow ∷ Env → String → Lua.Lua ()

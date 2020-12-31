@@ -21,6 +21,7 @@ import Paracletus.Draw
 import Paracletus.Dyn
 import Paracletus.Elem
 import Paracletus.Vulkan.Calc
+import Paracletus.Oblatum.Event (findDir, calcCam, decell, accelIS)
 import Paracletus.Oblatum.Mouse (linkTest)
 import Control.Concurrent (threadDelay)
 import Data.Time.Clock
@@ -160,14 +161,19 @@ processCommand env ds cmd = case cmd of
         ds'    = ds { dsFPS = fps }
     atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
     return $ ResDrawState ds'
-  LoadCmdMoveCam (x,y,z) → case (currentWin ds) of
+  LoadCmdMoveCam ks → case (currentWin ds) of
     Nothing  → return $ ResError "no window"
     Just win → do
       let eventQ     = envEventQ env
-          (cx,cy,cz) = winCursor win
-          newCam     = (x+cx,y+cy,z+cz)
-          newWin     = win { winCursor = newCam }
+          newAccel   = decell $ accelIS dir (winAccel win)
+          dir        = case (findDir ks) of
+                         Just d  → d
+                         Nothing → CardNULL
+          newCam     = calcCam newAccel $ winCursor win
+          newWin     = win { winCursor = newCam
+                           , winAccel  = newAccel }
           ds'        = ds { dsWins = replaceWin newWin (dsWins ds) }
+      if (((abs (fst newAccel)) ≤ 0.0) ∨ ((abs (snd newAccel)) ≤ 0.0)) then atomically $ writeQueue eventQ $ EventAccel False else return ()
       atomically $ writeQueue eventQ $ EventMoveCam newCam
       return $ ResDrawState ds'
   LoadCmdShell shCmd → case shCmd of

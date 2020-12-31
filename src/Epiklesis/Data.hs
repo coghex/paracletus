@@ -79,6 +79,7 @@ data Window = Window { winTitle  ∷ String
                      , winType   ∷ WinType
                      , winArgV   ∷ WinArgV
                      , winCursor ∷ (Float,Float,Float)
+                     , winAccel  ∷ (Float,Float)
                      , winElems  ∷ [WinElem]
                      } deriving (Show, Eq)
 
