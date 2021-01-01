@@ -157,9 +157,11 @@ processCommand env ds cmd = case cmd of
     where ds' = ds { dsNDefTex = nDefTex }
   LoadCmdSetFPS fps → do
     let eventQ = envEventQ env
+        loadQ  = envLoadQ  env
         dyns   = loadDyns ds'
         ds'    = ds { dsFPS = fps }
     atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
+    atomically $ writeQueue loadQ  $ LoadCmdWorld
     return $ ResDrawState ds'
   LoadCmdMoveCam ks → case (currentWin ds) of
     Nothing  → return $ ResError "no window"
