@@ -9,7 +9,7 @@ category: Game
 build-type: Simple
 
 flag dev
-    default: True
+    default: False
 
 executable paracletus
     main-is: Main.hs

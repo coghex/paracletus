@@ -15,7 +15,9 @@ loadWorld ds = case (currentWin ds) of
     where buffer = case (findWorldData win') of
                      Nothing      → dsBuff ds
                      Just (wp,wd) → setTileBuff 1 dyns (dsBuff ds)
-                       where dyns = calcWorldBuff (dsNDefTex ds) wp wd
+                       where dyns = calcWorldBuff (dsNDefTex ds) 256 wp wd $ head $ evalScreenCursor segSize (-0.05*cx,-0.05*cy)
+                             segSize   = wpSSize wp
+                             (cx,cy,_) = winCursor win
           win' = case (findWorldData win) of
                    Nothing      → win
                    Just (wp,wd) → win { winElems = replaceWorldWinElem wd' (winElems win) }
@@ -34,13 +36,10 @@ loadWorld ds = case (currentWin ds) of
 --  | otherwise             = Dyns dyns
 --  where (w,h) = wpSSize wp
 
-calcWorldBuff ∷ Int → WorldParams → WorldData → Dyns
-calcWorldBuff nDefTex wp wd = Dyns $ calcSpots nDefTex wp wd
-
-printSegs ∷ [((Int,Int),((Int,Int),Segment))] → String
-printSegs [] = ""
-printSegs ((zoneInd,(ind,_)):segs) = str ⧺ printSegs segs
-  where str = "(" ⧺ (show zoneInd) ⧺ ", " ⧺ (show ind) ⧺ "), "
+calcWorldBuff ∷ Int → Int → WorldParams → WorldData → (Int,Int) → Dyns
+calcWorldBuff nDefTex size wp wd curs = Dyns $ res ⧺ (take (size - (length res)) (repeat (DynData 0 (0,0) (1,1) (0,0))))
+  where res = calcSpots nDefTex wp wd curs
+  
 
 fixSegs ∷ WorldParams → [((Int,Int),Segment)] → [((Int,Int),((Int,Int),Segment))]
 fixSegs _ [] = []
@@ -50,6 +49,11 @@ fixSegs wp (((i,j),seg):segs) = [((zi,zj),((i',j'),seg))] ⧺ fixSegs wp segs
         i'      = (i + zw) `mod` zw
         j'      = (j + zh) `mod` zh
         (zw,zh) = wpZSize wp
+
+printSegs ∷ [((Int,Int),((Int,Int),Segment))] → String
+printSegs [] = ""
+printSegs ((zoneInd,(ind,_)):segs) = str ⧺ printSegs segs
+  where str = "(" ⧺ (show zoneInd) ⧺ ", " ⧺ (show ind) ⧺ "), "
 
 replaceZones ∷ [((Int,Int),((Int,Int),Segment))] → (Int,Int) → [Zone] → [Zone]
 replaceZones []     _        zs = zs
@@ -170,49 +174,79 @@ seedDistance x1 y1 x2 y2 x3 y3 = do
 
 
 -- world generation
-calcSpots ∷ Int → WorldParams → WorldData → [DynData]
-calcSpots nDefTex wp wd = calcWorldTiles nDefTex wp cam zs
-  where cam = wdCam   wd
+calcSpots ∷ Int → WorldParams → WorldData → (Int,Int) → [DynData]
+calcSpots nDefTex wp wd curs = calcSeg nDefTex c zs
+  where c   = fixCurs wp curs
         zs  = wdZones wd
-
-calcWorldTiles ∷ Int → WorldParams → (Float,Float) → [Zone] → [DynData]
-calcWorldTiles _       _  _   []                 = []
-calcWorldTiles nDefTex wp cam ((Zone ind segs):zs) = z' ⧺ calcWorldTiles nDefTex wp cam zs
-  where z'    = flatten $ map (calcZoneRows nDefTex wp cam ind) (zip yinds segs)
-        yinds = take (fst segS) [0..]
-        segS  = wpZSize wp
-
-calcZoneRows ∷ Int → WorldParams → (Float,Float) → (Int,Int) → (Integer,[Segment]) → [DynData]
-calcZoneRows nDefTex wp cam ind (j,segs) = flatten $ map (calcZoneSpot nDefTex j' wp cam ind) (zip xinds segs)
-  where xinds = take (snd segS) [0..]
-        segS  = wpZSize wp
-        j'    = fromIntegral j
-
-calcZoneSpot ∷ Int → Int → WorldParams → (Float,Float) → (Int,Int) → (Integer,Segment) → [DynData]
-calcZoneSpot nDefTex j wp cam ind (i,seg) = calcSegTiles nDefTex (i',j) wp roundCam ind seg
-  where roundCam = ((round (fst cam)),(round (snd cam)))
-        i' = fromIntegral i
-
-calcSegTiles ∷ Int → (Int,Int) → WorldParams → (Int,Int) → (Int,Int) → Segment → [DynData]
-calcSegTiles _       _     _  _   _   (SegmentNULL)  = []
-calcSegTiles nDefTex (i,j) wp cam ind (Segment grid) = flatten $ calcSegRow nDefTex cam (x,y) grid
-  where (x,y)   = (sw*(i + ((zw - 1)*(fst ind))),sh*(j + (zh*(snd ind))))
-        (sw,sh) = wpSSize wp
+fixCurs ∷ WorldParams → (Int,Int) → ((Int,Int),(Int,Int))
+fixCurs wp (i,j) = ((0,0),(0,0))--((i',j'),(zi,zj))
+  where zi      = -1 + ((i + zw) `div` zw)
+        zj      = -1 + ((j + zh) `div` zh)
+        i'      = (i + zw) `mod` zw
+        j'      = (j + zh) `mod` zh
         (zw,zh) = wpZSize wp
-
-calcSegRow ∷ Int → (Int,Int) → (Int,Int) → [[Spot]] → [[DynData]]
-calcSegRow _       _       _     [[]]         = [[]]
-calcSegRow _       _       _     []           = []
-calcSegRow nDefTex (cx,cy) (x,y) (grow:grows) = [rowTiles] ⧺ calcSegRow nDefTex (cx,cy) (x,(y+1)) grows
-  where rowTiles = calcSegSpot nDefTex (cx,cy) (x,y) grow
-
-calcSegSpot ∷ Int → (Int,Int) → (Int,Int) → [Spot] → [DynData]
-calcSegSpot _       _       _     [] = []
-calcSegSpot nDefTex (cx,cy) (x,y) ((Spot t c):gspots) = [dd] ⧺ calcSegSpot nDefTex (cx,cy) ((x + 1),y) gspots
-  --where tile = MTile (x',y') (1,1) (ix,iy) (3,15) c'
+calcSeg ∷ Int → ((Int,Int),(Int,Int)) → [Zone] → [DynData]
+calcSeg _       _                []     = []
+calcSeg nDefTex (zoneInd,segInd) (z:zs)
+  | (zoneIndex z ≡ zoneInd) = dd ⧺ calcSeg nDefTex (zoneInd,segInd) zs
+  | otherwise               = calcSeg nDefTex (zoneInd,segInd) zs
+  where dd = calcZone nDefTex segInd (zoneSegs z)
+calcZone ∷ Int → (Int,Int) → [[Segment]] → [DynData]
+calcZone nDefTex (j,i) segs = calcSpot nDefTex $ (segs !! j) !! i
+calcSpot ∷ Int → Segment → [DynData]
+calcSpot _       SegmentNULL    = []
+calcSpot nDefTex (Segment grid) = flatten $ map (calcGridRow nDefTex) (zip yinds grid)
+  where yinds = take (length grid) [0..]
+calcGridRow ∷ Int → (Int,[Spot]) → [DynData]
+calcGridRow nDefTex (j,spots) = flatten $ map (calcGrid j nDefTex) (zip xinds spots)
+  where xinds = take (length spots) [0..]
+calcGrid ∷ Int → Int → (Int,Spot) → [DynData]
+calcGrid y nDefTex (x,(Spot t c)) = [dd]
   where dd = DynData c' (2*x',2*y') (1,1) (ix,iy)
         x' = fromIntegral x - 1
         y' = fromIntegral y - 1
         ix = t `mod` 3
         iy = t `div` 3
         c' = c + nDefTex
+
+--calcWorldTiles ∷ Int → WorldParams → (Float,Float) → [Zone] → [DynData]
+--calcWorldTiles _       _  _   []                 = []
+--calcWorldTiles nDefTex wp cam ((Zone ind segs):zs) = z' ⧺ calcWorldTiles nDefTex wp cam zs
+--  where z'    = flatten $ map (calcZoneRows nDefTex wp cam ind) (zip yinds segs)
+--        yinds = take (fst segS) [0..]
+--        segS  = wpZSize wp
+--
+--calcZoneRows ∷ Int → WorldParams → (Float,Float) → (Int,Int) → (Integer,[Segment]) → [DynData]
+--calcZoneRows nDefTex wp cam ind (j,segs) = flatten $ map (calcZoneSpot nDefTex j' wp cam ind) (zip xinds segs)
+--  where xinds = take (snd segS) [0..]
+--        segS  = wpZSize wp
+--        j'    = fromIntegral j
+--
+--calcZoneSpot ∷ Int → Int → WorldParams → (Float,Float) → (Int,Int) → (Integer,Segment) → [DynData]
+--calcZoneSpot nDefTex j wp cam ind (i,seg) = calcSegTiles nDefTex (i',j) wp roundCam ind seg
+--  where roundCam = ((round (fst cam)),(round (snd cam)))
+--        i' = fromIntegral i
+--
+--calcSegTiles ∷ Int → (Int,Int) → WorldParams → (Int,Int) → (Int,Int) → Segment → [DynData]
+--calcSegTiles _       _     _  _   _   (SegmentNULL)  = []
+--calcSegTiles nDefTex (i,j) wp cam ind (Segment grid) = flatten $ calcSegRow nDefTex cam (x,y) grid
+--  where (x,y)   = (sw*(i + ((zw - 1)*(fst ind))),sh*(j + (zh*(snd ind))))
+--        (sw,sh) = wpSSize wp
+--        (zw,zh) = wpZSize wp
+--
+--calcSegRow ∷ Int → (Int,Int) → (Int,Int) → [[Spot]] → [[DynData]]
+--calcSegRow _       _       _     [[]]         = [[]]
+--calcSegRow _       _       _     []           = []
+--calcSegRow nDefTex (cx,cy) (x,y) (grow:grows) = [rowTiles] ⧺ calcSegRow nDefTex (cx,cy) (x,(y+1)) grows
+--  where rowTiles = calcSegSpot nDefTex (cx,cy) (x,y) grow
+--
+--calcSegSpot ∷ Int → (Int,Int) → (Int,Int) → [Spot] → [DynData]
+--calcSegSpot _       _       _     [] = []
+--calcSegSpot nDefTex (cx,cy) (x,y) ((Spot t c):gspots) = [dd] ⧺ calcSegSpot nDefTex (cx,cy) ((x + 1),y) gspots
+--  --where tile = MTile (x',y') (1,1) (ix,iy) (3,15) c'
+--  where dd = DynData c' (2*x',2*y') (1,1) (ix,iy)
+--        x' = fromIntegral x - 1
+--        y' = fromIntegral y - 1
+--        ix = t `mod` 3
+--        iy = t `div` 3
+--        c' = c + nDefTex

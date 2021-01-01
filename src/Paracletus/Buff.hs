@@ -12,14 +12,13 @@ import Paracletus.Oblatum.Font
 initBuff ∷ [Dyns]
 initBuff = [shDyns,wDyns]
   where shDyns = Dyns $ take 64 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
-        wDyns  = Dyns $ take 256 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
+        wDyns  = Dyns $ take 128 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
 
 loadTileBuff ∷ [Tile]
 loadTileBuff = makeTileBuff 0 64
 
 loadWorldBuff ∷ WorldParams → [Tile]
-loadWorldBuff wp = makeWTileBuff 1 $ 2*w*h
-  where (w,h)    = wpSSize wp
+loadWorldBuff wp = makeWTileBuff 1 128
 
 makeWTileBuff ∷ Int → Int → [Tile]
 makeWTileBuff b n
