@@ -46,8 +46,9 @@ initGLFWWindow w h n windowSizeChanged = do
       Nothing → logExcept GLFWError ExParacletus "failed to init glfw"
       Just window → do
         logDebug "initialized glfw window"
-        liftIO $ GLFW.setKeyCallback window $ Just $ keyCallback eventQ
+        liftIO $ GLFW.setKeyCallback         window $ Just $ keyCallback         eventQ
         liftIO $ GLFW.setMouseButtonCallback window $ Just $ mouseButtonCallback eventQ
+        liftIO $ GLFW.setScrollCallback      window $ Just $ scrollCallback      eventQ
         liftIO $ GLFW.setWindowSizeCallback window $
           Just (\_ _ _ → atomically $ writeTVar windowSizeChanged True)
         return window

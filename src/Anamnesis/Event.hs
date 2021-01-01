@@ -56,6 +56,7 @@ processEvent event = case event of
     modify $ \s → s { stInput = (stInput s) { accelCap = False } }
     liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdWorld
   (EventMouseButton win mb mbs mk) → evalMouse win mb mbs mk
+  (EventScroll win x y) → evalScroll win x y
   (EventDyns dyns) → modify $ \s → s { stDynData = dyns }
   (EventVerts verts) → do
     env ← ask

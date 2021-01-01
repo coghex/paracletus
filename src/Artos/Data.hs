@@ -16,6 +16,7 @@ data Event = EventError !GLFW.Error !String
            | EventExit
            | EventKey !GLFW.Window !GLFW.Key !Int !GLFW.KeyState !GLFW.ModifierKeys
            | EventMouseButton !GLFW.Window !GLFW.MouseButton !GLFW.MouseButtonState !GLFW.ModifierKeys
+           | EventScroll !GLFW.Window !Double !Double
            | EventMoveCam !(Float,Float,Float)
            | EventAccel
            | EventVerts !Verts
@@ -38,6 +39,7 @@ data LoadCmd = LoadCmdNewWin Window
              | LoadCmdNewBit String String PaneBit
              | LoadCmdMoveSlider Double Int
              | LoadCmdShell ShellCmd
+             | LoadCmdScroll Double
              | LoadCmdMoveCam ISKeys
              | LoadCmdVerts
              | LoadCmdDyns

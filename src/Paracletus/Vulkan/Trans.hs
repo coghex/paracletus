@@ -52,10 +52,11 @@ updateTransObj cam device extent uniBuf = do
         unT ∷ Int → (Float,Float,Float) → Float
         unT 1 (x,_,_) = 3.6*x
         unT 2 (_,y,_) = 3.6*y
-        unT 3 (_,_,z) = z
+        unT 3 (_,_,z) = 3.6*z
         unT _ _ = 0.0
         proj  = proj' %* clip
         proj' = orthogonal (0.1) (500) (fromIntegral width) (fromIntegral height)
+        --proj' = perspective 0.1 500 (45/360*2*pi) aspectRatio
         clip = DF4
           (DF4 1   0   0   0)
           (DF4 0 (-1)  0   0)
@@ -63,7 +64,7 @@ updateTransObj cam device extent uniBuf = do
           (DF4 0   0  0.5  1)
         width = getField @"width" extent
         height = getField @"height" extent
-        --aspectRatio = fromIntegral width / fromIntegral height
+        aspectRatio = fromIntegral width / fromIntegral height
 
 updateTransDyn ∷ Int → [DynData] → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
 updateTransDyn _    []       _      _      _      = return ()

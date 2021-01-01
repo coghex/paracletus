@@ -274,6 +274,19 @@ processCommand env ds cmd = case cmd of
             atomically $ writeQueue eventQ $ EventNewInput $ LinkSlider $ bitL
           _ → return ()
         return $ ResDrawState ds'
+  LoadCmdScroll y → case (currentWin ds) of
+    Nothing  → return $ ResError "no window present"
+    Just win → if ((winType win) ≡ WinTypeGame) then do
+        let ds'        = ds { dsWins = replaceWin newWin (dsWins ds) }
+            newWin     = win { winCursor = newCam }
+            (cx,cy,cz) = (winCursor win)
+            newCam     = (cx,cy,cz')
+            cz'        = min -0.1 $ max -10 $ cz - (0.1*(realToFrac y))
+            --z'         = 0.1*(realToFrac y)
+            eventQ     = envEventQ env
+        atomically $ writeQueue eventQ $ EventMoveCam newCam
+        return $ ResDrawState ds'
+      else return ResSuccess
   LoadCmdWorld → case (currentWin ds) of
     Nothing  → return $ ResError "no window present"
     Just win → do

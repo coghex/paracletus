@@ -11,3 +11,5 @@ keyCallback ∷ Queue Event → GLFW.Window → GLFW.Key → Int → GLFW.KeySta
 keyCallback tc win k sc ka mk = atomically $ writeQueue tc $ EventKey win k sc ka mk
 mouseButtonCallback ∷ Queue Event → GLFW.Window → GLFW.MouseButton → GLFW.MouseButtonState → GLFW.ModifierKeys → IO ()
 mouseButtonCallback tc win mb mbs mk = atomically $ writeQueue tc $ EventMouseButton win mb mbs mk
+scrollCallback :: Queue Event -> GLFW.Window -> Double -> Double -> IO ()
+scrollCallback tx win x y = atomically $ writeQueue tx $ EventScroll win x y

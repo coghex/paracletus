@@ -23,6 +23,12 @@ convertPixels (x,y) = (x',y')
   where x' = ((x - (1280.0 / 2.0)) / 64.0)
         y' = - ((y - ( 720.0 / 2.0)) / 64.0)
 
+evalScroll ∷ GLFW.Window → Double → Double → Anamnesis ε σ ()
+evalScroll _ _ y = do
+  env ← ask
+  let loadQ = envLoadQ env
+  liftIO $ atomically $ writeQueue loadQ $ LoadCmdScroll y
+
 evalMouse ∷ GLFW.Window → GLFW.MouseButton → GLFW.MouseButtonState → GLFW.ModifierKeys → Anamnesis ε σ ()
 evalMouse win mb mbs _ = do
   when (mb ≡ GLFW.mousebutt1) $ do
