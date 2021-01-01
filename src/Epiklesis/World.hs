@@ -172,18 +172,17 @@ seedDistance x1 y1 x2 y2 x3 y3 = do
       p2 = (((x1-x3)*(x1-x3))+((y1-y3)*(y1-y3)))
   p1*p2
 
-
 -- world generation
 calcSpots ∷ Int → WorldParams → WorldData → (Int,Int) → [DynData]
 calcSpots nDefTex wp wd curs = calcSeg nDefTex c zs
   where c   = fixCurs wp curs
         zs  = wdZones wd
 fixCurs ∷ WorldParams → (Int,Int) → ((Int,Int),(Int,Int))
-fixCurs wp (i,j) = ((0,0),(0,0))--((i',j'),(zi,zj))
-  where zi      = -1 + ((i + zw) `div` zw)
-        zj      = -1 + ((j + zh) `div` zh)
-        i'      = (i + zw) `mod` zw
-        j'      = (j + zh) `mod` zh
+fixCurs wp (i,j) = ((i',j'),(zi,zj))
+  where zi      = ((i + zw) `div` zw)
+        zj      = ((j + zh) `div` zh)
+        i'      = (1 + i + zw) `mod` zw
+        j'      = (1 + j + zh) `mod` zh
         (zw,zh) = wpZSize wp
 calcSeg ∷ Int → ((Int,Int),(Int,Int)) → [Zone] → [DynData]
 calcSeg _       _                []     = []
