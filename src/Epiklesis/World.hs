@@ -11,12 +11,18 @@ loadWorld ∷ DrawState → DrawState
 loadWorld ds = case (currentWin ds) of
   Nothing  → ds
   Just win → ds { dsWins = replaceWin win' (dsWins ds)
+                --, dsStatus = status
                 , dsBuff = buffer }
     where buffer = case (findWorldData win') of
                      Nothing      → dsBuff ds
                      Just (wp,wd) → setTileBuff 1 dyns (dsBuff ds)
                        where dyns = calcWorldBuff (dsNDefTex ds) 256 wp wd $ head $ evalScreenCursor segSize (-0.05*cx,-0.05*cy)
                              segSize   = wpSSize wp
+                             (cx,cy,_) = winCursor win
+          status = case (findWorldData win') of
+                     Nothing      → DSSNULL
+                     Just (wp,wd) → DSSLogDebug $ show $ fixCurs wp $ head $ evalScreenCursor segSize (-0.05*cx,-0.05*cy)
+                       where segSize   = wpSSize wp
                              (cx,cy,_) = winCursor win
           win' = case (findWorldData win) of
                    Nothing      → win
@@ -44,10 +50,10 @@ calcWorldBuff nDefTex size wp wd curs = Dyns $ res ⧺ (take (size - (length res
 fixSegs ∷ WorldParams → [((Int,Int),Segment)] → [((Int,Int),((Int,Int),Segment))]
 fixSegs _ [] = []
 fixSegs wp (((i,j),seg):segs) = [((zi,zj),((i',j'),seg))] ⧺ fixSegs wp segs
-  where zi      = -1 + ((i + zw) `div` zw)
-        zj      = -1 + ((j + zh) `div` zh)
-        i'      = (i + zw) `mod` zw
-        j'      = (j + zh) `mod` zh
+  where zi      = ((1 + i) `div` zw)
+        zj      = ((1 + j) `div` zh)
+        i'      = (1 + i + zw) `mod` zw
+        j'      = (1 + j + zh) `mod` zh
         (zw,zh) = wpZSize wp
 
 printSegs ∷ [((Int,Int),((Int,Int),Segment))] → String
@@ -174,36 +180,40 @@ seedDistance x1 y1 x2 y2 x3 y3 = do
 
 -- world generation
 calcSpots ∷ Int → WorldParams → WorldData → (Int,Int) → [DynData]
-calcSpots nDefTex wp wd curs = calcSeg nDefTex c zs
-  where c   = fixCurs wp curs
-        zs  = wdZones wd
+calcSpots nDefTex wp wd curs = calcSeg nDefTex size zsize c zs
+  where c     = fixCurs wp curs
+        zs    = wdZones wd
+        size  = wpSSize wp
+        zsize = wpZSize wp
 fixCurs ∷ WorldParams → (Int,Int) → ((Int,Int),(Int,Int))
-fixCurs wp (i,j) = ((i',j'),(zi,zj))
-  where zi      = ((i + zw) `div` zw)
-        zj      = ((j + zh) `div` zh)
+fixCurs wp (i,j) = ((zi,zj),(i',j'))
+  where zi      = ((1 + i) `div` zw)
+        zj      = ((1 + j) `div` zh)
         i'      = (1 + i + zw) `mod` zw
         j'      = (1 + j + zh) `mod` zh
         (zw,zh) = wpZSize wp
-calcSeg ∷ Int → ((Int,Int),(Int,Int)) → [Zone] → [DynData]
-calcSeg _       _                []     = []
-calcSeg nDefTex (zoneInd,segInd) (z:zs)
-  | (zoneIndex z ≡ zoneInd) = dd ⧺ calcSeg nDefTex (zoneInd,segInd) zs
-  | otherwise               = calcSeg nDefTex (zoneInd,segInd) zs
-  where dd = calcZone nDefTex segInd (zoneSegs z)
-calcZone ∷ Int → (Int,Int) → [[Segment]] → [DynData]
-calcZone nDefTex (j,i) segs = calcSpot nDefTex $ (segs !! j) !! i
-calcSpot ∷ Int → Segment → [DynData]
-calcSpot _       SegmentNULL    = []
-calcSpot nDefTex (Segment grid) = flatten $ map (calcGridRow nDefTex) (zip yinds grid)
+calcSeg ∷ Int → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → [Zone] → [DynData]
+calcSeg _       _    _       _                []     = []
+calcSeg nDefTex size (zw,zh) (zoneInd,segInd) (z:zs)
+  | (zoneIndex z ≡ zoneInd) = dd ⧺ calcSeg nDefTex size (zw,zh) (zoneInd,segInd) zs
+  | otherwise               = calcSeg nDefTex size (zw,zh) (zoneInd,segInd) zs
+  where dd = calcZone nDefTex zoneSize size segInd (zoneSegs z)
+        zoneSize = (sw*zw*(fst zoneInd),sh*zh*(snd zoneInd))
+        (sw,sh)  = size
+calcZone ∷ Int → (Int,Int) → (Int,Int) → (Int,Int) → [[Segment]] → [DynData]
+calcZone nDefTex (zw,zh) (w,h) (i,j) segs = calcSpot (zw+w*i,zh+h*j) nDefTex $ (segs !! j) !! i
+calcSpot ∷ (Int,Int) → Int → Segment → [DynData]
+calcSpot _   _       SegmentNULL    = []
+calcSpot ind nDefTex (Segment grid) = flatten $ map (calcGridRow ind nDefTex) (zip yinds grid)
   where yinds = take (length grid) [0..]
-calcGridRow ∷ Int → (Int,[Spot]) → [DynData]
-calcGridRow nDefTex (j,spots) = flatten $ map (calcGrid j nDefTex) (zip xinds spots)
+calcGridRow ∷ (Int,Int) → Int → (Int,[Spot]) → [DynData]
+calcGridRow ind nDefTex (j,spots) = flatten $ map (calcGrid ind j nDefTex) (zip xinds spots)
   where xinds = take (length spots) [0..]
-calcGrid ∷ Int → Int → (Int,Spot) → [DynData]
-calcGrid y nDefTex (x,(Spot t c)) = [dd]
+calcGrid ∷ (Int,Int) → Int → Int → (Int,Spot) → [DynData]
+calcGrid (cx,cy) y nDefTex (x,(Spot t c)) = [dd]
   where dd = DynData c' (2*x',2*y') (1,1) (ix,iy)
-        x' = fromIntegral x - 1
-        y' = fromIntegral y - 1
+        x' = (fromIntegral cx) + (fromIntegral x - 1)
+        y' = (fromIntegral cy) + (fromIntegral y - 1)
         ix = t `mod` 3
         iy = t `div` 3
         c' = c + nDefTex
