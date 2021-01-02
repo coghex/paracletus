@@ -16,12 +16,12 @@ loadWorld ds = case (currentWin ds) of
     where buffer = case (findWorldData win') of
                      Nothing      → dsBuff ds
                      Just (wp,wd) → setTileBuff 1 dyns (dsBuff ds)
-                       where dyns = calcWorldBuff (dsNDefTex ds) 128 wp wd $ head $ evalScreenCursor segSize (-0.05*cx,-0.05*cy)
+                       where dyns = calcWorldBuff (dsNDefTex ds) 128 wp wd $ head $ evalScreenCursor segSize (-0.025*cx,-0.025*cy)
                              segSize   = wpSSize wp
                              (cx,cy,_) = winCursor win
           status = case (findWorldData win') of
                      Nothing      → DSSNULL
-                     Just (wp,wd) → DSSLogDebug $ show $ fixCurs wp $ head $ evalScreenCursor segSize (-0.05*cx,-0.05*cy)
+                     Just (wp,wd) → DSSLogDebug $ show $ fixCurs wp $ head $ evalScreenCursor segSize (-0.025*cx,-0.025*cy)
                        where segSize   = wpSSize wp
                              (cx,cy,_) = winCursor win
           win' = case (findWorldData win) of
