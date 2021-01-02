@@ -16,12 +16,12 @@ loadWorld ds = case (currentWin ds) of
     where buffer = case (findWorldData win') of
                      Nothing      → dsBuff ds
                      Just (wp,wd) → setTileBuff 1 dyns (dsBuff ds)
-                       where dyns = calcWorldBuff (dsNDefTex ds) 128 wp wd $ head $ evalScreenCursor segSize (-0.025*cx,-0.025*cy)
+                       where dyns = calcWorldBuff (dsNDefTex ds) 128 wp wd $ head $ evalScreenCursor segSize (-cx/64.0,-cy/64.0)
                              segSize   = wpSSize wp
                              (cx,cy,_) = winCursor win
           status = case (findWorldData win') of
                      Nothing      → DSSNULL
-                     Just (wp,wd) → DSSLogDebug $ show $ fixCurs wp $ head $ evalScreenCursor segSize (-0.025*cx,-0.025*cy)
+                     Just (wp,wd) → DSSLogDebug $ show $ fixCurs wp $ head $ evalScreenCursor segSize (-cx/64.0,-cy/64.0)
                        where segSize   = wpSSize wp
                              (cx,cy,_) = winCursor win
           win' = case (findWorldData win) of
@@ -29,7 +29,7 @@ loadWorld ds = case (currentWin ds) of
                    Just (wp,wd) → win { winElems = replaceWorldWinElem wd' (winElems win) }
                      where zoneInd   = (0,0)
                            wd'       = wd { wdZones = replaceZones newSegs zoneSize (wdZones wd) }
-                           newSegs   = fixSegs wpGen $ genSegs wpGen $ evalScreenCursor segSize (-0.05*cx,-0.05*cy)
+                           newSegs   = fixSegs wpGen $ genSegs wpGen $ evalScreenCursor segSize (-cx/64.0,-cy/64.0)
                            segSize   = wpSSize wp
                            zoneSize  = wpZSize wp
                            wpGen     = wp
