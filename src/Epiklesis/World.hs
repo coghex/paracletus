@@ -15,15 +15,8 @@ loadWorld ds = case (currentWin ds) of
                 , dsBuff = buffer }
     where buffer = case (findWorldData win') of
                      Nothing      → dsBuff ds
-                     Just (wp,wd) → setTileBuff 1 dyns (dsBuff ds)
-                       where dyns = calcWorldBuff (dsNDefTex ds) 128 wp wd $ head $ evalScreenCursor segSize (-cx/64.0,-cy/64.0)
-                             segSize   = wpSSize wp
-                             (cx,cy,_) = winCursor win
-          status = case (findWorldData win') of
-                     Nothing      → DSSNULL
-                     Just (wp,wd) → DSSLogDebug $ show $ fixCurs wp $ head $ evalScreenCursor segSize (-cx/64.0,-cy/64.0)
-                       where segSize   = wpSSize wp
-                             (cx,cy,_) = winCursor win
+                     Just (wp,wd) → setTileBuffs (dsNDefTex ds) (cx,cy) wp wd (dsBuff ds)
+                       where (cx,cy,_) = winCursor win
           win' = case (findWorldData win) of
                    Nothing      → win
                    Just (wp,wd) → win { winElems = replaceWorldWinElem wd' (winElems win) }
@@ -35,12 +28,13 @@ loadWorld ds = case (currentWin ds) of
                            wpGen     = wp
                            (cx,cy,_) = winCursor win
 
--- calculates dyns of the world tiles
---calcWorldDSBuff ∷ WorldParams → Dyns → Dyns
---calcWorldDSBuff wp (Dyns dyns)
---  | (length dyns) ≢ (w*h) = Dyns $ take (w*h) $ repeat $ DynData 0 (0,0) (1,1) (0,0)
---  | otherwise             = Dyns dyns
---  where (w,h) = wpSSize wp
+setTileBuffs ∷ Int → (Float,Float) → WorldParams → WorldData → [Dyns] → [Dyns]
+setTileBuffs nDefTex (cx,cy) wp wd oldBuff = calcWorldBuffs 1 nDefTex wp wd (evalScreenCursor segSize (-cx/64.0,-cy/64.0)) oldBuff
+  where segSize   = wpSSize wp
+calcWorldBuffs ∷ Int → Int → WorldParams → WorldData → [(Int,Int)] → [Dyns] → [Dyns]
+calcWorldBuffs _ _       _  _  []       buff = buff
+calcWorldBuffs n nDefTex wp wd (sc:scs) buff = calcWorldBuffs (n + 1) nDefTex wp wd scs dyns
+  where dyns = setTileBuff n (calcWorldBuff nDefTex 128 wp wd sc) buff
 
 calcWorldBuff ∷ Int → Int → WorldParams → WorldData → (Int,Int) → Dyns
 calcWorldBuff nDefTex size wp wd curs = Dyns $ res ⧺ (take (size - (length res)) (repeat (DynData 0 (0,0) (1,1) (0,0))))
@@ -99,16 +93,16 @@ findWorldDataElems (_:wes) = findWorldDataElems wes
 -- returns the list of indecies
 -- of segments to generate
 evalScreenCursor ∷ (Int,Int) → (Float,Float) → [(Int,Int)]
-evalScreenCursor (w,h) (cx,cy) = [pos,posn,pose,poss,posw,posnw,posne,posse,possw]
+evalScreenCursor (w,h) (cx,cy) = [pos,posn,pose,poss,posw]-- ,posnw,posne,posse,possw]
   where pos   = (x,y)
         posn  = (x,y + 1)
         poss  = (x,y - 1)
         posw  = (x - 1,y)
         pose  = (x + 1,y)
         posnw = (x - 1,y - 1)
-        posne = (x + 1,y - 1)
+        --posne = (x + 1,y - 1)
         possw = (x - 1,y + 1)
-        posse = (x + 1,y + 1)
+        --posse = (x + 1,y + 1)
         x     = (-1) + (floor $ cx / w')
         y     = (-1) + (floor $ cy / h')
         w'    = fromIntegral w

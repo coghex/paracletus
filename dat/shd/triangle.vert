@@ -10,11 +10,11 @@ layout(binding = 0) uniform TransformationObject {
 } trans;
 
 layout(binding = 2) uniform DynTransObject {
-  mat4 move[256];
+  mat4 move[1000];
 } dyn;
 
 layout(binding = 3) uniform DynTexTransObject {
-  mat4 dynTexI[256];
+  mat4 dynTexI[1000];
 } dynTex;
 
 layout(location = 0) in vec3 inPosition;

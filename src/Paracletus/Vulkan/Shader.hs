@@ -1,4 +1,3 @@
--- this link not needed if you add comment
 -- {-# OPTIONS_GHC -fforce-recomp #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE Strict #-}

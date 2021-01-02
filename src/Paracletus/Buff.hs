@@ -10,7 +10,7 @@ import Paracletus.Data
 import Paracletus.Oblatum.Font
 
 initBuff ∷ [Dyns]
-initBuff = [shDyns,wDyns]
+initBuff = [shDyns,wDyns,wDyns,wDyns,wDyns,wDyns]-- ,wDyns,wDyns,wDyns,wDyns,wDyns]
   where shDyns = Dyns $ take 64 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
         wDyns  = Dyns $ take 128 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
 
@@ -18,7 +18,7 @@ loadTileBuff ∷ [Tile]
 loadTileBuff = makeTileBuff 0 64
 
 loadWorldBuff ∷ WorldParams → [Tile]
-loadWorldBuff wp = makeWTileBuff 1 128
+loadWorldBuff wp = makeWTileBuff 1 128 ⧺ makeWTileBuff 2 128 ⧺ makeWTileBuff 3 128 ⧺ makeWTileBuff 4 128 ⧺ makeWTileBuff 5 128-- ⧺ makeWTileBuff 6 128 ⧺ makeWTileBuff 7 128 ⧺ makeWTileBuff 8 128 ⧺ makeWTileBuff 9 128 ⧺ makeWTileBuff 10 128
 
 makeWTileBuff ∷ Int → Int → [Tile]
 makeWTileBuff b n
