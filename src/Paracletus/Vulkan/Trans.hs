@@ -48,12 +48,8 @@ updateTransObj cam device extent uniBuf = do
   liftIO $ vkUnmapMemory device uniBuf
   -- these commands are all backwards
   -- ortho near far w h
-  where view = translate3 (vec3 (unT 1 cam) (unT 2 cam) (unT 3 cam))
-        unT ∷ Int → (Float,Float,Float) → Float
-        unT 1 (x,_,_) = 3.6*x
-        unT 2 (_,y,_) = 3.6*y
-        unT 3 (_,_,z) = 3.6*z
-        unT _ _ = 0.0
+  where view = translate3 (vec3 x y z)
+        (x,y,z) = cam
         proj  = proj' %* clip
         proj' = orthogonal (0.1) (500) (fromIntegral width) (fromIntegral height)
         --proj' = perspective 0.1 500 (45/360*2*pi) aspectRatio

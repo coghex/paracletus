@@ -168,7 +168,7 @@ generateMipmaps pdev image format width height mipLevels cmdBuf = do
   createLvl (mipLevel, srcWidth, srcHeight) = do
     let barrier = barrierStruct (mipLevel - 1) VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL VK_ACCESS_TRANSFER_WRITE_BIT VK_ACCESS_TRANSFER_READ_BIT
      in withVkPtr barrier $ \barrPtr → liftIO $ vkCmdPipelineBarrier cmdBuf VK_PIPELINE_STAGE_TRANSFER_BIT VK_PIPELINE_STAGE_TRANSFER_BIT VK_ZERO_FLAGS 0 VK_NULL 0 VK_NULL 1 barrPtr
-    withVkPtr (blitStruct mipLevel srcWidth srcHeight) $ \blitPtr → liftIO $ vkCmdBlitImage cmdBuf image VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL image VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL 1 blitPtr VK_FILTER_LINEAR
+    withVkPtr (blitStruct mipLevel srcWidth srcHeight) $ \blitPtr → liftIO $ vkCmdBlitImage cmdBuf image VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL image VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL 1 blitPtr VK_FILTER_NEAREST
     let barrier = barrierStruct (mipLevel - 1) VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL VK_ACCESS_TRANSFER_READ_BIT VK_ACCESS_SHADER_READ_BIT
      in withVkPtr barrier $ \barrPtr → liftIO $ vkCmdPipelineBarrier cmdBuf VK_PIPELINE_STAGE_TRANSFER_BIT VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT VK_ZERO_FLAGS 0 VK_NULL 0 VK_NULL 1 barrPtr
 
@@ -184,18 +184,18 @@ createTextureSampler dev mipLevels = do
   let samplerCreateInfo = createVk @VkSamplerCreateInfo
         $  set @"sType" VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO
         &* set @"pNext" VK_NULL_HANDLE
-        &* set @"magFilter" VK_FILTER_LINEAR
-        &* set @"minFilter" VK_FILTER_LINEAR
+        &* set @"magFilter" VK_FILTER_NEAREST
+        &* set @"minFilter" VK_FILTER_NEAREST
         &* set @"addressModeU" VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
         &* set @"addressModeV" VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
         &* set @"addressModeW" VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE
-        &* set @"anisotropyEnable" VK_TRUE
-        &* set @"maxAnisotropy" 16
+        &* set @"anisotropyEnable" VK_FALSE
+        &* set @"maxAnisotropy" 0
         &* set @"borderColor" VK_BORDER_COLOR_INT_OPAQUE_BLACK
         &* set @"unnormalizedCoordinates" VK_FALSE
         &* set @"compareEnable" VK_FALSE
         &* set @"compareOp" VK_COMPARE_OP_ALWAYS
-        &* set @"mipmapMode" VK_SAMPLER_MIPMAP_MODE_LINEAR
+        &* set @"mipmapMode" VK_SAMPLER_MIPMAP_MODE_NEAREST
         &* set @"mipLodBias" 0
         &* set @"minLod" 0
         &* set @"maxLod" (fromIntegral mipLevels)

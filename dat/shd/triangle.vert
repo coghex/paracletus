@@ -10,11 +10,11 @@ layout(binding = 0) uniform TransformationObject {
 } trans;
 
 layout(binding = 2) uniform DynTransObject {
-  mat4 move[1024];
+  mat4 move[256];
 } dyn;
 
 layout(binding = 3) uniform DynTexTransObject {
-  mat4 dynTexI[1024];
+  mat4 dynTexI[256];
 } dynTex;
 
 layout(location = 0) in vec3 inPosition;
@@ -37,8 +37,8 @@ void main() {
     vec4 col3 = vec4(0.0,0.0,-1.0,1.0);
     mat4 basicI = mat4(col0,col1,col2,col3);
     mat4 view = (inMove.z > 0.0) ? trans.view : basicI;
-    vec4 col4 = vec4(-trans.view[3][2]/4.0,0.0,0.0,0.0);
-    vec4 col5 = vec4(0.0,-trans.view[3][2]/3.0,0.0,0.0);
+    vec4 col4 = vec4(-4*trans.view[3][2]/4.0,0.0,0.0,0.0);
+    vec4 col5 = vec4(0.0,-4*trans.view[3][2]/3.0,0.0,0.0);
     vec4 col6 = vec4(0.0,0.0,1.0,0.0);
     vec4 col7 = vec4(0.0,0.0,0.0,1.0);
     mat4 zoom = mat4(col4,col5,col6,col7);
@@ -48,7 +48,7 @@ void main() {
     gl_Position = proj * view * dynV * vec4(inPosition, 1.0);
     fragColor = inColor;
     mat4 dynTC = dynTex.dynTexI[dynI];
-    vec2 dynTexCoord = (inMove.y > 0.0) ? (vec2(inTexCoord.x + (dynTC[3][0]/3.0),inTexCoord.y + (dynTC[3][1]/15.0))) : inTexCoord.xy;
+    vec2 dynTexCoord = (inMove.y > 0.0) ? (vec2(inTexCoord.x + ((dynTC[3][0])/3.0),inTexCoord.y + ((dynTC[3][1])/20.0))) : inTexCoord.xy;
     int texI = int(floor (dynTC[3][2]));
     int inTex = int(inTexCoord.z);
     int outTex = (inMove.x > 0.0) ? inTex + texI : inTex;

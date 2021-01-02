@@ -24,7 +24,7 @@ makeWTileBuff ∷ Int → Int → [Tile]
 makeWTileBuff b n
   | (n ≡ 0)   = []
   | otherwise = makeWTileBuff b (n - 1) ⧺ [tile]
-  where tile = DMTile (DMBuff b (n - 1)) (0,0) (1,1) (0,0) (3,15) 0
+  where tile = DMTile (DMBuff b (n - 1)) (0,0) (1,1) (0,0) (3,20) 0
 
 makeTileBuff ∷ Int → Int → [Tile]
 makeTileBuff b n
