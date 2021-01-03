@@ -30,6 +30,7 @@ data State = State { stStatus   ∷ AExcept
                    , stCam      ∷ !(Float,Float,Float)
                    , stVerts    ∷ !Verts
                    , stDynData  ∷ !Dyns
+                   , stCamData  ∷ !Dyns
                    , stSettings ∷ !Settings
                    , stModTexs  ∷ ![String]
                    , stNDefTex  ∷ !Int

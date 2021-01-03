@@ -31,6 +31,12 @@ createDescriptorPool dev nswapchains nimages = allocResource (liftIO ∘ flip (v
         &* set @"descriptorCount" (fromIntegral nswapchains)
       , createVk @VkDescriptorPoolSize
         $  set @"type" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+        &* set @"descriptorCount" (fromIntegral nswapchains)
+      , createVk @VkDescriptorPoolSize
+        $  set @"type" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+        &* set @"descriptorCount" (fromIntegral nswapchains)
+      , createVk @VkDescriptorPoolSize
+        $  set @"type" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
         &* set @"descriptorCount" (fromIntegral nswapchains) ]
     &* set @"maxSets" (fromIntegral nswapchains)
   ) $ \ciPtr → runVk $ vkCreateDescriptorPool dev ciPtr VK_NULL pPtr
@@ -67,30 +73,19 @@ createDescriptorSetLayout dev nimages = allocResource
                 &* set @"descriptorType" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
                 &* set @"descriptorCount" 1
                 &* set @"stageFlags" VK_SHADER_STAGE_VERTEX_BIT
-                &* set @"pImmutableSamplers" VK_NULL ]
-
-createFontDescriptorSetLayout ∷ VkDevice → Int → Anamnesis ε σ VkDescriptorSetLayout
-createFontDescriptorSetLayout dev nimages = allocResource
-  (\dsl → liftIO $ vkDestroyDescriptorSetLayout dev dsl VK_NULL) $
-  withVkPtr dslCreateInfo $ \dslciPtr → allocaPeek $ runVk ∘ vkCreateDescriptorSetLayout dev dslciPtr VK_NULL
-  where dslCreateInfo = createVk @VkDescriptorSetLayoutCreateInfo
-          $  set @"sType" VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO
-          &* set @"pNext" VK_NULL
-          &* set @"flags" VK_ZERO_FLAGS
-          &* setListCountAndRef @"bindingCount" @"pBindings"
-              [ createVk @VkDescriptorSetLayoutBinding
-                $  set @"binding" 0
+                &* set @"pImmutableSamplers" VK_NULL
+              , createVk @VkDescriptorSetLayoutBinding
+                $  set @"binding" 4
                 &* set @"descriptorType" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
                 &* set @"descriptorCount" 1
                 &* set @"stageFlags" VK_SHADER_STAGE_VERTEX_BIT
                 &* set @"pImmutableSamplers" VK_NULL
               , createVk @VkDescriptorSetLayoutBinding
-                $  set @"binding" 1
-                &* set @"descriptorType" VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
-                &* set @"descriptorCount" (fromIntegral nimages)
-                &* set @"stageFlags" VK_SHADER_STAGE_FRAGMENT_BIT
+                $  set @"binding" 5
+                &* set @"descriptorType" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+                &* set @"descriptorCount" 1
+                &* set @"stageFlags" VK_SHADER_STAGE_VERTEX_BIT
                 &* set @"pImmutableSamplers" VK_NULL ]
-
 
 createDescriptorSets ∷ VkDevice → VkDescriptorPool → Int → Ptr VkDescriptorSetLayout → Anamnesis ε σ [VkDescriptorSet]
 createDescriptorSets dev descriptorPool n layoutsPtr = allocaArray n $ \dsPtr → withVkPtr dsai $ \dsaiPtr → do
@@ -103,8 +98,8 @@ createDescriptorSets dev descriptorPool n layoutsPtr = allocaArray n $ \dsPtr �
           &* set @"descriptorSetCount" (fromIntegral n)
           &* set @"pSetLayouts" layoutsPtr
 
-prepareDescriptorSet ∷ VkDevice → VkDescriptorBufferInfo → VkDescriptorBufferInfo → VkDescriptorBufferInfo → [VkDescriptorImageInfo] → VkDescriptorSet → Int → Anamnesis ε σ ()
-prepareDescriptorSet dev bufferInfo dynBufInfo dynTexBufInfo imageInfo descriptorSet nimages = liftIO $ withVkArrayLen descriptorWrites $ \dwLen dwPtr → liftIO $ vkUpdateDescriptorSets dev dwLen dwPtr 0 VK_NULL
+prepareDescriptorSet ∷ VkDevice → VkDescriptorBufferInfo → VkDescriptorBufferInfo → VkDescriptorBufferInfo → VkDescriptorBufferInfo → VkDescriptorBufferInfo → [VkDescriptorImageInfo] → VkDescriptorSet → Int → Anamnesis ε σ ()
+prepareDescriptorSet dev bufferInfo dynBufInfo dynTexBufInfo camBufInfo camTexBufInfo imageInfo descriptorSet nimages = liftIO $ withVkArrayLen descriptorWrites $ \dwLen dwPtr → liftIO $ vkUpdateDescriptorSets dev dwLen dwPtr 0 VK_NULL
   where descriptorWrites =
           [ createVk @VkWriteDescriptorSet
             $  set @"sType" VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET
@@ -148,5 +143,27 @@ prepareDescriptorSet dev bufferInfo dynBufInfo dynTexBufInfo imageInfo descripto
             &* set @"descriptorType" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
             &* set @"descriptorCount" 1
             &* setVkRef @"pBufferInfo" dynTexBufInfo
+            &* set @"pImageInfo" VK_NULL
+            &* set @"pTexelBufferView" VK_NULL
+          , createVk @VkWriteDescriptorSet
+            $  set @"sType" VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET
+            &* set @"pNext" VK_NULL
+            &* set @"dstSet" descriptorSet
+            &* set @"dstBinding" 4
+            &* set @"dstArrayElement" 0
+            &* set @"descriptorType" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+            &* set @"descriptorCount" 1
+            &* setVkRef @"pBufferInfo" camBufInfo
+            &* set @"pImageInfo" VK_NULL
+            &* set @"pTexelBufferView" VK_NULL
+          , createVk @VkWriteDescriptorSet
+            $  set @"sType" VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET
+            &* set @"pNext" VK_NULL
+            &* set @"dstSet" descriptorSet
+            &* set @"dstBinding" 5
+            &* set @"dstArrayElement" 0
+            &* set @"descriptorType" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+            &* set @"descriptorCount" 1
+            &* setVkRef @"pBufferInfo" camTexBufInfo
             &* set @"pImageInfo" VK_NULL
             &* set @"pTexelBufferView" VK_NULL ]

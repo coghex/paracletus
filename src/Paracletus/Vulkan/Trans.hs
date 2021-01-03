@@ -29,6 +29,16 @@ data DynTransObject = DynTransObject
   } deriving (Show, Generic)
 instance PrimBytes DynTransObject
 
+data CamTexTransObject = CamTexTransObject
+  { ctexi ∷ Mat44f
+  } deriving (Show, Generic)
+instance PrimBytes CamTexTransObject
+
+data CamTransObject = CamTransObject
+  { cmov ∷ Mat44f
+  } deriving (Show, Generic)
+instance PrimBytes CamTransObject
+
 data TransformationObject = TransformationObject
   { model ∷ Mat44f
   , view  ∷ Mat44f
@@ -87,8 +97,6 @@ updateTransTex 0    _        _      _      _      = return ()
 updateTransTex nDyn (dd:dds) device extent uniBuf = do
   let nDyn'   = (fromIntegral nDyn) - 1
   uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf (nDyn'*(bSizeOf @DynTexTransObject undefined)) (bSizeOf @DynTexTransObject undefined) VK_ZERO_FLAGS
-  -- TODO: dyndata should have atlas size,
-  -- right now only works for world
   let dtexi = DF4
                  (DF4 1 0 0 0)
                  (DF4 0 1 0 0)
@@ -100,6 +108,43 @@ updateTransTex nDyn (dd:dds) device extent uniBuf = do
   poke (castPtr uboPtr) (scalar $ DynTexTransObject {..})
   liftIO $ vkUnmapMemory device uniBuf
   updateTransTex (nDyn - 1) dds device extent uniBuf
+
+updateTransCam ∷ Int → [DynData] → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
+updateTransCam _    []       _      _      _      = return ()
+updateTransCam 0    _        _      _      _      = return ()
+updateTransCam nDyn (dd:dds) device extent uniBuf = do
+  let nDyn'   = (fromIntegral nDyn) - 1
+  uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf (nDyn'*(bSizeOf @CamTransObject undefined)) (bSizeOf @CamTransObject undefined) VK_ZERO_FLAGS
+  let cmov = DF4
+                (DF4 w 0 0 0)
+                (DF4 0 h 0 0)
+                (DF4 0 0 1 0)
+                (DF4 x y 0 1)
+      (x ,y)  = (realToFrac x', realToFrac y')
+      (x',y') = ddPosition dd
+      (w ,h)  = (realToFrac w', realToFrac h')
+      (w',h') = ddScale dd
+  poke (castPtr uboPtr) (scalar $ CamTransObject {..})
+  liftIO $ vkUnmapMemory device uniBuf
+  updateTransCam (nDyn - 1) dds device extent uniBuf
+
+updateTransCamTex ∷ Int → [DynData] → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
+updateTransCamTex _    []       _      _      _      = return ()
+updateTransCamTex 0    _        _      _      _      = return ()
+updateTransCamTex nDyn (dd:dds) device extent uniBuf = do
+  let nDyn'   = (fromIntegral nDyn) - 1
+  uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf (nDyn'*(bSizeOf @CamTexTransObject undefined)) (bSizeOf @CamTexTransObject undefined) VK_ZERO_FLAGS
+  let ctexi = DF4
+                 (DF4 1 0 0 0)
+                 (DF4 0 1 0 0)
+                 (DF4 0 0 1 0)
+                 (DF4 x y n 1)
+      (x ,y)  = (fromIntegral x', fromIntegral y')
+      (x',y') = ddTIndex dd
+      n       = fromIntegral $ ddTex dd
+  poke (castPtr uboPtr) (scalar $ CamTexTransObject {..})
+  liftIO $ vkUnmapMemory device uniBuf
+  updateTransCamTex (nDyn - 1) dds device extent uniBuf
 
 createTransObjBuffers ∷ VkPhysicalDevice → VkDevice → Int → Anamnesis ε σ [(VkDeviceMemory, VkBuffer)]
 createTransObjBuffers pdev dev n = replicateM n $ createBuffer pdev dev (bSizeOf @TransformationObject undefined) VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ⌄ VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
@@ -130,4 +175,26 @@ transTexBufferInfo nDyn uniformBuffer = return $ createVk @VkDescriptorBufferInf
   $  set @"buffer" uniformBuffer
   &* set @"offset" 0
   &* set @"range" (nDyn'*(bSizeOf @DynTexTransObject undefined))
+  where nDyn' = max 1 $ fromIntegral nDyn
+
+createTransCamBuffers ∷ VkPhysicalDevice → VkDevice → Int → Int → Anamnesis ε σ [(VkDeviceMemory, VkBuffer)]
+createTransCamBuffers pdev dev n nDyn = replicateM n $ createBuffer pdev dev (nDyn'*(bSizeOf @CamTransObject undefined)) VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ⌄ VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+  where nDyn' = max 1 $ fromIntegral nDyn
+
+transCamBufferInfo ∷ Int → VkBuffer → Anamnesis ε σ VkDescriptorBufferInfo
+transCamBufferInfo nDyn uniformBuffer = return $ createVk @VkDescriptorBufferInfo
+  $  set @"buffer" uniformBuffer
+  &* set @"offset" 0
+  &* set @"range" (nDyn'*(bSizeOf @CamTransObject undefined))
+  where nDyn' = max 1 $ fromIntegral nDyn
+
+createTransCamTexBuffers ∷ VkPhysicalDevice → VkDevice → Int → Int → Anamnesis ε σ [(VkDeviceMemory, VkBuffer)]
+createTransCamTexBuffers pdev dev n nDyn = replicateM n $ createBuffer pdev dev (nDyn'*(bSizeOf @CamTexTransObject undefined)) VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ⌄ VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+  where nDyn' = max 1 $ fromIntegral nDyn
+
+transCamTexBufferInfo ∷ Int → VkBuffer → Anamnesis ε σ VkDescriptorBufferInfo
+transCamTexBufferInfo nDyn uniformBuffer = return $ createVk @VkDescriptorBufferInfo
+  $  set @"buffer" uniformBuffer
+  &* set @"offset" 0
+  &* set @"range" (nDyn'*(bSizeOf @CamTexTransObject undefined))
   where nDyn' = max 1 $ fromIntegral nDyn

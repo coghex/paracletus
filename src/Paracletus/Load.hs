@@ -150,7 +150,7 @@ processCommand env ds cmd = case cmd of
           dyns   = loadDyns ds'
           ds'    = ds { dsWins = replaceWin win (dsWins ds) }
           win    = moveSlider x n w
-      atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
+      atomically $ writeQueue eventQ $ EventDyns dyns
       return $ ResDrawState ds'
   LoadCmdSetNDefTex nDefTex → do
     return $ ResDrawState ds'
@@ -160,7 +160,7 @@ processCommand env ds cmd = case cmd of
         loadQ  = envLoadQ  env
         dyns   = loadDyns ds'
         ds'    = ds { dsFPS = fps }
-    atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
+    atomically $ writeQueue eventQ $ EventDyns $ dyns
     atomically $ writeQueue loadQ  $ LoadCmdWorld
     return $ ResDrawState ds'
   LoadCmdMoveCam ks → case (currentWin ds) of
@@ -236,14 +236,14 @@ processCommand env ds cmd = case cmd of
     let eventQ = envEventQ env
         newVerts = VertsDF $ calcVertices $ loadTiles ds
         dyns   = loadDyns ds
-    atomically $ writeQueue eventQ $ EventDyns $ Dyns dyns
+    atomically $ writeQueue eventQ $ EventDyns $ dyns
     return ResSuccess
   LoadCmdVerts → do
     let newVerts = VertsDF $ calcVertices $ loadTiles ds
         ds'      = ds { dsTiles = loadTiles ds }
         dyns   = loadDyns ds'
     atomically $ writeQueue (envEventQ env) $ EventVerts newVerts
-    atomically $ writeQueue (envEventQ env) $ EventDyns $ Dyns dyns
+    atomically $ writeQueue (envEventQ env) $ EventDyns $ dyns
     return $ ResDrawState ds'
   LoadCmdNewElem name elem → do
     let wins = dsWins ds

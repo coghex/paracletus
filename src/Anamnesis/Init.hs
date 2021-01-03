@@ -48,6 +48,7 @@ initState env = do
                              , stCam      = (0.0,0.0,(-1.0))
                              , stVerts    = VertsNULL
                              , stDynData  = Dyns []
+                             , stCamData  = Dyns []
                              , stSettings = settings
                              , stModTexs  = []
                              , stNDefTex  = 0

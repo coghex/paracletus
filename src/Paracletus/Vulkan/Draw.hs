@@ -121,9 +121,13 @@ data RenderData = RenderData
   , memories           ∷ Ptr VkDeviceMemory
   , dynMemories        ∷ Ptr VkDeviceMemory
   , texMemories        ∷ Ptr VkDeviceMemory
+  , camMemories        ∷ Ptr VkDeviceMemory
+  , camTexMemories     ∷ Ptr VkDeviceMemory
   , memoryMutator      ∷ ∀ ε σ. VkDeviceMemory → Anamnesis ε σ ()
   , dynMemoryMutator   ∷ ∀ ε σ. VkDeviceMemory → Anamnesis ε σ ()
-  , texMemoryMutator   ∷ ∀ ε σ. VkDeviceMemory → Anamnesis ε σ () }
+  , texMemoryMutator   ∷ ∀ ε σ. VkDeviceMemory → Anamnesis ε σ ()
+  , camMemoryMutator   ∷ ∀ ε σ. VkDeviceMemory → Anamnesis ε σ ()
+  , camTexMemoryMutator ∷ ∀ ε σ. VkDeviceMemory → Anamnesis ε σ () }
 
 drawFrame ∷ RenderData → Anamnesis ε σ Bool
 drawFrame RenderData{..} = do
@@ -141,12 +145,18 @@ drawFrame RenderData{..} = do
       memPtr  = memories `ptrAtIndex` imgIndex
       dmemPtr = dynMemories `ptrAtIndex` imgIndex
       tmemPtr = texMemories `ptrAtIndex` imgIndex
+      cmemPtr = camMemories `ptrAtIndex` imgIndex
+      ctmemPtr = camTexMemories `ptrAtIndex` imgIndex
   mem ← peek memPtr
   memoryMutator mem
   dmem ← peek dmemPtr
   dynMemoryMutator dmem
   tmem ← peek tmemPtr
   texMemoryMutator tmem
+  cmem ← peek cmemPtr
+  camMemoryMutator cmem
+  ctmem ← peek ctmemPtr
+  camTexMemoryMutator ctmem
   let submitInfo = [ createVk @VkSubmitInfo
           $  set @"sType" VK_STRUCTURE_TYPE_SUBMIT_INFO
           &* set @"pNext" VK_NULL
