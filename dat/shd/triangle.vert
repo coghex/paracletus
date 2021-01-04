@@ -10,11 +10,11 @@ layout(binding = 0) uniform TransformationObject {
 } trans;
 
 layout(binding = 2) uniform DynTransObject {
-  mat4 move[128];
+  mat4 move[1000];
 } dyn;
 
 layout(binding = 3) uniform DynTexTransObject {
-  mat4 dynTexI[128];
+  mat4 dynTexI[1000];
 } dynTex;
 
 layout(binding = 4) uniform CamTransObject {

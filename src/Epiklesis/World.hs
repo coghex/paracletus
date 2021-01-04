@@ -34,7 +34,8 @@ setTileBuffs nDefTex (cx,cy) wp wd oldBuff = calcWorldBuffs 1 nDefTex wp wd (eva
 calcWorldBuffs ∷ Int → Int → WorldParams → WorldData → [(Int,Int)] → [Dyns] → [Dyns]
 calcWorldBuffs _ _       _  _  []       buff = buff
 calcWorldBuffs n nDefTex wp wd (sc:scs) buff = calcWorldBuffs (n + 1) nDefTex wp wd scs dyns
-  where dyns = setTileBuff n (calcWorldBuff nDefTex 128 wp wd sc) buff
+  where dyns = setTileBuff n (calcWorldBuff nDefTex (sh*sw) wp wd sc) buff
+        (sw,sh) = wpSSize wp
 
 calcWorldBuff ∷ Int → Int → WorldParams → WorldData → (Int,Int) → Dyns
 calcWorldBuff nDefTex size wp wd curs = Dyns $ res ⧺ (take (size - (length res)) (repeat (DynData 0 (0,0) (1,1) (0,0))))

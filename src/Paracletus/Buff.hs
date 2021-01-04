@@ -12,16 +12,20 @@ import Paracletus.Oblatum.Font
 initBuff ∷ [Dyns]
 initBuff = [shDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns]
   where shDyns = Dyns $ take 64 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
-        wDyns  = Dyns $ take 128 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
+        wDyns  = Dyns $ take 196 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
 
 loadTileBuff ∷ [Tile]
 loadTileBuff = makeTileBuff 0 64
 
-loadWorldBuff ∷ [Tile]
-loadWorldBuff = makeWTileBuff 1 128 ⧺ makeWTileBuff 2 128 ⧺ makeWTileBuff 3 128 ⧺ makeWTileBuff 4 128 ⧺ makeWTileBuff 5 128
+loadWorldBuff ∷ WorldParams → [Tile]
+loadWorldBuff wp = makeWTileBuff 1 size ⧺ makeWTileBuff 2 size ⧺ makeWTileBuff 3 size ⧺ makeWTileBuff 4 size ⧺ makeWTileBuff 5 size
+  where size = sw*sh
+        (sw,sh) = wpSSize wp
 
-loadAuxBuff ∷ [Tile]
-loadAuxBuff = makeATileBuff 6 128 ⧺ makeATileBuff 7 128 ⧺ makeATileBuff 8 128 ⧺ makeATileBuff 9 128
+loadAuxBuff ∷ WorldParams → [Tile]
+loadAuxBuff wp = makeATileBuff 6 size ⧺ makeATileBuff 7 size ⧺ makeATileBuff 8 size ⧺ makeATileBuff 9 size
+  where size = sw*sh
+        (sw,sh) = wpSSize wp
 
 makeWTileBuff ∷ Int → Int → [Tile]
 makeWTileBuff b n
