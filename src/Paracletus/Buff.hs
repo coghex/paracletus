@@ -10,21 +10,30 @@ import Paracletus.Data
 import Paracletus.Oblatum.Font
 
 initBuff ∷ [Dyns]
-initBuff = [shDyns,wDyns,wDyns,wDyns,wDyns,wDyns]-- ,wDyns,wDyns,wDyns,wDyns,wDyns]
+initBuff = [shDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns]
   where shDyns = Dyns $ take 64 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
         wDyns  = Dyns $ take 128 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
 
 loadTileBuff ∷ [Tile]
 loadTileBuff = makeTileBuff 0 64
 
-loadWorldBuff ∷ WorldParams → [Tile]
-loadWorldBuff wp = makeWTileBuff 1 128 ⧺ makeWTileBuff 2 128 ⧺ makeWTileBuff 3 128 ⧺ makeWTileBuff 4 128 ⧺ makeWTileBuff 5 128-- ⧺ makeWTileBuff 6 128 ⧺ makeWTileBuff 7 128 ⧺ makeWTileBuff 8 128 ⧺ makeWTileBuff 9 128 ⧺ makeWTileBuff 10 128
+loadWorldBuff ∷ [Tile]
+loadWorldBuff = makeWTileBuff 1 128 ⧺ makeWTileBuff 2 128 ⧺ makeWTileBuff 3 128 ⧺ makeWTileBuff 4 128 ⧺ makeWTileBuff 5 128
+
+loadAuxBuff ∷ [Tile]
+loadAuxBuff = makeATileBuff 6 128 ⧺ makeATileBuff 7 128 ⧺ makeATileBuff 8 128 ⧺ makeATileBuff 9 128
 
 makeWTileBuff ∷ Int → Int → [Tile]
 makeWTileBuff b n
   | (n ≡ 0)   = []
   | otherwise = makeWTileBuff b (n - 1) ⧺ [tile]
   where tile = DMTile (DMBuff b (n - 1)) (0,0) (1,1) (0,0) (3,20) 0
+
+makeATileBuff ∷ Int → Int → [Tile]
+makeATileBuff b n
+  | (n ≡ 0)   = []
+  | otherwise = makeATileBuff b (n - 1) ⧺ [tile]
+  where tile = ATile (DMBuff b (n - 1)) (0,0) (1,1) (0,0) (3,20) 0
 
 makeTileBuff ∷ Int → Int → [Tile]
 makeTileBuff b n

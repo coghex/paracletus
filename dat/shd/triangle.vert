@@ -25,6 +25,14 @@ layout(binding = 5) uniform CamTexTransObject {
   mat4 camTexI[1000];
 } camTex;
 
+layout(binding = 6) uniform AuxTransObject {
+  mat4 amov[1000];
+} aux;
+
+layout(binding = 7) uniform AuxTexTransObject {
+  mat4 auxTexI[1000];
+} auxTex;
+
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec4 inColor;
 layout(location = 2) in vec3 inTexCoord;
@@ -56,10 +64,10 @@ void main() {
     mat4 zoom = mat4(col4,col5,col6,col7);
     mat4 proj = (inMove.z > 0.0) ? trans.proj * zoom : trans.proj;
     
-    mat4 dynV = (bufI > 1.5) ? trans.model * (cam.cmov[dynI]) : (inMove.y > 0.0) ? (trans.model * (dyn.move[dynI])) : trans.model;
+    mat4 dynV = (bufI > 5.5) ? trans.model * (aux.amov[dynI]) : (bufI > 1.5) ? trans.model * (cam.cmov[dynI]) : (inMove.y > 0.0) ? (trans.model * (dyn.move[dynI])) : trans.model;
     gl_Position = proj * view * dynV * vec4(inPosition, 1.0);
     fragColor = inColor;
-    mat4 dynTC = (bufI > 1.5) ? camTex.camTexI[dynI] : dynTex.dynTexI[dynI];
+    mat4 dynTC = (bufI > 5.5) ? auxTex.auxTexI[dynI] : (bufI > 1.5) ? camTex.camTexI[dynI] : dynTex.dynTexI[dynI];
     vec2 dynTexCoord = (inMove.y > 0.0) ? (vec2(inTexCoord.x + ((dynTC[3][0])/3.0),inTexCoord.y + ((dynTC[3][1])/20.0))) : inTexCoord.xy;
     int texI = int(floor (dynTC[3][2]));
     int inTex = int(inTexCoord.z);

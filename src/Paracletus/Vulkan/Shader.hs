@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -fforce-recomp #-}
+--{-# OPTIONS_GHC -fforce-recomp #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE Strict #-}
 {-# LANGUAGE TemplateHaskell #-}

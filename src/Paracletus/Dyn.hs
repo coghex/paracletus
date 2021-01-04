@@ -8,8 +8,10 @@ import Epiklesis.Data
 import Epiklesis.Shell
 import Epiklesis.Window
 
-loadDyns ∷ DrawState → (Dyns,Dyns)
-loadDyns ds = (Dyns $ reverse $ loadDynData ds $ dsTiles ds, Dyns $ reverse $ loadCamData ds $ dsTiles ds)
+-- loads in reverse so the trans functions
+-- can be mmap recursively without index
+loadDyns ∷ DrawState → (Dyns,Dyns,Dyns)
+loadDyns ds = (Dyns $ reverse $ loadDynData ds $ dsTiles ds, Dyns $ reverse $ loadCamData ds $ dsTiles ds, Dyns $ reverse $ loadAuxData ds $ dsTiles ds)
 
 loadCamData ∷ DrawState → [Tile] → [DynData]
 loadCamData _  []                      = []
@@ -17,6 +19,13 @@ loadCamData ds ((DMTile (DMBuff b n) _ _ _ _ _):ts) = [buff !! n] ⧺ loadCamDat
   where Dyns buff = dsBuff ds !! b
 loadCamData ds ((DMTile DMNULL _ _ _ _ _):ts) = [DynData 0 (0,0) (1,1) (0,0)] ⧺ loadCamData ds ts
 loadCamData ds (_:ts) = loadCamData ds ts
+
+loadAuxData ∷ DrawState → [Tile] → [DynData]
+loadAuxData _  []                      = []
+loadAuxData ds ((ATile (DMBuff b n) _ _ _ _ _):ts) = [buff !! n] ⧺ loadAuxData ds ts
+  where Dyns buff = dsBuff ds !! b
+loadAuxData ds ((ATile DMNULL _ _ _ _ _):ts) = [DynData 0 (0,0) (1,1) (0,0)] ⧺ loadAuxData ds ts
+loadAuxData ds (_:ts) = loadAuxData ds ts
 
 loadDynData ∷ DrawState → [Tile] → [DynData]
 loadDynData _  []                     = []
@@ -42,6 +51,7 @@ loadDynData ds ((DTile (DMBuff b n) _ _ _ _ _):ts) = [buff !! n] ⧺ loadDynData
 --loadDynData ds ((DMTile (DMBuff b n) _ _ _ _ _):ts) = [buff !! n] ⧺ loadDynData ds ts
 --  where Dyns buff = dsBuff ds !! b
 loadDynData ds ((DMTile _ _ _ _ _ _):ts) = loadDynData ds ts
+loadDynData ds ((ATile _ _ _ _ _ _):ts) = loadDynData ds ts
 loadDynData ds ((DTile (DMNULL) _ _ _ _ _):ts) = [DynData 0 (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
 
 -- calcs dyndata for slider val

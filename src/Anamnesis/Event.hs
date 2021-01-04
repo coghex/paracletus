@@ -57,8 +57,9 @@ processEvent event = case event of
     liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdWorld
   (EventMouseButton win mb mbs mk) → evalMouse win mb mbs mk
   (EventScroll win x y) → evalScroll win x y
-  (EventDyns (dyns,cams)) → modify $ \s → s { stDynData = dyns
-                                            , stCamData = cams }
+  (EventDyns (dyns,cams,aux)) → modify $ \s → s { stDynData = dyns
+                                            , stCamData = cams
+                                            , stAuxData = aux }
   (EventVerts verts) → do
     env ← ask
     stRel ← gets stReload

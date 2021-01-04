@@ -20,7 +20,7 @@ data Event = EventError !GLFW.Error !String
            | EventMoveCam !(Float,Float,Float)
            | EventAccel
            | EventVerts !Verts
-           | EventDyns !(Dyns,Dyns)
+           | EventDyns !(Dyns,Dyns,Dyns)
            | EventNewInput !LinkAction
            | EventInput !LinkAction
            | EventCap !Bool

@@ -55,6 +55,13 @@ data Tile = GTile { tPos   ∷ (Double,Double)
                   , tInd   ∷ (Int,Int)
                   , tSize  ∷ (Int,Int)
                   , tT     ∷ Int
+                  }
+          | ATile { tDyn  ∷ DynMap
+                  , tPos   ∷ (Double,Double)
+                  , tScale ∷ (Double,Double)
+                  , tInd   ∷ (Int,Int)
+                  , tSize  ∷ (Int,Int)
+                  , tT     ∷ Int
                   } deriving (Show, Eq)
 --instance Ord Tile where
 --  compare (GTile _ _ _ _ _) (GTile _ _ _ _ _) = EQ

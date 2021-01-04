@@ -303,9 +303,9 @@ genDynBuffs ∷ DrawState → [Dyns]
 genDynBuffs ds = dyns1
   where dyns0 = dsBuff ds
         dyns1 = genShBuff dyns0 0 $ dsShell ds
-        dyns2 = case (currentWin ds) of
-                  Nothing → dyns1
-                  Just w  → case (findWorldData w) of
-                      Nothing      → dyns1
-                      Just (wp,wd) → genWorldBuff dyns1 1 wd
+        --dyns2 = case (currentWin ds) of
+        --          Nothing → dyns1
+        --          Just w  → case (findWorldData w) of
+        --              Nothing      → dyns1
+        --              Just (wp,wd) → genWorldBuff dyns1 1 wd
 

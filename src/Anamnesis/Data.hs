@@ -31,6 +31,7 @@ data State = State { stStatus   ∷ AExcept
                    , stVerts    ∷ !Verts
                    , stDynData  ∷ !Dyns
                    , stCamData  ∷ !Dyns
+                   , stAuxData  ∷ !Dyns
                    , stSettings ∷ !Settings
                    , stModTexs  ∷ ![String]
                    , stNDefTex  ∷ !Int

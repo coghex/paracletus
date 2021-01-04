@@ -9,7 +9,7 @@ import Control.Concurrent (forkIO)
 import Control.Monad (forM_, when)
 import Control.Monad.State.Class (gets, modify)
 import Control.Monad.Reader.Class (asks)
-import Data.List (zip6)
+import Data.List (zip7)
 import Graphics.Vulkan.Core_1_0
 import Graphics.Vulkan.Ext.VK_KHR_swapchain
 import Anamnesis
@@ -109,6 +109,7 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
   -- vulkan shaders dont allow dynamic ubo arrays
   let nDynObjs = 128
       nCamObjs = 1000
+      nAuxObjs = 1000
   -- dynamic object matricies stack on the global
   (transDynMems, transDynBufs) ← unzip ⊚ createTransDynBuffers pdev dev swapchainLen nDynObjs
   dynDescBufInfos    ← mapM (transDynBufferInfo nDynObjs) transDynBufs
@@ -122,11 +123,18 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
   (transCamTexMems, transCamTexBufs) ← unzip ⊚ createTransCamTexBuffers pdev dev swapchainLen nCamObjs
   camTexDescBufInfos ← mapM (transCamTexBufferInfo nCamObjs) transCamTexBufs
   transCamTexMemories ← newArrayRes transCamTexMems
+  (transAuxMems, transAuxBufs) ← unzip ⊚ createTransAuxBuffers pdev dev swapchainLen nAuxObjs
+  auxDescBufInfos    ← mapM (transAuxBufferInfo nAuxObjs) transAuxBufs
+  transAuxMemories ← newArrayRes transAuxMems
+  (transAuxTexMems, transAuxTexBufs) ← unzip ⊚ createTransAuxTexBuffers pdev dev swapchainLen nAuxObjs
+  auxTexDescBufInfos ← mapM (transAuxTexBufferInfo nAuxObjs) transAuxTexBufs
+  transAuxTexMemories ← newArrayRes transAuxTexMems
   -- *** DESCRIPTOR POOL
   descriptorPool ← createDescriptorPool dev swapchainLen (nimages texData)
   descriptorSetLayouts ← newArrayRes $ replicate swapchainLen $ descSetLayout texData
   descriptorSets ← createDescriptorSets dev descriptorPool swapchainLen descriptorSetLayouts
-  forM_ (zip6 descriptorBufferInfos dynDescBufInfos dynTexDescBufInfos camDescBufInfos camTexDescBufInfos descriptorSets) $ \(bufInfo, dynBufInfo, dynTexDescBufInfo, camBufInfo, camTexBufInfo, dSet) → prepareDescriptorSet dev bufInfo dynBufInfo dynTexDescBufInfo camBufInfo camTexBufInfo (descTexInfo texData) dSet (nimages texData)
+  let bufInfos = zip7 descriptorBufferInfos dynDescBufInfos dynTexDescBufInfos camDescBufInfos camTexDescBufInfos auxDescBufInfos auxTexDescBufInfos
+  forM_ (zip bufInfos descriptorSets) $ \((bufInfo, dynBufInfo, dynTexDescBufInfo, camBufInfo, camTexBufInfo, auxBufInfo, auxTexBufInfo), dSet) → prepareDescriptorSet dev bufInfo dynBufInfo dynTexDescBufInfo camBufInfo camTexBufInfo auxBufInfo auxTexBufInfo (descTexInfo texData) dSet (nimages texData)
   -- *** PIPELINE
   imgViews ← mapM (\image → createImageView dev image (swapImgFormat swapInfo) VK_IMAGE_ASPECT_COLOR_BIT 1) (swapImgs swapInfo)
   renderPass ← createRenderPass dev swapInfo (depthFormat texData) msaaSamples
@@ -153,7 +161,9 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
       let camNew        = stCam stNew
           Dyns nDynData = stDynData stNew
           Dyns nCamData = stCamData stNew
+          Dyns nAuxData = stAuxData stNew
           nCamNew       = length nCamData
+          nAuxNew       = length nAuxData
           nDynNew       = length nDynData
           rdata         = RenderData { dev
                                 , swapInfo
@@ -169,11 +179,15 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
                                 , texMemories = transTexMemories
                                 , camMemories = transCamMemories
                                 , camTexMemories = transCamTexMemories
+                                , auxMemories = transAuxMemories
+                                , auxTexMemories = transAuxTexMemories
                                 , memoryMutator = updateTransObj camNew dev (swapExtent swapInfo)
                                 , dynMemoryMutator = updateTransDyn nDynNew nDynData dev (swapExtent swapInfo)
                                 , texMemoryMutator = updateTransTex nDynNew nDynData dev (swapExtent swapInfo)
                                 , camMemoryMutator = updateTransCam nCamNew nCamData dev (swapExtent swapInfo)
-                                , camTexMemoryMutator = updateTransCamTex nCamNew nCamData dev (swapExtent swapInfo) }
+                                , camTexMemoryMutator = updateTransCamTex nCamNew nCamData dev (swapExtent swapInfo)
+                                , auxMemoryMutator = updateTransAux nAuxNew nAuxData dev (swapExtent swapInfo)
+                                , auxTexMemoryMutator = updateTransAuxTex nAuxNew nAuxData dev (swapExtent swapInfo) }
 
       liftIO pollEvents
       needRecreation ← drawFrame rdata `catchError` (\err → case (testEx err VK_ERROR_OUT_OF_DATE_KHR) of
@@ -224,7 +238,8 @@ genCommandBuffs dev pdev commandPool queues graphicsPipeline renderPass texData 
       newCmdBP ← createCommandBuffers dev graphicsPipeline commandPool renderPass (pipelineLayout texData) swapInfo vertexBufferNew (dfLen inds0, indexBufferNew) framebuffers descriptorSets
       return newCmdBP
     VertsNULL → do
-      let (verts0, inds0) = calcVertices $ [GTile (0,0) (1,1) (0,0) (1,1) 1,DMTile DMNULL (0,0) (1,1) (0,0) (1,1) 1]
+    -- TODO: a loading screen could be put here
+      let (verts0, inds0) = calcVertices $ [GTile (0,0) (1,1) (0,0) (1,1) 1,DMTile DMNULL (0,0) (1,1) (0,0) (1,1) 1,ATile DMNULL (0,0) (1,1) (0,0) (1,1) 1]
       vertexBufferNew ← createVertexBuffer pdev dev commandPool (graphicsQueue queues) verts0
       indexBufferNew ← createIndexBuffer pdev dev commandPool (graphicsQueue queues) inds0
       newCmdBP ← createCommandBuffers dev graphicsPipeline commandPool renderPass (pipelineLayout texData) swapInfo vertexBufferNew (dfLen inds0, indexBufferNew) framebuffers descriptorSets

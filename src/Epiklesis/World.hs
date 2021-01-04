@@ -93,16 +93,16 @@ findWorldDataElems (_:wes) = findWorldDataElems wes
 -- returns the list of indecies
 -- of segments to generate
 evalScreenCursor ∷ (Int,Int) → (Float,Float) → [(Int,Int)]
-evalScreenCursor (w,h) (cx,cy) = [pos,posn,pose,poss,posw]-- ,posnw,posne,posse,possw]
+evalScreenCursor (w,h) (cx,cy) = [pos,posn,pose,poss,posw,posnw,posne,posse,possw]
   where pos   = (x,y)
         posn  = (x,y + 1)
         poss  = (x,y - 1)
         posw  = (x - 1,y)
         pose  = (x + 1,y)
         posnw = (x - 1,y - 1)
-        --posne = (x + 1,y - 1)
+        posne = (x + 1,y - 1)
         possw = (x - 1,y + 1)
-        --posse = (x + 1,y + 1)
+        posse = (x + 1,y + 1)
         x     = (-1) + (floor $ cx / w')
         y     = (-1) + (floor $ cy / h')
         w'    = fromIntegral w
