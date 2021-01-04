@@ -18,11 +18,11 @@ layout(binding = 3) uniform DynTexTransObject {
 } dynTex;
 
 layout(binding = 4) uniform CamTransObject {
-  mat4 cmov[1024];
+  mat4 cmov[1000];
 } cam;
 
 layout(binding = 5) uniform CamTexTransObject {
-  mat4 camTexI[1024];
+  mat4 camTexI[1000];
 } camTex;
 
 layout(location = 0) in vec3 inPosition;

@@ -7,7 +7,8 @@ module Paracletus.Vulkan.Trans where
 import Prelude()
 import UPrelude
 import Control.Monad (replicateM)
-import Foreign.Ptr (castPtr)
+import Foreign.Ptr (castPtr,plusPtr)
+import Foreign.Storable (Storable)
 import GHC.Generics (Generic)
 import Graphics.Vulkan
 import Graphics.Vulkan.Core_1_0
@@ -74,77 +75,93 @@ updateTransObj cam device extent uniBuf = do
 
 updateTransDyn ∷ Int → [DynData] → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
 updateTransDyn _    []       _      _      _      = return ()
-updateTransDyn 0    _        _      _      _      = return ()
-updateTransDyn nDyn (dd:dds) device extent uniBuf = do
-  let nDyn'   = (fromIntegral nDyn) - 1
-  uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf (nDyn'*(bSizeOf @DynTransObject undefined)) (bSizeOf @DynTransObject undefined) VK_ZERO_FLAGS
-  let move = DF4
-                (DF4 w 0 0 0)
-                (DF4 0 h 0 0)
-                (DF4 0 0 1 0)
-                (DF4 x y 0 1)
-      (x ,y)  = (realToFrac x', realToFrac y')
-      (x',y') = ddPosition dd
-      (w ,h)  = (realToFrac w', realToFrac h')
-      (w',h') = ddScale dd
-  poke (castPtr uboPtr) (scalar $ DynTransObject {..})
+updateTransDyn nDyn dyns device extent uniBuf = do
+  let nDyn'   = (fromIntegral nDyn)
+  uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf 0 (nDyn'*(bSizeOf @DynTransObject undefined)) VK_ZERO_FLAGS
+  let updateTransDynFunc ∷ Int → [DynData] → Ptr α → Anamnesis ε σ ()
+      updateTransDynFunc _    []       _        = return ()
+      updateTransDynFunc nDyn0 (dd:dds) uboPtr0 = do
+        let move = DF4
+              (DF4 w 0 0 0)
+              (DF4 0 h 0 0)
+              (DF4 0 0 1 0)
+              (DF4 x y 0 1)
+            (x ,y)  = (realToFrac x', realToFrac y')
+            (x',y') = ddPosition dd
+            (w ,h)  = (realToFrac w', realToFrac h')
+            (w',h') = ddScale dd
+            nDyn0'  = nDyn0 - 1
+        poke (plusPtr (castPtr uboPtr0) (nDyn0'*(bSizeOf @DynTransObject undefined))) (scalar $ DynTransObject move)
+        updateTransDynFunc nDyn0' dds uboPtr0
+  updateTransDynFunc nDyn dyns uboPtr
   liftIO $ vkUnmapMemory device uniBuf
-  updateTransDyn (nDyn - 1) dds device extent uniBuf
 
 updateTransTex ∷ Int → [DynData] → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
 updateTransTex _    []       _      _      _      = return ()
-updateTransTex 0    _        _      _      _      = return ()
-updateTransTex nDyn (dd:dds) device extent uniBuf = do
-  let nDyn'   = (fromIntegral nDyn) - 1
-  uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf (nDyn'*(bSizeOf @DynTexTransObject undefined)) (bSizeOf @DynTexTransObject undefined) VK_ZERO_FLAGS
-  let dtexi = DF4
-                 (DF4 1 0 0 0)
-                 (DF4 0 1 0 0)
-                 (DF4 0 0 1 0)
-                 (DF4 x y n 1)
-      (x ,y)  = (fromIntegral x', fromIntegral y')
-      (x',y') = ddTIndex dd
-      n       = fromIntegral $ ddTex dd
-  poke (castPtr uboPtr) (scalar $ DynTexTransObject {..})
+updateTransTex nDyn dyns device extent uniBuf = do
+  let nDyn'   = (fromIntegral nDyn)
+  uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf 0 (nDyn'*(bSizeOf @DynTexTransObject undefined)) VK_ZERO_FLAGS
+  let updateTransTexFunc ∷ Int → [DynData] → Ptr α → Anamnesis ε σ ()
+      updateTransTexFunc _     []       _       = return ()
+      updateTransTexFunc nDyn0 (dd:dds) uboPtr0 = do
+        let dtexi = DF4
+              (DF4 1 0 0 0)
+              (DF4 0 1 0 0)
+              (DF4 0 0 1 0)
+              (DF4 x y n 1)
+            (x ,y)  = (fromIntegral x', fromIntegral y')
+            (x',y') = ddTIndex dd
+            n       = fromIntegral $ ddTex dd
+            nDyn0'  = nDyn0 - 1
+        poke (plusPtr (castPtr uboPtr0) (nDyn0'*(bSizeOf @DynTexTransObject undefined))) (scalar $ DynTexTransObject dtexi)
+        updateTransTexFunc nDyn0' dds uboPtr0
+  updateTransTexFunc nDyn dyns uboPtr
   liftIO $ vkUnmapMemory device uniBuf
-  updateTransTex (nDyn - 1) dds device extent uniBuf
 
 updateTransCam ∷ Int → [DynData] → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
 updateTransCam _    []       _      _      _      = return ()
-updateTransCam 0    _        _      _      _      = return ()
-updateTransCam nDyn (dd:dds) device extent uniBuf = do
-  let nDyn'   = (fromIntegral nDyn) - 1
-  uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf (nDyn'*(bSizeOf @CamTransObject undefined)) (bSizeOf @CamTransObject undefined) VK_ZERO_FLAGS
-  let cmov = DF4
-                (DF4 w 0 0 0)
-                (DF4 0 h 0 0)
-                (DF4 0 0 1 0)
-                (DF4 x y 0 1)
-      (x ,y)  = (realToFrac x', realToFrac y')
-      (x',y') = ddPosition dd
-      (w ,h)  = (realToFrac w', realToFrac h')
-      (w',h') = ddScale dd
-  poke (castPtr uboPtr) (scalar $ CamTransObject {..})
+updateTransCam nDyn dyns device extent uniBuf = do
+  let nDyn'   = (fromIntegral nDyn)
+  uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf 0 (nDyn'*(bSizeOf @CamTransObject undefined)) VK_ZERO_FLAGS
+  let updateTransCamFunc ∷ Int → [DynData] → Ptr α → Anamnesis ε σ ()
+      updateTransCamFunc _     []       _       = return ()
+      updateTransCamFunc nDyn0 (dd:dds) uboPtr0 = do
+        let cmov = DF4
+                      (DF4 w 0 0 0)
+                      (DF4 0 h 0 0)
+                      (DF4 0 0 1 0)
+                      (DF4 x y 0 1)
+            (x ,y)  = (realToFrac x', realToFrac y')
+            (x',y') = ddPosition dd
+            (w ,h)  = (realToFrac w', realToFrac h')
+            (w',h') = ddScale dd
+            nDyn0'  = nDyn0 - 1
+        poke (plusPtr (castPtr uboPtr0) (nDyn0'*(bSizeOf @CamTransObject undefined))) (scalar $ CamTransObject cmov)
+        updateTransCamFunc nDyn0' dds uboPtr0
+  updateTransCamFunc nDyn dyns uboPtr
   liftIO $ vkUnmapMemory device uniBuf
-  updateTransCam (nDyn - 1) dds device extent uniBuf
 
 updateTransCamTex ∷ Int → [DynData] → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
 updateTransCamTex _    []       _      _      _      = return ()
-updateTransCamTex 0    _        _      _      _      = return ()
-updateTransCamTex nDyn (dd:dds) device extent uniBuf = do
-  let nDyn'   = (fromIntegral nDyn) - 1
-  uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf (nDyn'*(bSizeOf @CamTexTransObject undefined)) (bSizeOf @CamTexTransObject undefined) VK_ZERO_FLAGS
-  let ctexi = DF4
-                 (DF4 1 0 0 0)
-                 (DF4 0 1 0 0)
-                 (DF4 0 0 1 0)
-                 (DF4 x y n 1)
-      (x ,y)  = (fromIntegral x', fromIntegral y')
-      (x',y') = ddTIndex dd
-      n       = fromIntegral $ ddTex dd
-  poke (castPtr uboPtr) (scalar $ CamTexTransObject {..})
+updateTransCamTex nDyn dyns device extent uniBuf = do
+  let nDyn'   = (fromIntegral nDyn)
+  uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf 0 (nDyn'*(bSizeOf @CamTexTransObject undefined)) VK_ZERO_FLAGS
+  let updateTransCamTexFunc ∷ Int → [DynData] → Ptr α → Anamnesis ε σ ()
+      updateTransCamTexFunc _     []       _       = return ()
+      updateTransCamTexFunc nDyn0 (dd:dds) uboPtr0 = do
+        let ctexi = DF4
+                       (DF4 1 0 0 0)
+                       (DF4 0 1 0 0)
+                       (DF4 0 0 1 0)
+                       (DF4 x y n 1)
+            (x ,y)  = (fromIntegral x', fromIntegral y')
+            (x',y') = ddTIndex dd
+            n       = fromIntegral $ ddTex dd
+            nDyn0'  = nDyn0 - 1
+        poke (plusPtr (castPtr uboPtr0) (nDyn0'*(bSizeOf @CamTexTransObject undefined))) (scalar $ CamTexTransObject ctexi)
+        updateTransCamTexFunc nDyn0' dds uboPtr0
+  updateTransCamTexFunc nDyn dyns uboPtr
   liftIO $ vkUnmapMemory device uniBuf
-  updateTransCamTex (nDyn - 1) dds device extent uniBuf
 
 createTransObjBuffers ∷ VkPhysicalDevice → VkDevice → Int → Anamnesis ε σ [(VkDeviceMemory, VkBuffer)]
 createTransObjBuffers pdev dev n = replicateM n $ createBuffer pdev dev (bSizeOf @TransformationObject undefined) VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ⌄ VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
