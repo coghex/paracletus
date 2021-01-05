@@ -141,12 +141,13 @@ genSegs ∷ WorldParams → [(Int,Int)] → [((Int,Int),Segment)]
 genSegs _  []             = []
 genSegs wp (pos:poss) = [(pos,seg)] ⧺ (genSegs wp poss)
   where seg = Segment $ seedSeg wp pos
+
 -- generates tile list for single segment
 seedSeg ∷ WorldParams → (Int,Int) → [[Spot]]
 seedSeg wp pos = seedConts (sw,sh) pos conts rands zeroSeg
   where rands   = wpRands wp
         conts   = wpConts wp
-        zeroSeg = take sh (zip [0..] (repeat (take sw (zip [0..] (repeat (Spot 2 2))))))
+        zeroSeg = take sh (zip [0..] (repeat (take sw (zip [0..] (repeat (Spot 3 1))))))
         (sw,sh) = wpSSize wp
 seedConts ∷ (Int,Int) → (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [(Int,[(Int,Spot)])] → [[Spot]]
 seedConts _    _   _      []     seg = flattenSeg seg
@@ -167,10 +168,10 @@ seedTile ∷ (Int,Int) → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) →
 seedTile (width,height) pos (_,s) ((w,x),(y,z)) j (i,t)
   | seedDistance i' j' w x y z < (s*maxsize) = (i,t')
   | otherwise                                = (i,t)
-  where t'      = Spot 3 1
+  where t'      = Spot 2 2
         i'      = i + ((fst pos)*width)
         j'      = j + ((snd pos)*height)
-        maxsize = (max width height)*(max width height)
+        maxsize = 10*(max width height)*(max width height)
 
 seedDistance ∷ Int → Int → Int → Int → Int → Int → Int
 seedDistance x1 y1 x2 y2 x3 y3 = do
