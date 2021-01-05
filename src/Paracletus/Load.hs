@@ -132,7 +132,7 @@ processCommands env ds = do
             return ds
       Nothing → return ds
 
-data LoadResult = ResSuccess | ResError String | ResDrawState DrawState | ResNULL deriving (Show, Eq)
+data LoadResult = ResSuccess | ResError String | ResDrawState DrawState | ResNULL
 
 processCommand ∷ Env → DrawState → LoadCmd → IO LoadResult
 processCommand env ds cmd = case cmd of

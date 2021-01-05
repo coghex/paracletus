@@ -7,6 +7,7 @@ import Data.List.Split (splitOn)
 import qualified Foreign.Lua as Lua
 import System.Directory (getDirectoryContents)
 import System.FilePath (combine)
+import System.Random
 import Anamnesis.Data
 import Artos.Data
 import Artos.Queue
@@ -102,7 +103,8 @@ hsNewWorld env win sx sy zx zy dp = do
       filterOutPathJunk "."  = False
       filterOutPathJunk ".." = False
       filterOutPathJunk _    = True
-      wp = WorldParams (sx,sy) (zx,zy) [] []
+      sgs = [mkStdGen 0, mkStdGen 1]
+      wp = WorldParams (sx,sy) (zx,zy) [] [] sgs
       wd = WorldData (1.0,1.0) [Zone (0,0) initSegs]
       initSegs = take zy (repeat (take zx (repeat (SegmentNULL))))
   Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewElem win (WinElemWorld wp wd dps)

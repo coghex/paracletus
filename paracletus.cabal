@@ -91,6 +91,7 @@ executable paracletus
                  , vector
                  , bytestring
                  , split
+                 , random
                  , template-haskell
     default-extensions: DataKinds
                         ExplicitForAll

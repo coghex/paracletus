@@ -1,6 +1,7 @@
 module Epiklesis.Data where
 -- data for generating verticies from lua
 import Paracletus.Data
+import System.Random
 
 -- draw state is kept in a seperate thread
 -- and calculated into verticies
@@ -14,7 +15,7 @@ data DrawState = DrawState { dsStatus  ∷ DSStatus
                            , dsFPS     ∷ FPS
                            , dsBuff    ∷ [Dyns]
                            , dsNDefTex ∷ Int
-                           } deriving (Show, Eq)
+                           }
 
 -- status of the loading thread, allowing
 -- us to return results of deeply nested
@@ -94,7 +95,7 @@ data Window = Window { winTitle  ∷ String
                      , winCursor ∷ (Float,Float,Float)
                      , winAccel  ∷ (Float,Float)
                      , winElems  ∷ [WinElem]
-                     } deriving (Show, Eq)
+                     }
 
 -- types define some behavior
 data WinType = WinTypeMenu | WinTypeGame | WinTypeNULL deriving (Show, Eq)
@@ -116,7 +117,7 @@ data WinElem
   | WinElemWorld { wParams ∷ WorldParams
                  , wData   ∷ WorldData
                  , wDir    ∷ [String] }
-  | WinElemNULL deriving (Show, Eq)
+  | WinElemNULL
 
 
 -- world parameters help generate world
@@ -124,7 +125,8 @@ data WorldParams = WorldParams { wpSSize ∷ (Int,Int)
                                , wpZSize ∷ (Int,Int)
                                , wpRands ∷ [((Int,Int),(Int,Int))]
                                , wpConts ∷ [(Int,Int)]
-                               } deriving (Show, Eq)
+                               , wpStdGs ∷ [StdGen]
+                               }
 -- data stored with each world
 data WorldData = WorldData { wdCam   ∷ (Float,Float)
                            , wdZones ∷ [Zone]
