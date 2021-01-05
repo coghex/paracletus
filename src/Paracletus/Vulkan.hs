@@ -111,18 +111,22 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
       nCamObjs = 1000
       nAuxObjs = 1000
   -- dynamic object matricies stack on the global
+  -- they all behave the same,
+  -- the names are meaningless
   (transDynMems, transDynBufs) ← unzip ⊚ createTransDynBuffers pdev dev swapchainLen nDynObjs
   dynDescBufInfos    ← mapM (transDynBufferInfo nDynObjs) transDynBufs
   transDynMemories ← newArrayRes transDynMems
   (transTexMems, transTexBufs) ← unzip ⊚ createTransTexBuffers pdev dev swapchainLen nDynObjs
   dynTexDescBufInfos ← mapM (transTexBufferInfo nDynObjs) transTexBufs
   transTexMemories ← newArrayRes transTexMems
+  -- camera buffer
   (transCamMems, transCamBufs) ← unzip ⊚ createTransCamBuffers pdev dev swapchainLen nCamObjs
   camDescBufInfos    ← mapM (transCamBufferInfo nCamObjs) transCamBufs
   transCamMemories ← newArrayRes transCamMems
   (transCamTexMems, transCamTexBufs) ← unzip ⊚ createTransCamTexBuffers pdev dev swapchainLen nCamObjs
   camTexDescBufInfos ← mapM (transCamTexBufferInfo nCamObjs) transCamTexBufs
   transCamTexMemories ← newArrayRes transCamTexMems
+  -- auxilary buffer
   (transAuxMems, transAuxBufs) ← unzip ⊚ createTransAuxBuffers pdev dev swapchainLen nAuxObjs
   auxDescBufInfos    ← mapM (transAuxBufferInfo nAuxObjs) transAuxBufs
   transAuxMemories ← newArrayRes transAuxMems

@@ -27,8 +27,8 @@ function initMod ()
 
     local game1 = window:new ()
     game1:initGame("game1")
-    game1:newWorld(12,8,4,3,"dat/tex/world")
     game1:newLink(-6.0,-4.0,"Back",back)
+    game1:newWorld(12,8,4,3,"dat/tex/world")
 
     menu1:switchWindow ()
     toggleFPS ()
