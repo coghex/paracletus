@@ -3,10 +3,24 @@ module Epiklesis.World where
 import Prelude()
 import UPrelude
 import Epiklesis.Data
+import Epiklesis.Rand
 import Epiklesis.Window
 import Paracletus.Data
 import Paracletus.Buff
 
+-- world parameters set from argV
+genWorldParams ∷ UserWorldParams → WorldParams → WorldParams
+genWorldParams uwp wp = wp { wpRands = rands
+                           , wpConts = conts }
+  where rands   = genRands sg0 sg1 ncont w h
+        conts   = genConts sg0 sg1 ncont
+        sg0     = (wpStdGs wp) !! 0
+        sg1     = (wpStdGs wp) !! 1
+        (w,h)   = ((fst (wpSSize wp))*w', (snd (wpSSize wp))*h')
+        (w',h') = (uwpWidth uwp, uwpHeight uwp)
+        ncont   = uwpNConts uwp
+
+-- world gets loaded constantly, for many reasons
 loadWorld ∷ DrawState → DrawState
 loadWorld ds = case (currentWin ds) of
   Nothing  → ds
@@ -50,6 +64,18 @@ fixSegs wp (((i,j),seg):segs) = [((zi,zj),((i',j'),seg))] ⧺ fixSegs wp segs
         i'      = (1 + i + zw) `mod` zw
         j'      = (1 + j + zh) `mod` zh
         (zw,zh) = wpZSize wp
+
+-- pretty printers
+printWorldParams ∷ String → Window → String
+printWorldParams param win = printElemWPs param (winElems win)
+printElemWPs ∷ String → [WinElem] → String
+printElemWPs _     []       = "no world defined"
+printElemWPs "sSize" ((WinElemWorld wp _ _):_) = "seg size: " ⧺ (show (wpSSize wp))
+printElemWPs "zSize" ((WinElemWorld wp _ _):_) = "zone size: " ⧺ (show (wpZSize wp))
+printElemWPs "rands" ((WinElemWorld wp _ _):_) = "rands: " ⧺ (show (wpRands wp))
+printElemWPs "conts" ((WinElemWorld wp _ _):_) = "conts: " ⧺ (show (wpConts wp))
+printElemWPs param   ((WinElemWorld wp _ _):_) = "no world parameter " ⧺ param ⧺ " present"
+printElemWPs param (wp:wps) = printElemWPs param wps
 
 printSegs ∷ [((Int,Int),((Int,Int),Segment))] → String
 printSegs [] = ""

@@ -28,8 +28,10 @@ executable paracletus
                    Artos.Queue
                    Artos.Var
                    Epiklesis
+                   Epiklesis.ArgV
                    Epiklesis.Command
                    Epiklesis.Data
+                   Epiklesis.Rand
                    Epiklesis.Settings
                    Epiklesis.ShCmd
                    Epiklesis.Shell

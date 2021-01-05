@@ -8,6 +8,7 @@ import Data.List.Split (splitOn)
 import Anamnesis.Data
 import Epiklesis.Data
 import Epiklesis.ShCmd
+import Epiklesis.World (printWorldParams)
 import Epiklesis.Window (currentWin)
 import Paracletus.Buff (clearBuff)
 import Paracletus.Data
@@ -34,6 +35,8 @@ evalShCmds env shCmd ds = case shCmd of
     ShellCmdDelete → ds { dsShell = delShell (dsShell ds)
                         , dsStatus = DSSLoadDyns }
     ShellCmdExec → ds { dsStatus = DSSEvalShell }--evalShell env ds
+    -- enumerates all possible return
+    -- values from echo commands
     ShellCmdRet "cam" → ds { dsShell = (dsShell ds) { shRet = str }}
       where str = case (currentWin ds) of
                     Nothing → "no window"
@@ -42,6 +45,22 @@ evalShCmds env shCmd ds = case shCmd of
       where str = case (currentWin ds) of
                     Nothing → "no window"
                     Just w  → show $ winArgV w
+    ShellCmdRet "sSize" → ds { dsShell = (dsShell ds) { shRet = str }}
+      where str = case (currentWin ds) of
+                    Nothing → "no window"
+                    Just w  → printWorldParams "sSize" w
+    ShellCmdRet "zSize" → ds { dsShell = (dsShell ds) { shRet = str }}
+      where str = case (currentWin ds) of
+                    Nothing → "no window"
+                    Just w  → printWorldParams "zSize" w
+    ShellCmdRet "rands" → ds { dsShell = (dsShell ds) { shRet = str }}
+      where str = case (currentWin ds) of
+                    Nothing → "no window"
+                    Just w  → printWorldParams "rands" w
+    ShellCmdRet "conts" → ds { dsShell = (dsShell ds) { shRet = str }}
+      where str = case (currentWin ds) of
+                    Nothing → "no window"
+                    Just w  → printWorldParams "conts" w
     ShellCmdRet str → ds { dsShell = (dsShell ds) { shRet = "value '" ⧺ str ⧺ "' not known" }}
     ShellCmdString ch → ds { dsShell  = stringShell ch (dsShell ds)
                            , dsStatus = DSSLoadDyns }

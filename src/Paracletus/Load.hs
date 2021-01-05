@@ -11,6 +11,7 @@ import Artos.Data
 import Artos.Var
 import Artos.Queue
 import Anamnesis.Data
+import Epiklesis.ArgV (changeWin)
 import Epiklesis.Data
 import Epiklesis.Shell
 import Epiklesis.ShCmd
