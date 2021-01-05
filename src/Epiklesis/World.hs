@@ -147,7 +147,7 @@ seedSeg ∷ WorldParams → (Int,Int) → [[Spot]]
 seedSeg wp pos = seedConts (sw,sh) pos conts rands zeroSeg
   where rands   = wpRands wp
         conts   = wpConts wp
-        zeroSeg = take sh (zip [0..] (repeat (take sw (zip [0..] (repeat (Spot 3 1))))))
+        zeroSeg = take sh (zip [0..] (repeat (take sw (zip [0..] (repeat (Spot 1 3))))))
         (sw,sh) = wpSSize wp
 seedConts ∷ (Int,Int) → (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [(Int,[(Int,Spot)])] → [[Spot]]
 seedConts _    _   _      []     seg = flattenSeg seg
@@ -168,7 +168,7 @@ seedTile ∷ (Int,Int) → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) →
 seedTile (width,height) pos (_,s) ((w,x),(y,z)) j (i,t)
   | seedDistance i' j' w x y z < (s*maxsize) = (i,t')
   | otherwise                                = (i,t)
-  where t'      = Spot 2 2
+  where t'      = Spot (s+1) 2
         i'      = i + ((fst pos)*width)
         j'      = j + ((snd pos)*height)
         maxsize = 10*(max width height)*(max width height)
@@ -211,7 +211,7 @@ calcGridRow ∷ (Int,Int) → Int → (Int,[Spot]) → [DynData]
 calcGridRow ind nDefTex (j,spots) = flatten $ map (calcGrid ind j nDefTex) (zip xinds spots)
   where xinds = take (length spots) [0..]
 calcGrid ∷ (Int,Int) → Int → Int → (Int,Spot) → [DynData]
-calcGrid (cx,cy) y nDefTex (x,(Spot t c)) = [dd]
+calcGrid (cx,cy) y nDefTex (x,(Spot c t)) = [dd]
   where dd = DynData c' (2*x',2*y') (1,1) (ix,iy)
         x' = (fromIntegral cx) + (fromIntegral x)
         y' = (fromIntegral cy) + (fromIntegral y)
