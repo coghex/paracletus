@@ -65,7 +65,7 @@ hsNewPaneBit env name pane bit = case (head (splitOn ":" bit)) of
     Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewBit name pane $ PaneBitText $ last $ splitOn ":" bit
   "slider" → do
     let loadQ = envLoadQ env
-    Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewBit name pane $ PaneBitSlider text mn mx vl
+    Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewBit name pane $ PaneBitSlider text mn mx $ Just vl
       where args = splitOn ":" bit
             text = head $ tail args
             mn   = read $ head $ tail $ tail args

@@ -26,6 +26,7 @@ data DSStatus = DSSLogDebug String
               | DSSLoadVerts
               | DSSLoadInput LinkAction
               | DSSLoadCap Bool
+              | DSSEvalShell
               | DSSRecreate
               | DSSExit
               | DSSNULL deriving (Show, Eq)
@@ -88,6 +89,15 @@ data DynMap = DMFPS Int
             | DMBuff Int Int
             | DMNULL deriving (Show, Eq)
 
+-- user defined parameters
+data UserWorldParams = UserWorldParams
+ { uwpNConts ∷ Int
+ , uwpNSpots ∷ Int
+ , uwpSeed   ∷ Int
+ , uwpWidth  ∷ Int
+ , uwpHeight ∷ Int
+ } deriving (Show, Eq)
+
 -- abstract idea of what a window can be
 data Window = Window { winTitle  ∷ String
                      , winType   ∷ WinType
@@ -101,7 +111,7 @@ data Window = Window { winTitle  ∷ String
 data WinType = WinTypeMenu | WinTypeGame | WinTypeNULL deriving (Show, Eq)
 
 -- possible arguments from previous window
-data WinArgV = WinArgNULL deriving (Show, Eq)
+data WinArgV = WinArgUWP UserWorldParams | WinArgNULL deriving (Show, Eq)
 
 -- possible elements of a window
 data WinElem
@@ -153,7 +163,7 @@ data PaneBit
   | PaneBitSlider { pbsText ∷ String
                   , pbsMin  ∷ Int
                   , pbsMax  ∷ Int
-                  , pbsVal  ∷ Int }
+                  , pbsVal  ∷ Maybe Int }
   | PaneBitNULL deriving (Show, Eq)
 
 -- possible actions when links are clicked

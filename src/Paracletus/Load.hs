@@ -13,6 +13,7 @@ import Artos.Queue
 import Anamnesis.Data
 import Epiklesis.Data
 import Epiklesis.Shell
+import Epiklesis.ShCmd
 import Epiklesis.Window
 import Epiklesis.World (loadWorld,findWorldData)
 import Paracletus.Buff
@@ -103,6 +104,9 @@ processCommands env ds = do
               processCommands env ds''
                 where ds'' = ds' { dsStatus = DSSNULL
                                  , dsBuff   = genDynBuffs ds' }
+            DSSEvalShell → do
+              ds'' ← evalShell env $ ds' { dsStatus = DSSNULL }
+              processCommands env ds''
             DSSRecreate → do
               atomically $ writeQueue (envEventQ env) $ EventRecreate
               atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
@@ -178,47 +182,7 @@ processCommand env ds cmd = case cmd of
       if (((abs (fst newAccel)) ≤ 0.0) ∧ ((abs (snd newAccel)) ≤ 0.0)) then atomically $ writeQueue eventQ $ EventAccel else return ()
       atomically $ writeQueue eventQ $ EventMoveCam newCam
       return $ ResDrawState ds'
-  LoadCmdShell shCmd → case shCmd of
-    ShellCmdTab → return $ ResDrawState ds'
-      where ds' = ds { dsShell = tabShell (dsShell ds) $ dsCmds ds
-                     , dsStatus = DSSLoadDyns }
-    ShellCmdDelete → return $ ResDrawState ds'
-      where ds' = ds { dsShell = delShell (dsShell ds)
-                     , dsStatus = DSSLoadDyns }
-    ShellCmdExec → do
-      ds' ← evalShell env ds
-      return $ ResDrawState ds'
-    ShellCmdRet "cam" → return $ ResDrawState $ ds { dsShell = (dsShell ds) { shRet = str }}
-      where str = case (currentWin ds) of
-                    Nothing → "no window"
-                    Just w  → show $ winCursor w
-    ShellCmdRet str → return $ ResDrawState $ ds { dsShell = (dsShell ds) { shRet = "value '" ⧺ str ⧺ "' not known" }}
-    ShellCmdString ch → do
-      return $ ResDrawState ds'
-      where ds' = ds { dsShell  = stringShell ch (dsShell ds)
-                     , dsStatus = DSSLoadDyns }
-    ShellCmdCursor n → do
-      return $ ResDrawState ds'
-      where ds'  = ds { dsShell = (dsShell ds) { shCursor = newN }
-                      , dsStatus = DSSLoadDyns }
-            newN = max 0 $ min (length (shInpStr sh)) $ (shCursor sh) + n
-            sh   = dsShell ds
-    ShellCmdOpen  → return $ ResDrawState ds'
-      where ds' = ds { dsShell = openShell (dsShell ds)
-                     , dsStatus = DSSLoadCap True }
-    ShellCmdClose → return $ ResDrawState ds'
-      where ds' = ds { dsShell = closeShell (dsShell ds)
-                     , dsStatus = DSSLoadCap False }
-    ShellCmdControl key → return $ ResDrawState ds'
-      where ds' = ds { dsShell = controlShell (dsShell ds) key
-                     , dsStatus = controlShStatus key }
-    ShellCmdUp    → return $ ResDrawState ds'
-      where ds' = ds { dsShell = upShell (dsShell ds)
-                     , dsStatus = DSSLoadDyns }
-    ShellCmdDown  → return $ ResDrawState ds'
-      where ds' = ds { dsShell = downShell (dsShell ds)
-                     , dsStatus = DSSLoadDyns }
-    ShellCmdNULL  → return $ ResNULL
+  LoadCmdShell shCmd → return $ ResDrawState $ evalShCmds env shCmd ds
   LoadCmdNewWin win → return $ ResDrawState ds'
     where ds' = ds { dsWins = win:(dsWins ds) }
   -- TODO: get rid of winI, use head

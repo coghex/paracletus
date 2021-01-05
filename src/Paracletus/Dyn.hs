@@ -61,7 +61,7 @@ sliderDiglet ((WinElemPane _ _ bits):wes) n d = sliderBitDiglet bits n d
 sliderDiglet (we:wes) n d = sliderDiglet wes n d
 sliderBitDiglet ∷ [(Int,PaneBit)] → Int → Int → Int
 sliderBitDiglet []       _ _ = -36
-sliderBitDiglet ((i,(PaneBitSlider _ _ _ val)):pbs) n d
+sliderBitDiglet ((i,(PaneBitSlider _ _ _ (Just val))):pbs) n d
   | n ≡ i = calcSliderDig d val
   | otherwise = sliderBitDiglet pbs n d
 sliderBitDiglet (pb:pbs) n d = sliderBitDiglet pbs n d
@@ -98,7 +98,7 @@ calcWinSliderOffset ((WinElemPane _ _ bits):wes) n = calcBitsSliderOffset bits n
 calcWinSliderOffset (we:wes) n = calcWinSliderOffset wes n
 calcBitsSliderOffset ∷ [(Int,PaneBit)] → Int → Float
 calcBitsSliderOffset []       _ = 0.0
-calcBitsSliderOffset ((i,(PaneBitSlider text mn mx val)):pbs) n = if (n ≡ i) then 6.0*val'/(mx' - mn') else calcBitsSliderOffset pbs n
+calcBitsSliderOffset ((i,(PaneBitSlider text mn mx (Just val))):pbs) n = if (n ≡ i) then 6.0*val'/(mx' - mn') else calcBitsSliderOffset pbs n
   where val' = fromIntegral val
         mn'  = fromIntegral mn
         mx'  = fromIntegral mx
@@ -115,9 +115,9 @@ moveWinSlider (we:wes) x n = [we] ⧺ moveWinSlider wes x n
 
 moveBitsSlider ∷ Double → Int → [(Int,PaneBit)] → [(Int,PaneBit)]
 moveBitsSlider _ _ [] = []
-moveBitsSlider x n ((i,PaneBitSlider text mn mx val):pbs)
-  | (i ≡ n)   = [(i,PaneBitSlider text mn mx val')] ⧺ moveBitsSlider x n pbs
-  | otherwise = [(i,PaneBitSlider text mn mx val)]  ⧺ moveBitsSlider x n pbs
+moveBitsSlider x n ((i,PaneBitSlider text mn mx (Just val)):pbs)
+  | (i ≡ n)   = [(i,PaneBitSlider text mn mx (Just val'))] ⧺ moveBitsSlider x n pbs
+  | otherwise = [(i,PaneBitSlider text mn mx (Just val))]  ⧺ moveBitsSlider x n pbs
   where val' = min mx $ max mn $ ((round (x*(mx' - mn'))) `div` 3)
         mn'  = fromIntegral mn
         mx'  = fromIntegral mx
@@ -136,5 +136,5 @@ printElemDynList ((WinElemPane pos name bits):wes) = printBitsDynList bits ⧺ p
 printElemDynList (we:wes) = printElemDynList wes
 printBitsDynList ∷ [(Int,PaneBit)] → String
 printBitsDynList [] = ""
-printBitsDynList ((i,(PaneBitSlider text mn mx val)):pbs) = (show i) ⧺ ", " ⧺ text ⧺ ": " ⧺ (show val) ⧺ "\n" ⧺ printBitsDynList pbs
+printBitsDynList ((i,(PaneBitSlider text mn mx (Just val))):pbs) = (show i) ⧺ ", " ⧺ text ⧺ ": " ⧺ (show val) ⧺ "\n" ⧺ printBitsDynList pbs
 printBitsDynList ((i,pb):pbs) = printBitsDynList pbs

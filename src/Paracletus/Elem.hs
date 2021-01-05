@@ -33,7 +33,9 @@ loadWinElem _ (WinElemNULL)               = []
 -- finds tiles for window pane
 calcPaneTiles ∷ (Double,Double) → [(Int,PaneBit)] → [Tile]
 calcPaneTiles _   []                    = []
-calcPaneTiles pos ((i,PaneBitSlider text mn mx vl):pbs) = (calcText TextSize30px (fst pos) pos' text) ⧺ calcPaneSlider i pos' mn mx vl ⧺ calcPaneTiles pos pbs
+calcPaneTiles pos ((i,PaneBitSlider text mn mx (Just vl)):pbs) = (calcText TextSize30px (fst pos) pos' text) ⧺ calcPaneSlider i pos' mn mx vl ⧺ calcPaneTiles pos pbs
+  where pos' = ((fst pos) + 1.0,(snd pos) - (fromIntegral i))
+calcPaneTiles pos ((i,PaneBitSlider text mn mx Nothing):pbs) = (calcText TextSize30px (fst pos) pos' text) ⧺ calcPaneTiles pos pbs
   where pos' = ((fst pos) + 1.0,(snd pos) - (fromIntegral i))
 calcPaneTiles pos ((i,PaneBitText text):pbs) = (calcText TextSize30px (fst pos) pos' text) ⧺ calcPaneTiles pos pbs
   where pos' = ((fst pos) + 0.5,(snd pos) + (fromIntegral i))

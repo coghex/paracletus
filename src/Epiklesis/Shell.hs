@@ -8,6 +8,7 @@ import Data.List.Split (splitOn)
 import Anamnesis.Data
 import Epiklesis.Data
 import Epiklesis.ShCmd
+import Epiklesis.Window (currentWin)
 import Paracletus.Buff (clearBuff)
 import Paracletus.Data
 import Paracletus.Elem (calcTextBox, calcText)
@@ -24,6 +25,41 @@ openShell sh = sh { shOpen = True }
 
 closeShell ∷ Shell → Shell
 closeShell sh = sh { shOpen = False }
+
+-- shell commands from loadcmdshell
+evalShCmds ∷ Env → ShellCmd → DrawState → DrawState
+evalShCmds env shCmd ds = case shCmd of
+    ShellCmdTab → ds { dsShell = tabShell (dsShell ds) $ dsCmds ds
+                     , dsStatus = DSSLoadDyns }
+    ShellCmdDelete → ds { dsShell = delShell (dsShell ds)
+                        , dsStatus = DSSLoadDyns }
+    ShellCmdExec → ds { dsStatus = DSSEvalShell }--evalShell env ds
+    ShellCmdRet "cam" → ds { dsShell = (dsShell ds) { shRet = str }}
+      where str = case (currentWin ds) of
+                    Nothing → "no window"
+                    Just w  → show $ winCursor w
+    ShellCmdRet "argv" → ds { dsShell = (dsShell ds) { shRet = str }}
+      where str = case (currentWin ds) of
+                    Nothing → "no window"
+                    Just w  → show $ winArgV w
+    ShellCmdRet str → ds { dsShell = (dsShell ds) { shRet = "value '" ⧺ str ⧺ "' not known" }}
+    ShellCmdString ch → ds { dsShell  = stringShell ch (dsShell ds)
+                           , dsStatus = DSSLoadDyns }
+    ShellCmdCursor n → ds { dsShell = (dsShell ds) { shCursor = newN }
+                          , dsStatus = DSSLoadDyns }
+      where newN = max 0 $ min (length (shInpStr sh)) $ (shCursor sh) + n
+            sh   = dsShell ds
+    ShellCmdOpen  → ds { dsShell = openShell (dsShell ds)
+                       , dsStatus = DSSLoadCap True }
+    ShellCmdClose → ds { dsShell = closeShell (dsShell ds)
+                       , dsStatus = DSSLoadCap False }
+    ShellCmdControl key → ds { dsShell = controlShell (dsShell ds) key
+                             , dsStatus = controlShStatus key }
+    ShellCmdUp    → ds { dsShell = upShell (dsShell ds)
+                       , dsStatus = DSSLoadDyns }
+    ShellCmdDown  → ds { dsShell = downShell (dsShell ds)
+                       , dsStatus = DSSLoadDyns }
+    ShellCmdNULL  → ds
 
 -- different keys require different returns
 controlShStatus ∷ ShellControl → DSStatus
@@ -113,6 +149,7 @@ evalShell env ds = do
                        , shOutStr = retstring
                        , shTabbed = Nothing
                        , shHistI  = -1
+                       , shRet    = ""
                        , shHist   = ([shInpStr oldSh] ⧺ shHist oldSh)
                        , shCursor = 0 }
   return $ ds { dsShell  = newSh
