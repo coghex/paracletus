@@ -67,11 +67,12 @@ calcMenuArgV mbs = case a1 of
         Just a4' → case a5 of
           Nothing  → WinArgNULL
           Just a5' → WinArgUWP $ UserWorldParams a1' a2' a3' a4' a5'
-  where a1 = calcUWP $ mbs !! 0
-        a2 = calcUWP $ mbs !! 1
-        a3 = calcUWP $ mbs !! 2
-        a4 = calcUWP $ mbs !! 3
-        a5 = calcUWP $ mbs !! 4
+  where a1 = mbs' !! 0
+        a2 = mbs' !! 1
+        a3 = mbs' !! 2
+        a4 = mbs' !! 3
+        a5 = mbs' !! 4
+        mbs' = filter (≢Nothing) $ map calcUWP mbs
 calcUWP ∷ (Int,PaneBit) → Maybe Int
 calcUWP (_,mb) = case mb of
   PaneBitSlider _ _ _ v → v
