@@ -32,6 +32,7 @@ executable paracletus
                    Epiklesis.Command
                    Epiklesis.Data
                    Epiklesis.Rand
+                   Epiklesis.Map
                    Epiklesis.Settings
                    Epiklesis.ShCmd
                    Epiklesis.Shell
