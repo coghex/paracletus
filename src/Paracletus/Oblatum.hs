@@ -133,3 +133,6 @@ processInput = do
                 moveSliderWithMouse is
               else return ()
     Nothing → return ()
+  case (mouse3 is) of
+    Just pos → moveCamWithMouse pos
+    Nothing  → return ()

@@ -1,7 +1,7 @@
 module Epiklesis.Rand where
 -- some helper functions to generate random lists
-import Prelude()
-import UPrelude
+--import Prelude()
+--import UPrelude
 import System.Random
 
 -- rands help generate random ellipses
@@ -21,10 +21,10 @@ genConts sg0 sg1 n = buildList2 (xl,yl)
 
 randomList ∷ (Random α) ⇒ (α,α) → Int → StdGen → [α]
 randomList bnds n = do
-  take n ∘ randomRs bnds
+  take n . randomRs bnds
 
 buildList2 ∷ ([α],[α]) → [(α,α)]
 buildList2 (_,[]) = []
 buildList2 ([],_) = []
-buildList2 (a:as,b:bs) = [(a,b)] ⧺ buildList2 (as,bs)
+buildList2 (a:as,b:bs) = [(a,b)] ++ buildList2 (as,bs)
 

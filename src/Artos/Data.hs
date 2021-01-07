@@ -41,6 +41,7 @@ data LoadCmd = LoadCmdNewWin Window
              | LoadCmdShell ShellCmd
              | LoadCmdScroll Double
              | LoadCmdMoveCam ISKeys
+             | LoadCmdMouseCam (Double,Double) (Float,Float)
              | LoadCmdVerts
              | LoadCmdDyns
              | LoadCmdWorld

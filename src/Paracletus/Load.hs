@@ -16,7 +16,7 @@ import Epiklesis.Data
 import Epiklesis.Shell
 import Epiklesis.ShCmd
 import Epiklesis.Window
-import Epiklesis.World (loadWorld,findWorldData)
+import Epiklesis.World
 import Paracletus.Buff
 import Paracletus.Data
 import Paracletus.Draw
@@ -168,6 +168,31 @@ processCommand env ds cmd = case cmd of
     atomically $ writeQueue eventQ $ EventDyns $ dyns
     atomically $ writeQueue loadQ  $ LoadCmdWorld
     return $ ResDrawState ds'
+  LoadCmdMouseCam pos' oldPos → case (currentWin ds) of
+    Nothing → return $ ResError $ "no world data"
+    Just w  → case (findWorldData w) of
+      Nothing → return $ ResError $ "no world data"
+      Just (_,wd) → do
+        let pos = ((realToFrac (fst pos')),(realToFrac (snd pos')))
+            diff = (((fst pos)-(fst oldPos)),((snd pos)-(snd oldPos)))
+            oldCam = winCursor w
+            newCam = moveCam oldCam diff
+            moveCam ∷ (Float,Float,Float) → (Float,Float) → (Float,Float,Float)
+            moveCam (x1,y1,z1) (x2,y2) = (x1+x2,y1-y2,z1)
+            newSC = moveScreenCursor newCam
+            moveScreenCursor ∷ (Float,Float,Float) → (Float,Float)
+            moveScreenCursor (x,y,_) = (-0.05*x,-0.05*y)
+            newWD = wd { wdCam = newSC }
+            newWinE = replaceWorldWinElem newWD (winElems w)
+            newWin  = w { winCursor = newCam
+                        , winAccel  = (0.0,0.0)
+                        , winElems  = newWinE }
+            newWins = replaceWin newWin (dsWins ds)
+            ds'     = ds { dsWins = newWins
+                         , dsStatus = DSSLoadDyns }
+        atomically $ writeQueue (envEventQ env) $ EventMoveCam newCam
+        return $ ResDrawState ds'
+            
   LoadCmdMoveCam ks → case (currentWin ds) of
     Nothing  → return $ ResError "no window"
     Just win → do
