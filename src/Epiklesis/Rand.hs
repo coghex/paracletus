@@ -18,7 +18,7 @@ genRands sg0 sg1 n w h = buildList2 (xl,yl)
 -- conts are iterations of ellipses generation
 genConts ∷ StdGen → StdGen → Int → [(Int,Int)]
 genConts sg0 sg1 n = buildList2 (xl,yl)
-  where xl = randomList (4,8) n sg0
+  where xl = randomList (4,20) n sg0
         yl = randomList (1,4) n sg1
 
 randomList ∷ (Random α) ⇒ (α,α) → Int → StdGen → [α]
