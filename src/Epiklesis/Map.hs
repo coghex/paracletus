@@ -28,6 +28,8 @@ cardinalsF w (g:gs) xn = [cardRow g xn xs Nothing] ++ (cardinalsF w gs (Just g))
 
 cardRow ∷ [α] → Maybe [α] → Maybe [α] → Maybe α → [(Cards α)]
 cardRow []     _               _               _       = []
+cardRow (g:gs) xns             (Just [])       xw = cardRow (g:gs) xns Nothing xw
+cardRow (g:gs) (Just [])       xss             xw = cardRow (g:gs) Nothing xss xw
 cardRow (g:gs) (Nothing)       (Nothing)       xw = [Cards (Nothing,Nothing,xe,xw)] ++ (cardRow gs Nothing Nothing $ Just g)
   where xe = case gs of
                []  → Nothing
@@ -57,22 +59,6 @@ cardRow (g:gs) (Just (xn:xns')) (Just (xs:xss')) xw = [Cards (Just xn,Just xs,xe
                 []  → Nothing
                 xs0 → Just xs0
 
--- returns spots surrounding segs
-cardEdges ∷ Cards Segment → ([Spot],[Spot],[Spot],[Spot])
-cardEdges (Cards (n,s,e,w)) = (n',s',e',w')
-  where n' = case n of
-               Just (Segment grid) → last grid
-               _                   → [SpotNULL]
-        s' = case s of
-               Just (Segment grid) → head grid
-               _                   → [SpotNULL]
-        e' = case e of
-               Just (Segment grid) → map head grid
-               _                   → [SpotNULL]
-        w' = case w of
-               Just (Segment grid) → map last grid
-               _                   → [SpotNULL]
-
 -- finds specified seg in zones
 indexZSeg ∷ (Int,Int) → (Int,Int) → [Zone] → Segment
 indexZSeg _    _   []     = SegmentNULL
@@ -82,28 +68,13 @@ indexZSeg zind ind (z:zs)
 indexSeg ∷ (Int,Int) → [[Segment]] → Segment
 indexSeg (x,y) segs = (segs !! y) !! x
 
----- adds edges for nothings
---fixEdges ∷ ([α],[α],[α],[α]) → [[Cards α]] → [[(α,α,α,α)]]
---fixEdges _     []   = []
---fixEdges edges grid = map (fixRowEdges edges) (zip yinds grid)
---  where yinds = take (length grid) [0..]
---fixRowEdges ∷ ([α],[α],[α],[α]) → (Int,[Cards α]) → [(α,α,α,α)] 
---fixRowEdges edges (j,rows) = map (fixSpotEdges j edges) (zip xinds rows)
---  where xinds = take (length rows) [0..]
---fixSpotEdges ∷ Int → ([α],[α],[α],[α]) → (Int, Cards α) → (α,α,α,α)
---fixSpotEdges j (ne,se,ee,we) (i,(Cards (n,s,e,w))) = (n',s',e',w')
---  where n' = case n of
---               Nothing → ne !! i
---               Just n0 → n0
---        s' = case s of
---               Nothing → se !! i
---               Just s0 → s0
---        e' = case e of
---               Nothing → ee !! j
---               Just e0 → e0
---        w' = case w of
---               Nothing → we !! j
---               Just w0 → w0
+-- finds specific zone
+indexZone ∷ (Int,Int) → (Int,Int) → [Zone] → Zone
+indexZone (w,h) ind []     = Zone ind $ take h $ repeat $ take w $ repeat $ SegmentNULL
+indexZone size  ind (z:zs)
+  | (zoneIndex z) ≡ ind = z
+  | otherwise           = indexZone size ind zs
+
 
 -- sets buffs for the map
 -- TODO: distribute across the buffers

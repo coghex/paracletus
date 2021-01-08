@@ -37,8 +37,10 @@ loadWorld ds = case (currentWin ds) of
           (cz,win') = case (findWorldData win) of
             Nothing      → (-1, win)
             Just (wp,wd) → (cz, win { winElems = replaceWorldWinElem wd' (winElems win) })
-              where wd'        = wd { wdZones = replaceZones newSegs zoneSize (wdZones wd) }
-                    newSegs    = setTileData wp wd (cx,cy)--fixSegs wpGen $ genSegs wpGen $ evalScreenCursor segSize (-cx/64.0,-cy/64.0)
+              where wd'        = wd { wdZones = zones1 }
+                    zones1     = setTileBorder wp zones0 (cx,cy)
+                    zones0     = replaceZones newSegs0 zoneSize (wdZones wd)
+                    newSegs0   = setTileData wp wd (cx,cy)--fixSegs wpGen $ genSegs wpGen $ evalScreenCursor segSize (-cx/64.0,-cy/64.0)
                     zoneSize   = wpZSize wp
                     (cx,cy,cz) = winCursor win
 
@@ -56,8 +58,11 @@ genTileData wp wd ((zind,ind):inds) = [(zind,(ind,seg))] ⧺ genTileData wp wd i
 genSegData ∷ WorldParams → WorldData → (Int,Int) → (Int,Int) → Segment
 genSegData wp wd zind ind = case seg of
   Segment grid → Segment grid
-  SegmentNULL  → Segment $ stripGrid $ seedConts ind' conts rands zeroSeg
-  where seg     = indexZSeg zind ind $ wdZones wd
+  SegmentNULL  → Segment $ stripGrid $ seg1
+  where seg1    = seedConts ind' conts rands zeroSeg
+        seg     = indexSeg ind $ zoneSegs zone
+        zone    = indexZone (zw,zh) zind zones
+        zones   = wdZones wd
         rands   = wpRands wp
         conts   = wpConts wp
         (sw,sh) = wpSSize wp
@@ -80,15 +85,86 @@ spotSpots i j (zi,zj) (rand,cont) ((w,x),(y,z)) (Spot c t)
   | seedDistance i' j' w x y z < (rand*maxS) = Spot c' t'
   | otherwise                                = Spot c t
   where c'   = cont
-        t'   = 2
+        t'   = 0
         i'   = i + zi
         j'   = j + zj
         maxS = 100000
 
+-- adds in borders where possible
+setTileBorder ∷ WorldParams → [Zone] → (Float,Float) → [Zone]
+setTileBorder wp zones (cx,cy) = calcBorder zones $ map (fixCurs wp) $ take 9 $ evalScreenCursor (wpSSize wp) (-cx/64.0,-cy/64.0)
+calcBorder ∷ [Zone] → [((Int,Int),(Int,Int))] → [Zone]
+calcBorder []     _    = []
+calcBorder (z:zs) inds = [calcZoneBorder z inds] ⧺ calcBorder zs inds
+calcZoneBorder ∷ Zone → [((Int,Int),(Int,Int))] → Zone
+calcZoneBorder zone []                = zone
+calcZoneBorder zone ((zind,ind):inds)
+  | (zoneIndex zone)≡zind = calcZoneBorder zone' inds
+  | otherwise = calcZoneBorder zone inds
+  where zone' = Zone zind $ calcSegsBorder (zoneSegs zone) ind
+
+calcSegsBorder ∷ [[Segment]] → (Int,Int) → [[Segment]]
+calcSegsBorder segs ind = replaceSeg ind seg1 segs
+  where seg1  = calcSegBorder seg0 cards
+        seg0  = (segs !! (snd ind)) !! (fst ind)
+        cards = ((cardinals segs) !! (snd ind)) !! (fst ind)
+calcSegBorder ∷ Segment → Cards Segment → Segment
+calcSegBorder SegmentNULL    _     = SegmentNULL
+calcSegBorder (Segment grid) cards = Segment grid'
+  where grid'  = calcGridBorder grid scards
+        scards = cardinals grid
+calcGridBorder ∷ [[Spot]] → [[Cards Spot]] → [[Spot]]
+calcGridBorder []         _            = []
+calcGridBorder (row:grid) (crow:cgrid) = [row'] ⧺ calcGridBorder grid cgrid
+  where row' = calcRowBorder row crow
+calcRowBorder ∷ [Spot] → [Cards Spot] → [Spot]
+calcRowBorder []         _            = []
+calcRowBorder _          []           = []
+calcRowBorder (spot:row) (cards:crow) = [spot'] ⧺ calcRowBorder row crow
+  where spot' = calcSpotBorder spot cards
+calcSpotBorder ∷ Spot → Cards Spot → Spot
+calcSpotBorder (Spot c t) (Cards (n,s,e,w)) = Spot c t'
+  where t' = if      (n' ∧ s' ∧ e' ∧ w') then 2
+             else if (n' ∧ s' ∧ e'     ) then 2
+             else if (n' ∧ s' ∧      w') then 2
+             else if (n' ∧      e' ∧ w') then 2
+             else if (     s' ∧ e' ∧ w') then 2
+             else if (n' ∧ s'          ) then 2
+             else if (n' ∧      e'     ) then 2
+             else if (n' ∧           w') then 2
+             else if (     s' ∧      w') then 2
+             else if (     s' ∧ e'     ) then 2
+             else if (          e' ∧ w') then 2
+             else if (n'               ) then 2
+             else if (     s'          ) then 2
+             else if (          e'     ) then 2
+             else if (               w') then 2
+             else t
+        n' = case n of
+               Nothing → False
+               Just (Spot c0 t0)
+                 | (c0 ≢ c)  → True
+                 | otherwise → False
+        s' = case s of
+               Nothing → False
+               Just (Spot c0 t0)
+                 | (c0 ≢ c)  → True
+                 | otherwise → False
+        e' = case e of
+               Nothing → False
+               Just (Spot c0 t0)
+                 | (c0 ≢ c)  → True
+                 | otherwise → False
+        w' = case w of
+               Nothing → False
+               Just (Spot c0 t0)
+                 | (c0 ≢ c)  → True
+                 | otherwise → False
+
 -- proivides world data as dyndata,
 -- loads from window object
 setTileBuffs ∷ Int → (Float,Float) → WorldParams → WorldData → [Dyns] → [Dyns]
-setTileBuffs nDefTex (cx,cy) wp wd oldBuff = calcWorldBuffs 1 nDefTex wp wd (evalScreenCursor segSize (-cx/64.0,-cy/64.0)) oldBuff
+setTileBuffs nDefTex (cx,cy) wp wd oldBuff = calcWorldBuffs 1 nDefTex wp wd (take 9 (evalScreenCursor segSize (-cx/64.0,-cy/64.0))) oldBuff
   where segSize   = wpSSize wp
 calcWorldBuffs ∷ Int → Int → WorldParams → WorldData → [(Int,Int)] → [Dyns] → [Dyns]
 calcWorldBuffs _ _       _  _  []       buff = buff
@@ -125,12 +201,6 @@ printSegs ∷ [((Int,Int),((Int,Int),Segment))] → String
 printSegs [] = ""
 printSegs ((zoneInd,(ind,_)):segs) = str ⧺ printSegs segs
   where str = "(" ⧺ (show zoneInd) ⧺ ", " ⧺ (show ind) ⧺ "), "
-
-indexZone ∷ (Int,Int) → [Zone] → Maybe Zone
-indexZone _   []      = Nothing
-indexZone ind (z:zs)
-  | (zoneIndex z) ≡ ind = Just z
-  | otherwise           = indexZone ind zs
 
 replaceZones ∷ [((Int,Int),((Int,Int),Segment))] → (Int,Int) → [Zone] → [Zone]
 replaceZones []     _        zs = zs
