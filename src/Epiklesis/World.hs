@@ -4,6 +4,7 @@ import Prelude()
 import UPrelude
 import Epiklesis.Data
 import Epiklesis.Rand
+import Epiklesis.Map
 import Epiklesis.Window
 import Paracletus.Data
 import Paracletus.Buff
@@ -16,7 +17,7 @@ genWorldParams uwp wp = wp { wpRands = rands
         conts   = genConts sg0 sg1 ncont
         sg0     = (wpStdGs wp) !! 0
         sg1     = (wpStdGs wp) !! 1
-        (w,h)   = ((fst (wpSSize wp))*w', (snd (wpSSize wp))*h')
+        (w,h)   = ((fst (wpZSize wp))*(fst (wpSSize wp))*w', (snd (wpZSize wp))*(snd (wpSSize wp))*h')
         (w',h') = (uwpWidth uwp, uwpHeight uwp)
         ncont   = uwpNConts uwp
 
@@ -30,38 +31,62 @@ loadWorld ds = case (currentWin ds) of
     where buffer = case (findWorldData win') of
                      Nothing      → dsBuff ds
                      Just (wp,wd)
-                       | (cz < -0.5)  → setTileBuffs (dsNDefTex ds) (cx,cy) wp wd (dsBuff ds)
+                       | (cz < -0.3)  → setTileBuffs (dsNDefTex ds) (cx,cy) wp wd (dsBuff ds)
                        | otherwise → setMapBuffs (dsNDefTex ds) (cx,cy) wp wd (dsBuff ds)
                        where (cx,cy,_) = winCursor win
           (cz,win') = case (findWorldData win) of
             Nothing      → (-1, win)
             Just (wp,wd) → (cz, win { winElems = replaceWorldWinElem wd' (winElems win) })
-              where zoneInd    = (0,0)
-                    wd'        = wd { wdZones = replaceZones newSegs zoneSize (wdZones wd) }
-                    newSegs    = fixSegs wpGen $ genSegs wpGen $ evalScreenCursor segSize (-cx/64.0,-cy/64.0)
-                    segSize    = wpSSize wp
+              where wd'        = wd { wdZones = replaceZones newSegs zoneSize (wdZones wd) }
+                    newSegs    = setTileData wp wd (cx,cy)--fixSegs wpGen $ genSegs wpGen $ evalScreenCursor segSize (-cx/64.0,-cy/64.0)
                     zoneSize   = wpZSize wp
-                    wpGen      = wp
                     (cx,cy,cz) = winCursor win
 
-setMapBuffs ∷ Int → (Float,Float) → WorldParams → WorldData → [Dyns] → [Dyns]
-setMapBuffs nDefTex (cx,cy) wp wd oldBuff = calcMapBuffs 1 nDefTex wp wd (evalScreenCursor segSize (-cx/64.0,-cy/64)) oldBuff
-  where segSize = wpSSize wp
-calcMapBuffs ∷ Int → Int → WorldParams → WorldData → [(Int,Int)] → [Dyns] → [Dyns]
-calcMapBuffs _ _       _  _  []       buff = buff
-calcMapBuffs n nDefTex wp wd (sc:scs) buff = calcMapBuffs (n + 1) nDefTex wp wd scs dyns
-  where dyns = setTileBuff n (calcMapBuff nDefTex (sh*sw) wp wd sc) buff
+-- proivides world data as dyndata,
+-- generates conts and tiles
+setTileData ∷ WorldParams → WorldData → (Float,Float) → [((Int,Int),((Int,Int),Segment))]
+setTileData wp wd (cx,cy) = genTileData wp wd fixedcs
+  where fixedcs = map (fixCurs wp) scs
+        scs     = evalScreenCursor segSize (-cx/64.0,-cy/64.0)
+        segSize = wpSSize wp
+genTileData ∷ WorldParams → WorldData → [((Int,Int),(Int,Int))] → [((Int,Int),((Int,Int),Segment))]
+genTileData _  _  []                = []
+genTileData wp wd ((zind,ind):inds) = [(zind,(ind,seg))] ⧺ genTileData wp wd inds
+  where seg = genSegData wp wd zind ind
+genSegData ∷ WorldParams → WorldData → (Int,Int) → (Int,Int) → Segment
+genSegData wp wd zind ind = case seg of
+  Segment grid → Segment grid
+  SegmentNULL  → Segment $ stripGrid $ seedConts ind' conts rands zeroSeg
+  where seg     = indexZSeg zind ind $ wdZones wd
+        rands   = wpRands wp
+        conts   = wpConts wp
         (sw,sh) = wpSSize wp
-calcMapBuff ∷ Int → Int → WorldParams → WorldData → (Int,Int) → Dyns
-calcMapBuff nDefTex size wp wd curs = Dyns $ res ⧺ (take (size - (length res)) (repeat (DynData 0 (0,0) (1,1) (0,0))))
-  where res     = calcMap nDefTex wp wd curs
+        (zw,zh) = wpZSize wp
+        zeroSeg = take sh (zip [0..] (repeat (take sw (zip [0..] (repeat (Spot 1 0))))))
+        ind'    = ((((fst ind)*sw) + ((fst zind)*zw*sw)), (((snd ind)*sh) + ((snd zind)*zh*sh)))
 
-calcMap ∷ Int → WorldParams → WorldData → (Int,Int) → [DynData]
-calcMap nDefTex wp wd curs = [testtile]
-  where testtile = DynData (nDefTex+1) (0,0) (w,h) (1,0)
-        (w,h)   = (fromIntegral w', fromIntegral h')
-        (w',h') = wpSSize wp
+seedConts ∷ (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
+seedConts _   []     _      grid = grid
+seedConts ind (c:cs) (r:rs) grid = seedConts ind cs rs spots
+  where spots = seedSpots ind c r grid
+seedSpots ∷ (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
+seedSpots _   _ _ []             = []
+seedSpots ind c r ((j,row):grid) = [(j,(rowSpots j ind c r row))] ⧺ seedSpots ind c r grid
+rowSpots ∷ Int → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → [(Int,Spot)] → [(Int,Spot)]
+rowSpots _ _   _ _ []             = []
+rowSpots j ind c r ((i,spot):row) = [(i,spotSpots i j ind c r spot)] ⧺ rowSpots j ind c r row
+spotSpots ∷ Int → Int → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → Spot → Spot
+spotSpots i j (zi,zj) (rand,cont) ((w,x),(y,z)) (Spot c t)
+  | seedDistance i' j' w x y z < (rand*maxS) = Spot c' t'
+  | otherwise                                = Spot c t
+  where c'   = cont
+        t'   = 2
+        i'   = i + zi
+        j'   = j + zj
+        maxS = 100000
 
+-- proivides world data as dyndata,
+-- loads from window object
 setTileBuffs ∷ Int → (Float,Float) → WorldParams → WorldData → [Dyns] → [Dyns]
 setTileBuffs nDefTex (cx,cy) wp wd oldBuff = calcWorldBuffs 1 nDefTex wp wd (evalScreenCursor segSize (-cx/64.0,-cy/64.0)) oldBuff
   where segSize   = wpSSize wp
@@ -100,6 +125,12 @@ printSegs ∷ [((Int,Int),((Int,Int),Segment))] → String
 printSegs [] = ""
 printSegs ((zoneInd,(ind,_)):segs) = str ⧺ printSegs segs
   where str = "(" ⧺ (show zoneInd) ⧺ ", " ⧺ (show ind) ⧺ "), "
+
+indexZone ∷ (Int,Int) → [Zone] → Maybe Zone
+indexZone _   []      = Nothing
+indexZone ind (z:zs)
+  | (zoneIndex z) ≡ ind = Just z
+  | otherwise           = indexZone ind zs
 
 replaceZones ∷ [((Int,Int),((Int,Int),Segment))] → (Int,Int) → [Zone] → [Zone]
 replaceZones []     _        zs = zs
@@ -140,44 +171,6 @@ findWorldDataM ∷ Maybe Window → Maybe (WorldParams,WorldData)
 findWorldDataM Nothing    = Nothing
 findWorldDataM (Just win) = findWorldDataElems (winElems win)
 
--- generates the segments that are
--- required by evalScreenCursor
-genSegs ∷ WorldParams → [(Int,Int)] → [((Int,Int),Segment)]
-genSegs _  []             = []
-genSegs wp (pos:poss) = [(pos,seg)] ⧺ (genSegs wp poss)
-  where seg = Segment $ seedSeg wp pos
-
--- generates tile list for single segment
-seedSeg ∷ WorldParams → (Int,Int) → [[Spot]]
-seedSeg wp pos = seedConts (sw,sh) pos conts rands zeroSeg
-  where rands   = wpRands wp
-        conts   = wpConts wp
-        zeroSeg = take sh (zip [0..] (repeat (take sw (zip [0..] (repeat (Spot 1 3))))))
-        (sw,sh) = wpSSize wp
-seedConts ∷ (Int,Int) → (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [(Int,[(Int,Spot)])] → [[Spot]]
-seedConts _    _   _      []     seg = flattenSeg seg
-seedConts _    _   []     _      seg = flattenSeg seg
-seedConts size pos (c:cs) (r:rs) seg = seedConts size pos cs rs seg'
-  where seg' = seedCont size pos c r seg
-flattenSeg ∷ [(Int,[(Int,Spot)])] → [[Spot]]
-flattenSeg [] = []
-flattenSeg ((_,row):gs) = [flattenRow row] ⧺ flattenSeg gs
-flattenRow ∷ [(Int,Spot)] → [Spot]
-flattenRow [] = []
-flattenRow ((_,g):gs) = [g] ⧺ flattenRow gs
-seedCont ∷ (Int,Int) → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
-seedCont size pos conts rands seg = map (seedTileRow size pos conts rands) seg
-seedTileRow ∷ (Int,Int) → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → (Int,[(Int,Spot)]) → (Int,[(Int,Spot)])
-seedTileRow size pos conts rands (j,row) = (j,map (seedTile size pos conts rands j) row)
-seedTile ∷ (Int,Int) → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → Int → (Int,Spot) → (Int,Spot)
-seedTile (width,height) pos (_,s) ((w,x),(y,z)) j (i,t)
-  | seedDistance i' j' w x y z < (s*maxsize) = (i,t')
-  | otherwise                                = (i,t)
-  where t'      = Spot (s+1) 2
-        i'      = i + ((fst pos)*width)
-        j'      = j + ((snd pos)*height)
-        maxsize = 10*(max width height)*(max width height)
-
 seedDistance ∷ Int → Int → Int → Int → Int → Int → Int
 seedDistance x1 y1 x2 y2 x3 y3 = do
   let p1 = (((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))
@@ -207,10 +200,12 @@ calcSeg nDefTex size (zw,zh) (zoneInd,segInd) (z:zs)
         zoneSize = (sw*zw*(fst zoneInd),sh*zh*(snd zoneInd))
         (sw,sh)  = size
 calcZone ∷ Int → (Int,Int) → (Int,Int) → (Int,Int) → [[Segment]] → [DynData]
-calcZone nDefTex (zw,zh) (w,h) (i,j) segs = calcSpot (zw+w*i,zh+h*j) nDefTex $ (segs !! j) !! i
-calcSpot ∷ (Int,Int) → Int → Segment → [DynData]
-calcSpot _   _       SegmentNULL    = []
-calcSpot ind nDefTex (Segment grid) = flatten $ map (calcGridRow ind nDefTex) (zip yinds grid)
+calcZone nDefTex (zw,zh) (w,h) (i,j) segs = calcSpot (zw+w*i,zh+h*j) nDefTex seg cards
+  where seg   = (segs !! j) !! i
+        cards = ((cardinals segs) !! j) !! i
+calcSpot ∷ (Int,Int) → Int → Segment → Cards Segment → [DynData]
+calcSpot _   _       SegmentNULL    cards = []
+calcSpot ind nDefTex (Segment grid) cards = flatten $ map (calcGridRow ind nDefTex) (zip yinds grid)
   where yinds = take (length grid) [0..]
 calcGridRow ∷ (Int,Int) → Int → (Int,[Spot]) → [DynData]
 calcGridRow ind nDefTex (j,spots) = flatten $ map (calcGrid ind j nDefTex) (zip xinds spots)

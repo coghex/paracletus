@@ -9,14 +9,16 @@ genRands ∷ StdGen → StdGen → Int → Int → Int → [((Int,Int),(Int,Int)
 genRands sg0 sg1 n w h = buildList2 (xl,yl)
   where xl  = buildList2 (xxl,xyl)
         yl  = buildList2 (yxl,yyl)
-        xxl = randomList (0,w) n sg0
-        xyl = randomList (0,h) n sg0
-        yxl = randomList (0,w) n sg1
-        yyl = randomList (0,h) n sg1
+        xxl = randomList (-w',w') n sg0
+        xyl = randomList (-h',h') n sg0
+        yxl = randomList (-w',w') n sg1
+        yyl = randomList (-h',h') n sg1
+        w'  = w `div` 2
+        h'  = h `div` 2
 -- conts are iterations of ellipses generation
 genConts ∷ StdGen → StdGen → Int → [(Int,Int)]
 genConts sg0 sg1 n = buildList2 (xl,yl)
-  where xl = randomList (1,6) n sg0
+  where xl = randomList (4,8) n sg0
         yl = randomList (1,4) n sg1
 
 randomList ∷ (Random α) ⇒ (α,α) → Int → StdGen → [α]

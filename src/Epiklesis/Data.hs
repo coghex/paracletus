@@ -157,6 +157,9 @@ data Spot = SpotNULL
                  , spotTile ∷ Int
                  } deriving (Show, Eq)
 
+-- cardinals of a spot
+data Cards α = Cards (Maybe α, Maybe α, Maybe α, Maybe α)
+
 -- possible bits in a pane
 data PaneBit
   = PaneBitText { bptText ∷ String }
