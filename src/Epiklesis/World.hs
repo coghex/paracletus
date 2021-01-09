@@ -124,21 +124,21 @@ calcRowBorder (spot:row) (cards:crow) = [spot'] ⧺ calcRowBorder row crow
   where spot' = calcSpotBorder spot cards
 calcSpotBorder ∷ Spot → Cards Spot → Spot
 calcSpotBorder (Spot c t) (Cards (n,s,e,w)) = Spot c t'
-  where t' = if      (n' ∧ s' ∧ e' ∧ w') then 2
-             else if (n' ∧ s' ∧ e'     ) then 2
-             else if (n' ∧ s' ∧      w') then 2
-             else if (n' ∧      e' ∧ w') then 2
-             else if (     s' ∧ e' ∧ w') then 2
-             else if (n' ∧ s'          ) then 2
-             else if (n' ∧      e'     ) then 2
-             else if (n' ∧           w') then 2
-             else if (     s' ∧      w') then 2
-             else if (     s' ∧ e'     ) then 2
-             else if (          e' ∧ w') then 2
-             else if (n'               ) then 2
-             else if (     s'          ) then 2
-             else if (          e'     ) then 2
-             else if (               w') then 2
+  where t' = if      (n' ∧ s' ∧ e' ∧ w') then 13
+             else if (n' ∧ s' ∧ e'     ) then 20
+             else if (n' ∧ s' ∧      w') then 18
+             else if (n' ∧      e' ∧ w') then 23
+             else if (     s' ∧ e' ∧ w') then 22
+             else if (n' ∧ s'          ) then 19
+             else if (n' ∧      e'     ) then 17
+             else if (n' ∧           w') then 15
+             else if (     s' ∧      w') then 9
+             else if (     s' ∧ e'     ) then 11
+             else if (          e' ∧ w') then 21
+             else if (n'               ) then 16
+             else if (     s'          ) then 10
+             else if (          e'     ) then 14
+             else if (               w') then 12
              else t
         n' = case n of
                Nothing → False
