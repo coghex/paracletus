@@ -67,7 +67,7 @@ genSegData wp wd zind ind = case seg of
         conts   = wpConts wp
         (sw,sh) = wpSSize wp
         (zw,zh) = wpZSize wp
-        zeroSeg = take sh (zip [0..] (repeat (take sw (zip [0..] (repeat (Spot 1 0))))))
+        zeroSeg = take (sh+2) (zip [-1..] (repeat (take (sw+2) (zip [-1..] (repeat (Spot 1 0))))))
         ind'    = ((((fst ind)*sw) + ((fst zind)*zw*sw)), (((snd ind)*sh) + ((snd zind)*zh*sh)))
 
 seedConts ∷ (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
@@ -92,25 +92,25 @@ spotSpots i j (zi,zj) (rand,cont) ((w,x),(y,z)) (Spot c t)
 
 -- adds in borders where possible
 setTileBorder ∷ WorldParams → [Zone] → (Float,Float) → [Zone]
-setTileBorder wp zones (cx,cy) = calcBorder zones $ map (fixCurs wp) $ take 9 $ evalScreenCursor (wpSSize wp) (-cx/64.0,-cy/64.0)
-calcBorder ∷ [Zone] → [((Int,Int),(Int,Int))] → [Zone]
-calcBorder []     _    = []
-calcBorder (z:zs) inds = [calcZoneBorder z inds] ⧺ calcBorder zs inds
-calcZoneBorder ∷ Zone → [((Int,Int),(Int,Int))] → Zone
-calcZoneBorder zone []                = zone
-calcZoneBorder zone ((zind,ind):inds)
-  | (zoneIndex zone)≡zind = calcZoneBorder zone' inds
-  | otherwise = calcZoneBorder zone inds
+setTileBorder wp zones (cx,cy) = calcBorder zones cards $ map (fixCurs wp) $ take 9 $ evalScreenCursor (wpSSize wp) (-cx/64.0,-cy/64.0)
+  where cards = zoneCards zones
+calcBorder ∷ [Zone] → [Cards Zone] → [((Int,Int),(Int,Int))] → [Zone]
+calcBorder []     _      _    = []
+calcBorder (z:zs) (c:cs) inds = [calcZoneBorder z c inds] ⧺ calcBorder zs cs inds
+calcZoneBorder ∷ Zone → Cards Zone → [((Int,Int),(Int,Int))] → Zone
+calcZoneBorder zone cards []                = zone
+calcZoneBorder zone cards ((zind,ind):inds)
+  | (zoneIndex zone)≡zind = calcZoneBorder zone' cards inds
+  | otherwise = calcZoneBorder zone cards inds
   where zone' = Zone zind $ calcSegsBorder (zoneSegs zone) ind
 
 calcSegsBorder ∷ [[Segment]] → (Int,Int) → [[Segment]]
 calcSegsBorder segs ind = replaceSeg ind seg1 segs
-  where seg1  = calcSegBorder seg0 cards
+  where seg1  = calcSegBorder seg0
         seg0  = (segs !! (snd ind)) !! (fst ind)
-        cards = ((cardinals segs) !! (snd ind)) !! (fst ind)
-calcSegBorder ∷ Segment → Cards Segment → Segment
-calcSegBorder SegmentNULL    _     = SegmentNULL
-calcSegBorder (Segment grid) cards = Segment grid'
+calcSegBorder ∷ Segment → Segment
+calcSegBorder SegmentNULL    = SegmentNULL
+calcSegBorder (Segment grid) = Segment grid'
   where grid'  = calcGridBorder grid scards
         scards = cardinals grid
 calcGridBorder ∷ [[Spot]] → [[Cards Spot]] → [[Spot]]
@@ -275,8 +275,9 @@ calcZone nDefTex (zw,zh) (w,h) (i,j) segs = calcSpot (zw+w*i,zh+h*j) nDefTex seg
         cards = ((cardinals segs) !! j) !! i
 calcSpot ∷ (Int,Int) → Int → Segment → Cards Segment → [DynData]
 calcSpot _   _       SegmentNULL    cards = []
-calcSpot ind nDefTex (Segment grid) cards = flatten $ map (calcGridRow ind nDefTex) (zip yinds grid)
-  where yinds = take (length grid) [0..]
+calcSpot ind nDefTex (Segment grid) cards = flatten $ map (calcGridRow ind nDefTex) (zip yinds grid')
+  where yinds = take (length grid') [0..]
+        grid' = map init $ map tail $ init $ tail grid
 calcGridRow ∷ (Int,Int) → Int → (Int,[Spot]) → [DynData]
 calcGridRow ind nDefTex (j,spots) = flatten $ map (calcGrid ind j nDefTex) (zip xinds spots)
   where xinds = take (length spots) [0..]

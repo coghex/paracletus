@@ -158,7 +158,7 @@ data Spot = SpotNULL
                  } deriving (Show, Eq)
 
 -- cardinals of a spot
-data Cards α = Cards (Maybe α, Maybe α, Maybe α, Maybe α)
+data Cards α = Cards (Maybe α, Maybe α, Maybe α, Maybe α) deriving (Show,Eq)
 
 -- possible bits in a pane
 data PaneBit
