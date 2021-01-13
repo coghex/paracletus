@@ -29,8 +29,10 @@ executable paracletus
                    Artos.Var
                    Epiklesis
                    Epiklesis.ArgV
+                   Epiklesis.Border
                    Epiklesis.Command
                    Epiklesis.Data
+                   Epiklesis.Elev
                    Epiklesis.Rand
                    Epiklesis.Map
                    Epiklesis.Settings
@@ -38,6 +40,7 @@ executable paracletus
                    Epiklesis.Shell
                    Epiklesis.Window
                    Epiklesis.World
+                   Epiklesis.Zazz
                    Paracletus
                    Paracletus.Buff
                    Paracletus.Data

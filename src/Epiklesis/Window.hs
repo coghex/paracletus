@@ -53,6 +53,46 @@ calcWinElemModTexs [] = []
 calcWinElemModTexs ((WinElemWorld _ _ dps):wes) = dps ⧺ calcWinElemModTexs wes
 calcWinElemModTexs (we:wes) = calcWinElemModTexs wes
 
+replaceZones ∷ [((Int,Int),((Int,Int),Segment))] → (Int,Int) → [Zone] → [Zone]
+replaceZones []     _        zs = zs
+replaceZones (s:ss) zoneSize zs = replaceZones ss zoneSize $ replaceSegs False s zoneSize zs
+replaceSegs ∷ Bool → ((Int,Int),((Int,Int),Segment)) → (Int,Int) → [Zone] → [Zone]
+replaceSegs True  _                   _        []     = []
+replaceSegs False (zoneInd,(ind,seg)) zoneSize []     = replaceZones [(zoneInd,(ind,seg))] zoneSize $ [Zone zoneInd (initSegs)]
+  where (w,h) = zoneSize
+        initSegs = take h $ repeat $ take w $ repeat $ SegmentNULL
+replaceSegs bool  (zoneInd,(ind,seg)) zoneSize ((Zone zind segs):zs)
+  | zind ≡ zoneInd = [Zone zind (replaceSeg ind seg segs)] ⧺ replaceSegs True (zoneInd,(ind,seg)) zoneSize zs
+  | otherwise      = [Zone zind segs] ⧺ replaceSegs bool (zoneInd,(ind,seg)) zoneSize zs
+
+replaceSeg ∷ (Int,Int) → Segment → [[Segment]] → [[Segment]]
+replaceSeg ind seg segs = map (findAndReplaceSegmentRow ind seg) (zip yinds segs)
+  where yinds = take (length segs) [0..]
+findAndReplaceSegmentRow ∷ (Int,Int) → Segment → (Int,[Segment]) → [Segment]
+findAndReplaceSegmentRow ind seg (j,segs) = map (findAndReplaceSegmentSpot ind seg j) (zip xinds segs)
+  where xinds = take (length segs) [0..]
+findAndReplaceSegmentSpot ∷ (Int,Int) → Segment → Int → (Int,Segment) → Segment
+findAndReplaceSegmentSpot ind seg0 j (i,seg)
+  | (i,j) ≡ ind = seg0
+  | otherwise   = seg
+
+replaceWorldWinElem ∷ (WorldData) → [WinElem] → [WinElem]
+replaceWorldWinElem _   [] = []
+replaceWorldWinElem wd0 ((WinElemWorld wp _  dp):wes) = [WinElemWorld wp wd0 dp] ⧺ replaceWorldWinElem wd0 wes
+replaceWorldWinElem wd0 (we:wes) = [we] ⧺ replaceWorldWinElem wd0 wes
+
+findWorldData ∷ Window → Maybe (WorldParams,WorldData)
+findWorldData win = findWorldDataElems (winElems win)
+findWorldDataElems ∷ [WinElem] → Maybe (WorldParams,WorldData)
+findWorldDataElems [] = Nothing
+findWorldDataElems ((WinElemWorld wp wd dp):wes) = Just (wp,wd)
+findWorldDataElems (_:wes) = findWorldDataElems wes
+
+findWorldDataM ∷ Maybe Window → Maybe (WorldParams,WorldData)
+findWorldDataM Nothing    = Nothing
+findWorldDataM (Just win) = findWorldDataElems (winElems win)
+
+
 -- returns the list of indecies
 -- of segments to generate
 evalScreenCursor ∷ (Int,Int) → (Float,Float) → [(Int,Int)]

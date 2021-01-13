@@ -134,16 +134,16 @@ zoneEdges (Cards (n,s,e,w)) = Cards (n',s',e',w')
 segEdges ∷ Cards Segment → Cards [Spot]
 segEdges (Cards (n,s,e,w)) = Cards (n',s',e',w')
   where n' = case n of
-               Just (Segment grid) → Just $ last grid
+               Just (Segment grid _) → Just $ last grid
                _                   → Nothing
         s' = case s of
-               Just (Segment grid) → Just $ head grid
+               Just (Segment grid _) → Just $ head grid
                _                   → Nothing
         e' = case e of
-               Just (Segment grid) → Just $ map head grid
+               Just (Segment grid _) → Just $ map head grid
                _                   → Nothing
         w' = case w of
-               Just (Segment grid) → Just $ map last grid
+               Just (Segment grid _) → Just $ map last grid
                _                   → Nothing
 
 -- finds specified seg in zones
@@ -185,3 +185,11 @@ calcMap nDefTex wp wd curs = [testtile]
         (w,h)     = (fromIntegral w', fromIntegral h')
         (w',h')   = wpSSize wp
 
+
+fixCurs ∷ WorldParams → (Int,Int) → ((Int,Int),(Int,Int))
+fixCurs wp (i,j) = ((zi,zj),(i',j'))
+  where zi      = ((1 + i) `div` zw)
+        zj      = ((1 + j) `div` zh)
+        i'      = (1 + i + zw) `mod` zw
+        j'      = (1 + j + zh) `mod` zh
+        (zw,zh) = wpZSize wp

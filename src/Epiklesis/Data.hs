@@ -148,7 +148,10 @@ data Zone = Zone { zoneIndex ∷ (Int,Int)
 -- segments are finite, thus faster
 data Segment = SegmentNULL
              | Segment { segGrid ∷ [[Spot]]
+                       , segElev ∷ [[Elev]]
                        } deriving (Show, Eq)
+-- elevation in float
+data Elev = Elev Float deriving (Show, Eq)
 
 -- spots can be of a certain image,
 -- with a certain atlas subtile
