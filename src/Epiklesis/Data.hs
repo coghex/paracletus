@@ -152,9 +152,9 @@ data Segment = SegmentNULL
 
 -- spots can be of a certain image,
 -- with a certain atlas subtile
-data Spot = SpotNULL
-          | Spot { spotCont ∷ Int
+data Spot = Spot { spotCont ∷ Int
                  , spotTile ∷ Int
+                 , spotEdge ∷ Maybe (Bool,Bool,Bool,Bool)
                  } deriving (Show, Eq)
 
 -- cardinals of a spot

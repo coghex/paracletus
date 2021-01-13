@@ -30,9 +30,7 @@ loadWorld ds = case (currentWin ds) of
                 , dsBuff = buffer }
     where buffer = case (findWorldData win') of
                      Nothing      → dsBuff ds
-                     Just (wp,wd)
-                       | (cz < -0.3)  → setTileBuffs (dsNDefTex ds) (cx,cy) wp wd (dsBuff ds)
-                       | otherwise → setMapBuffs (dsNDefTex ds) (cx,cy) wp wd (dsBuff ds)
+                     Just (wp,wd) → setTileBuffs (dsNDefTex ds) (cx,cy) wp wd (dsBuff ds)
                        where (cx,cy,_) = winCursor win
           (cz,win') = case (findWorldData win) of
             Nothing      → (-1, win)
@@ -67,7 +65,7 @@ genSegData wp wd zind ind = case seg of
         conts   = wpConts wp
         (sw,sh) = wpSSize wp
         (zw,zh) = wpZSize wp
-        zeroSeg = take (sh+2) (zip [-1..] (repeat (take (sw+2) (zip [-1..] (repeat (Spot 1 0))))))
+        zeroSeg = take (sh+2) (zip [-1..] (repeat (take (sw+2) (zip [-1..] (repeat (Spot 1 0 Nothing))))))
         ind'    = ((((fst ind)*sw) + ((fst zind)*zw*sw)), (((snd ind)*sh) + ((snd zind)*zh*sh)))
 
 seedConts ∷ (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
@@ -81,9 +79,9 @@ rowSpots ∷ Int → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → [(Int
 rowSpots _ _   _ _ []             = []
 rowSpots j ind c r ((i,spot):row) = [(i,spotSpots i j ind c r spot)] ⧺ rowSpots j ind c r row
 spotSpots ∷ Int → Int → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → Spot → Spot
-spotSpots i j (zi,zj) (rand,cont) ((w,x),(y,z)) (Spot c t)
-  | seedDistance i' j' w x y z < (rand*maxS) = Spot c' t'
-  | otherwise                                = Spot c t
+spotSpots i j (zi,zj) (rand,cont) ((w,x),(y,z)) (Spot c t b)
+  | seedDistance i' j' w x y z < (rand*maxS) = Spot c' t' b
+  | otherwise                                = Spot c t b
   where c'   = cont
         t'   = 0
         i'   = i + zi
@@ -110,9 +108,37 @@ calcSegsBorder segs ind = replaceSeg ind seg1 segs
         seg0  = (segs !! (snd ind)) !! (fst ind)
 calcSegBorder ∷ Segment → Segment
 calcSegBorder SegmentNULL    = SegmentNULL
-calcSegBorder (Segment grid) = Segment grid'
-  where grid'  = calcGridBorder grid scards
-        scards = cardinals grid
+calcSegBorder (Segment grid0) = Segment grid2
+  where grid1   = calcGridBorder grid0 scards0
+        scards0 = cardinals grid0
+        grid2   = calcGridCorners grid1 scards1
+        scards1 = cardinals grid1
+
+-- adds in corners on top of existing edges
+calcGridCorners ∷ [[Spot]] → [[Cards Spot]] → [[Spot]]
+calcGridCorners spots cards = map (calcRowCorners) $ zip spots cards
+calcRowCorners ∷ ([Spot],[Cards Spot]) → [Spot]
+calcRowCorners (spots,cards) = map (calcCorners) $ zip spots cards
+calcCorners ∷ (Spot,Cards Spot) → Spot
+calcCorners ((Spot c t b), Cards (n,s,e,w)) = case (n,s,e,w) of
+  (Nothing,_      ,_      ,_      ) → Spot c t b
+  (_      ,Nothing,_      ,_      ) → Spot c t b
+  (_      ,_      ,Nothing,_      ) → Spot c t b
+  (_      ,_      ,_      ,Nothing) → Spot c t b
+  (Just (Spot _ n0 _),Just (Spot _ s0 _),Just (Spot _ e0 _),Just (Spot _ w0 _)) → if (nw ∨ ne ∨ sw ∨ se) then Spot c t (Just (nw,ne,sw,se)) else Spot c t b
+    where nw     = nleft  ∧ wright
+          ne     = nright ∧ eleft
+          sw     = sright ∧ wleft
+          se     = sleft  ∧ eright
+          wright = (w0≡9) ∨(w0≡10)∨(w0≡18)∨(w0≡19)
+          wleft  = (w0≡15)∨(w0≡16)∨(w0≡18)∨(w0≡19)
+          eright = (e0≡16)∨(e0≡17)∨(e0≡19)∨(e0≡20)
+          eleft  = (e0≡10)∨(e0≡11)∨(e0≡19)∨(e0≡20)
+          nright = (s0≡11)∨(s0≡14)∨(s0≡21)∨(s0≡22)
+          nleft  = (s0≡9) ∨(s0≡12)∨(s0≡21)∨(s0≡22)
+          sright = (n0≡12)∨(n0≡15)∨(n0≡21)∨(n0≡23)
+          sleft  = (n0≡14)∨(n0≡17)∨(n0≡21)∨(n0≡23)
+
 calcGridBorder ∷ [[Spot]] → [[Cards Spot]] → [[Spot]]
 calcGridBorder []         _            = []
 calcGridBorder (row:grid) (crow:cgrid) = [row'] ⧺ calcGridBorder grid cgrid
@@ -123,7 +149,7 @@ calcRowBorder _          []           = []
 calcRowBorder (spot:row) (cards:crow) = [spot'] ⧺ calcRowBorder row crow
   where spot' = calcSpotBorder spot cards
 calcSpotBorder ∷ Spot → Cards Spot → Spot
-calcSpotBorder (Spot c t) (Cards (n,s,e,w)) = Spot c t'
+calcSpotBorder (Spot c t b) (Cards (n,s,e,w)) = Spot c t' b
   where t' = if      (n' ∧ s' ∧ e' ∧ w') then 13
              else if (n' ∧ s' ∧ e'     ) then 20
              else if (n' ∧ s' ∧      w') then 18
@@ -142,30 +168,70 @@ calcSpotBorder (Spot c t) (Cards (n,s,e,w)) = Spot c t'
              else t
         n' = case n of
                Nothing → False
-               Just (Spot c0 t0)
+               Just (Spot c0 _ _)
                  | (c0 ≢ c)  → True
                  | otherwise → False
         s' = case s of
                Nothing → False
-               Just (Spot c0 t0)
+               Just (Spot c0 _ _)
                  | (c0 ≢ c)  → True
                  | otherwise → False
         e' = case e of
                Nothing → False
-               Just (Spot c0 t0)
+               Just (Spot c0 _ _)
                  | (c0 ≢ c)  → True
                  | otherwise → False
         w' = case w of
                Nothing → False
-               Just (Spot c0 t0)
+               Just (Spot c0 _ _)
                  | (c0 ≢ c)  → True
                  | otherwise → False
 
 -- proivides world data as dyndata,
 -- loads from window object
 setTileBuffs ∷ Int → (Float,Float) → WorldParams → WorldData → [Dyns] → [Dyns]
-setTileBuffs nDefTex (cx,cy) wp wd oldBuff = calcWorldBuffs 1 nDefTex wp wd (take 9 (evalScreenCursor segSize (-cx/64.0,-cy/64.0))) oldBuff
-  where segSize   = wpSSize wp
+setTileBuffs nDefTex (cx,cy) wp wd dyns0 = dyns2
+  where dyns1   = calcWorldBuffs 2 nDefTex wp wd curs dyns0
+        curs    = take 9 (evalScreenCursor segSize (-cx/64.0,-cy/64.0))
+        segSize = wpSSize wp
+        dyns2   = setTileBuff 1 (calcAuxBuff nDefTex wp wd curs) dyns1
+
+calcAuxBuff ∷ Int → WorldParams → WorldData → [(Int,Int)] → Dyns
+calcAuxBuff nDefTex wp wd curs = Dyns $ res ⧺ (take (size - (length res)) (repeat (DynData 0 (0,0) (1,1) (0,0))))
+  where res  = calcCornerBuff nDefTex wp wd curs
+        size = 512
+
+calcCornerBuff ∷ Int → WorldParams → WorldData → [(Int,Int)] → [DynData]
+calcCornerBuff _       _  _  []       = []
+calcCornerBuff nDefTex wp wd (sc:scs) = calcZoneCornerBuff nDefTex zoneSize size (wdZones wd) sc' ⧺ calcCornerBuff nDefTex wp wd scs
+  where sc'      = fixCurs wp sc
+        zoneSize = wpZSize wp
+        size     = wpSSize wp
+calcZoneCornerBuff ∷ Int → (Int,Int) → (Int,Int) → [Zone] → ((Int,Int),(Int,Int)) → [DynData]
+calcZoneCornerBuff _       _       _     []     _            = []
+calcZoneCornerBuff nDefTex (zw,zh) (w,h) (z:zs) (zind,(i,j))
+  | zind ≡ zoneIndex z = calcSegCornerBuff (zw'+w*i,zh'+h*j) nDefTex (((zoneSegs z) !! j) !! i) ⧺ calcZoneCornerBuff nDefTex (zw,zh) (w,h) zs (zind,(i,j))
+  | otherwise          = calcZoneCornerBuff nDefTex (zw,zh) (w,h) zs (zind,(i,j))
+  where (zw',zh') = (w*zw*(fst zind),h*zh*(snd zind))
+calcSegCornerBuff ∷ (Int,Int) → Int → Segment → [DynData]
+calcSegCornerBuff _   _       SegmentNULL    = []
+calcSegCornerBuff ind nDefTex (Segment grid) = flatten $ map (calcGridRowCornerBuff ind nDefTex) (zip yinds grid')
+  where yinds = take (length grid') [0..]
+        grid' = map init $ map tail $ init $ tail grid
+calcGridRowCornerBuff ∷ (Int,Int) → Int → (Int,[Spot]) → [DynData]
+calcGridRowCornerBuff ind nDefTex (j,spots) = flatten $ map (calcGridCorner ind j nDefTex) (zip xinds spots)
+  where xinds = take (length spots) [0..]
+calcGridCorner ∷ (Int,Int) → Int → Int → (Int,Spot) → [DynData]
+calcGridCorner _       _ _       (_,(Spot c t Nothing)) = []
+calcGridCorner (cx,cy) y nDefTex (x,(Spot c t (Just (nw,ne,sw,se)))) = ddnw ⧺ ddne ⧺ ddsw ⧺ ddse
+  where ddnw = if nw then [DynData c' (2*x',2*y') (1,1) (1,8)] else []
+        ddne = if ne then [DynData c' (2*x',2*y') (1,1) (0,8)] else []
+        ddsw = if sw then [DynData c' (2*x',2*y') (1,1) (0,9)] else []
+        ddse = if se then [DynData c' (2*x',2*y') (1,1) (2,8)] else []
+        x'   = (fromIntegral cx) + (fromIntegral x)
+        y'   = (fromIntegral cy) + (fromIntegral y)
+        c'   = c + nDefTex
+
 calcWorldBuffs ∷ Int → Int → WorldParams → WorldData → [(Int,Int)] → [Dyns] → [Dyns]
 calcWorldBuffs _ _       _  _  []       buff = buff
 calcWorldBuffs n nDefTex wp wd (sc:scs) buff = calcWorldBuffs (n + 1) nDefTex wp wd scs dyns
@@ -270,19 +336,18 @@ calcSeg nDefTex size (zw,zh) (zoneInd,segInd) (z:zs)
         zoneSize = (sw*zw*(fst zoneInd),sh*zh*(snd zoneInd))
         (sw,sh)  = size
 calcZone ∷ Int → (Int,Int) → (Int,Int) → (Int,Int) → [[Segment]] → [DynData]
-calcZone nDefTex (zw,zh) (w,h) (i,j) segs = calcSpot (zw+w*i,zh+h*j) nDefTex seg cards
+calcZone nDefTex (zw,zh) (w,h) (i,j) segs = calcSpot (zw+w*i,zh+h*j) nDefTex seg
   where seg   = (segs !! j) !! i
-        cards = ((cardinals segs) !! j) !! i
-calcSpot ∷ (Int,Int) → Int → Segment → Cards Segment → [DynData]
-calcSpot _   _       SegmentNULL    cards = []
-calcSpot ind nDefTex (Segment grid) cards = flatten $ map (calcGridRow ind nDefTex) (zip yinds grid')
+calcSpot ∷ (Int,Int) → Int → Segment → [DynData]
+calcSpot _   _       SegmentNULL    = []
+calcSpot ind nDefTex (Segment grid) = flatten $ map (calcGridRow ind nDefTex) (zip yinds grid')
   where yinds = take (length grid') [0..]
         grid' = map init $ map tail $ init $ tail grid
 calcGridRow ∷ (Int,Int) → Int → (Int,[Spot]) → [DynData]
 calcGridRow ind nDefTex (j,spots) = flatten $ map (calcGrid ind j nDefTex) (zip xinds spots)
   where xinds = take (length spots) [0..]
 calcGrid ∷ (Int,Int) → Int → Int → (Int,Spot) → [DynData]
-calcGrid (cx,cy) y nDefTex (x,(Spot c t)) = [dd]
+calcGrid (cx,cy) y nDefTex (x,(Spot c t _)) = [dd]
   where dd = DynData c' (2*x',2*y') (1,1) (ix,iy)
         x' = (fromIntegral cx) + (fromIntegral x)
         y' = (fromIntegral cy) + (fromIntegral y)

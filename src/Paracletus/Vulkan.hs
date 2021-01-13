@@ -166,9 +166,9 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
           Dyns nDynData = stDynData stNew
           Dyns nCamData = stCamData stNew
           Dyns nAuxData = stAuxData stNew
+          nDynNew       = length nDynData
           nCamNew       = length nCamData
           nAuxNew       = length nAuxData
-          nDynNew       = length nDynData
           rdata         = RenderData { dev
                                 , swapInfo
                                 , queues
