@@ -17,12 +17,12 @@ layout(binding = 3) uniform DynTexTransObject {
   mat4 dynTexI[1000];
 } dynTex;
 
-layout(binding = 4) uniform CamTransObject {
-  mat4 cmov[1000];
+layout(binding = 4) buffer CamTransObject {
+  mat4 cmov[10000];
 } cam;
 
-layout(binding = 5) uniform CamTexTransObject {
-  mat4 camTexI[1000];
+layout(binding = 5) buffer CamTexTransObject {
+  mat4 camTexI[10000];
 } camTex;
 
 layout(binding = 6) uniform AuxTransObject {

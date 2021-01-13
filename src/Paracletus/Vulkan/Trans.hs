@@ -250,7 +250,7 @@ transTexBufferInfo nDyn uniformBuffer = return $ createVk @VkDescriptorBufferInf
   where nDyn' = max 1 $ fromIntegral nDyn
 
 createTransCamBuffers ∷ VkPhysicalDevice → VkDevice → Int → Int → Anamnesis ε σ [(VkDeviceMemory, VkBuffer)]
-createTransCamBuffers pdev dev n nDyn = replicateM n $ createBuffer pdev dev (nDyn'*(bSizeOf @CamTransObject undefined)) VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ⌄ VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+createTransCamBuffers pdev dev n nDyn = replicateM n $ createBuffer pdev dev (nDyn'*(bSizeOf @CamTransObject undefined)) VK_BUFFER_USAGE_STORAGE_BUFFER_BIT (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ⌄ VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
   where nDyn' = max 1 $ fromIntegral nDyn
 
 transCamBufferInfo ∷ Int → VkBuffer → Anamnesis ε σ VkDescriptorBufferInfo
@@ -261,7 +261,7 @@ transCamBufferInfo nDyn uniformBuffer = return $ createVk @VkDescriptorBufferInf
   where nDyn' = max 1 $ fromIntegral nDyn
 
 createTransCamTexBuffers ∷ VkPhysicalDevice → VkDevice → Int → Int → Anamnesis ε σ [(VkDeviceMemory, VkBuffer)]
-createTransCamTexBuffers pdev dev n nDyn = replicateM n $ createBuffer pdev dev (nDyn'*(bSizeOf @CamTexTransObject undefined)) VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ⌄ VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
+createTransCamTexBuffers pdev dev n nDyn = replicateM n $ createBuffer pdev dev (nDyn'*(bSizeOf @CamTexTransObject undefined)) VK_BUFFER_USAGE_STORAGE_BUFFER_BIT (VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT ⌄ VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
   where nDyn' = max 1 $ fromIntegral nDyn
 
 transCamTexBufferInfo ∷ Int → VkBuffer → Anamnesis ε σ VkDescriptorBufferInfo

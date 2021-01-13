@@ -18,12 +18,7 @@ loadTileBuff ∷ [Tile]
 loadTileBuff = makeTileBuff 0 64
 
 loadWorldBuff ∷ WorldParams → [Tile]
-loadWorldBuff wp = makeWTileBuff 1 size ⧺ makeWTileBuff 2 size ⧺ makeWTileBuff 3 size ⧺ makeWTileBuff 4 size ⧺ makeWTileBuff 5 size
-  where size = sw*sh
-        (sw,sh) = wpSSize wp
-
-loadAuxBuff ∷ WorldParams → [Tile]
-loadAuxBuff wp = makeATileBuff 6 size ⧺ makeATileBuff 7 size ⧺ makeATileBuff 8 size ⧺ makeATileBuff 9 size
+loadWorldBuff wp = makeWTileBuff 1 size ⧺ makeWTileBuff 2 size ⧺ makeWTileBuff 3 size ⧺ makeWTileBuff 4 size ⧺ makeWTileBuff 5 size ⧺ makeWTileBuff 6 size ⧺ makeWTileBuff 7 size ⧺ makeWTileBuff 8 size ⧺ makeWTileBuff 9 size
   where size = sw*sh
         (sw,sh) = wpSSize wp
 

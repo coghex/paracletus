@@ -108,7 +108,7 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
   descriptorBufferInfos ← mapM transObjBufferInfo transObjBufs
   -- vulkan shaders dont allow dynamic ubo arrays
   let nDynObjs = 1000
-      nCamObjs = 1000
+      nCamObjs = 10000
       nAuxObjs = 1000
   -- dynamic object matricies stack on the global
   -- they all behave the same,
