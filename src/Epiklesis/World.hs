@@ -59,18 +59,19 @@ genTileData wp wd ((zind,ind):inds) = [(zind,(ind,seg))] ⧺ genTileData wp wd i
 genSegData ∷ WorldParams → WorldData → (Int,Int) → (Int,Int) → Segment
 genSegData wp wd zind ind = case seg of
   Segment grid e → Segment grid e
-  SegmentNULL    → Segment (stripGrid seg1) (stripGrid elev)
-  where seg1    = seedConts ind' conts rands zeroSeg
-        seg     = indexSeg ind $ zoneSegs zone
-        zone    = indexZone (zw,zh) zind zones
-        zones   = wdZones wd
-        rands   = wpRands wp
-        conts   = wpConts wp
-        (sw,sh) = wpSSize wp
-        (zw,zh) = wpZSize wp
-        zeroSeg = take (sh+2) (zip [-1..] (repeat (take (sw+2) (zip [-1..] (repeat (Spot 1 0 Nothing))))))
-        ind'    = ((((fst ind)*sw) + ((fst zind)*zw*sw)), (((snd ind)*sh) + ((snd zind)*zh*sh)))
-        elev    = take (sh+2) (zip [-1..] (repeat (take (sw+2) (zip [-1..] (repeat (Elev 0))))))
+  SegmentNULL    → Segment (stripGrid seg1) (stripGrid elev1)
+  where seg1     = seedConts ind' conts rands zeroSeg
+        seg      = indexSeg ind $ zoneSegs zone
+        zone     = indexZone (zw,zh) zind zones
+        zones    = wdZones wd
+        rands    = wpRands wp
+        conts    = wpConts wp
+        (sw,sh)  = wpSSize wp
+        (zw,zh)  = wpZSize wp
+        zeroSeg  = take (sh+2) (zip [-1..] (repeat (take (sw+2) (zip [-1..] (repeat (Spot 1 0 Nothing))))))
+        ind'     = ((((fst ind)*sw) + ((fst zind)*zw*sw)), (((snd ind)*sh) + ((snd zind)*zh*sh)))
+        elev1    = seedElev ind' conts rands zeroElev
+        zeroElev = take (sh+2) (zip [-1..] (repeat (take (sw+2) (zip [-1..] (repeat (Elev 0))))))
 
 seedConts ∷ (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
 seedConts _   []     _      grid = grid
@@ -141,12 +142,6 @@ printSegs ∷ [((Int,Int),((Int,Int),Segment))] → String
 printSegs [] = ""
 printSegs ((zoneInd,(ind,_)):segs) = str ⧺ printSegs segs
   where str = "(" ⧺ (show zoneInd) ⧺ ", " ⧺ (show ind) ⧺ "), "
-
-seedDistance ∷ Int → Int → Int → Int → Int → Int → Int
-seedDistance x1 y1 x2 y2 x3 y3 = do
-  let p1 = (((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))
-      p2 = (((x1-x3)*(x1-x3))+((y1-y3)*(y1-y3)))
-  p1*p2
 
 -- world generation
 calcSpots ∷ Int → WorldParams → WorldData → (Int,Int) → [DynData]

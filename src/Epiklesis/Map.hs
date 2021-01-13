@@ -193,3 +193,10 @@ fixCurs wp (i,j) = ((zi,zj),(i',j'))
         i'      = (1 + i + zw) `mod` zw
         j'      = (1 + j + zh) `mod` zh
         (zw,zh) = wpZSize wp
+
+-- formula for an ellipse
+seedDistance ∷ Int → Int → Int → Int → Int → Int → Int
+seedDistance x1 y1 x2 y2 x3 y3 = do
+  let p1 = (((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))
+      p2 = (((x1-x3)*(x1-x3))+((y1-y3)*(y1-y3)))
+  p1*p2

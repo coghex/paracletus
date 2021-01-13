@@ -7,9 +7,10 @@ import Data.List (isPrefixOf)
 import Data.List.Split (splitOn)
 import Anamnesis.Data
 import Epiklesis.Data
+import Epiklesis.Elev (elevAt)
 import Epiklesis.ShCmd
 import Epiklesis.World (printWorldParams)
-import Epiklesis.Window (currentWin)
+import Epiklesis.Window (currentWin,findWorldData)
 import Paracletus.Buff (clearBuff)
 import Paracletus.Data
 import Paracletus.Elem (calcTextBox, calcText)
@@ -41,6 +42,12 @@ evalShCmds env shCmd ds = case shCmd of
       where str = case (currentWin ds) of
                     Nothing → "no window"
                     Just w  → show $ winCursor w
+    ShellCmdRet "elev" → ds { dsShell = (dsShell ds) { shRet = str }}
+      where str = case (currentWin ds) of
+                    Nothing → "no window"
+                    Just w  → case (findWorldData w) of
+                      Nothing      → "no world"
+                      Just (wp,wd) → show $ elevAt (winCursor w) wp wd
     ShellCmdRet "argv" → ds { dsShell = (dsShell ds) { shRet = str }}
       where str = case (currentWin ds) of
                     Nothing → "no window"
