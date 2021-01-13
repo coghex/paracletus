@@ -16,7 +16,6 @@ import Anamnesis
 import Anamnesis.Data
 import Anamnesis.Event
 import Anamnesis.Foreign
-import Anamnesis.Init
 import Anamnesis.Util
 import Artos.Data
 import Artos.Except
@@ -68,7 +67,6 @@ runParacVulkan = do
     let gqdata = GQData pdev dev commandPool (graphicsQueue queues)
     texData ← loadVulkanTextures gqdata []
     env ← ask
-    st  ← get
     -- *** CHILD THREADS
     -- epiklesis is the lua engine
     _ ← liftIO $ forkIO $ loadEpiklesis env

@@ -4,7 +4,6 @@ import Prelude()
 import UPrelude
 import Data.List.Split (splitOn)
 import Epiklesis.Data
-import Epiklesis.World
 import Paracletus.Buff
 import Paracletus.Data
 import Paracletus.Oblatum.Font
@@ -26,7 +25,7 @@ loadWinElem _ (WinElemPane pos _ bits)    = (calcTextBox size posOffset s) ⧺ c
   where s = calcPaneBoxSize size bits
         posOffset = ((fst pos) - 0.5, (snd pos) + 0.5)
         size = TextSize30px
-loadWinElem nDefTex (WinElemWorld wp wd _)      = loadWorldBuff wp ⧺ loadAuxBuff
+loadWinElem _ (WinElemWorld wp _ _)      = loadWorldBuff wp ⧺ loadAuxBuff
 loadWinElem _ (WinElemLink _ _ _)         = []
 loadWinElem _ (WinElemNULL)               = []
 
@@ -35,20 +34,20 @@ calcPaneTiles ∷ (Double,Double) → [(Int,PaneBit)] → [Tile]
 calcPaneTiles _   []                    = []
 calcPaneTiles pos ((i,PaneBitSlider text mn mx (Just vl)):pbs) = (calcText TextSize30px (fst pos) pos' text) ⧺ calcPaneSlider i pos' mn mx vl ⧺ calcPaneTiles pos pbs
   where pos' = ((fst pos) + 1.0,(snd pos) - (fromIntegral i))
-calcPaneTiles pos ((i,PaneBitSlider text mn mx Nothing):pbs) = (calcText TextSize30px (fst pos) pos' text) ⧺ calcPaneTiles pos pbs
+calcPaneTiles pos ((i,PaneBitSlider text _ _ Nothing):pbs) = (calcText TextSize30px (fst pos) pos' text) ⧺ calcPaneTiles pos pbs
   where pos' = ((fst pos) + 1.0,(snd pos) - (fromIntegral i))
 calcPaneTiles pos ((i,PaneBitText text):pbs) = (calcText TextSize30px (fst pos) pos' text) ⧺ calcPaneTiles pos pbs
   where pos' = ((fst pos) + 0.5,(snd pos) + (fromIntegral i))
-calcPaneTiles pos ((i,PaneBitNULL):pbs) = [] ⧺ calcPaneTiles pos pbs
+calcPaneTiles pos ((_,PaneBitNULL):pbs) = [] ⧺ calcPaneTiles pos pbs
 
 -- figure out what size the pane box should be
 calcPaneBoxSize ∷ TextSize → [(Int,PaneBit)] → (Double,Double)
 calcPaneBoxSize _    []  = (24,1)
-calcPaneBoxSize size pbs = (24,2.0*fromIntegral(length pbs))
+calcPaneBoxSize _    pbs = (24,2.0*fromIntegral(length pbs))
 
 -- create a slider of arbitrary bounds
 calcPaneSlider ∷ Int → (Double,Double) → Int → Int → Int → [Tile]
-calcPaneSlider n pos mn mx val = sliderTile ⧺ barTiles ⧺ minTiles ⧺ maxTiles ⧺ valTiles
+calcPaneSlider n pos mn mx _ = sliderTile ⧺ barTiles ⧺ minTiles ⧺ maxTiles ⧺ valTiles
   where sliderTile = [DTile (DMSlider n) sliderPos (0.1,0.5) (0,0) (1,1) 112]
         sliderPos  = ((fst pos) + 4.0, (snd pos))
         barTiles   = calcText size 0 posBar "<-------->"
@@ -74,7 +73,7 @@ findBitPos _    []       = (0,(0.0,0.0))
 findBitPos pane ((WinElemPane pos name bits):wes)
   | pane ≡ name = (length bits - 1,((fst pos), (snd pos) - (fromIntegral(length bits))))
   | otherwise   = findBitPos pane wes
-findBitPos pane (we:wes) = findBitPos pane wes
+findBitPos pane (_:wes) = findBitPos pane wes
 
 -- figure out what size the textbox should be
 calcTextBoxSize ∷ TextSize → String → (Double,Double)

@@ -32,7 +32,6 @@ executable paracletus
                    Epiklesis.Border
                    Epiklesis.Command
                    Epiklesis.Data
-                   Epiklesis.Elev
                    Epiklesis.Rand
                    Epiklesis.Map
                    Epiklesis.Settings

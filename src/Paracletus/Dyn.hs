@@ -57,14 +57,14 @@ loadDynData ds ((DTile (DMNULL) _ _ _ _ _):ts) = [DynData 0 (0,0) (1,1) (0,0)] �
 -- calcs dyndata for slider val
 sliderDiglet ∷ [WinElem] → Int → Int → Int
 sliderDiglet []       _ _ = -36
-sliderDiglet ((WinElemPane _ _ bits):wes) n d = sliderBitDiglet bits n d
-sliderDiglet (we:wes) n d = sliderDiglet wes n d
+sliderDiglet ((WinElemPane _ _ bits):_) n d = sliderBitDiglet bits n d
+sliderDiglet (_:wes) n d = sliderDiglet wes n d
 sliderBitDiglet ∷ [(Int,PaneBit)] → Int → Int → Int
 sliderBitDiglet []       _ _ = -36
 sliderBitDiglet ((i,(PaneBitSlider _ _ _ (Just val))):pbs) n d
   | n ≡ i = calcSliderDig d val
   | otherwise = sliderBitDiglet pbs n d
-sliderBitDiglet (pb:pbs) n d = sliderBitDiglet pbs n d
+sliderBitDiglet (_:pbs) n d = sliderBitDiglet pbs n d
 calcSliderDig ∷ Int → Int → Int
 calcSliderDig d val
   | val > 0   ∧ d < 1 = calcDig d val
@@ -87,22 +87,22 @@ calcDig 0 fps = fps `mod` 10
 calcDig 1 fps = (fps `div` 10) `mod` 10
 calcDig 2 fps = (fps `div` 100) `mod` 10
 calcDig 3 fps = (fps `div` 1000) `mod` 100
-calcDig _ fps = -36
+calcDig _ _   = -36
 
 -- convert slider 
 calcSliderOffset ∷ Window → Int → Float
 calcSliderOffset win n = calcWinSliderOffset (winElems win) n
 calcWinSliderOffset ∷ [WinElem] → Int → Float
 calcWinSliderOffset [] _ = 0.0
-calcWinSliderOffset ((WinElemPane _ _ bits):wes) n = calcBitsSliderOffset bits n
-calcWinSliderOffset (we:wes) n = calcWinSliderOffset wes n
+calcWinSliderOffset ((WinElemPane _ _ bits):_) n = calcBitsSliderOffset bits n
+calcWinSliderOffset (_:wes) n = calcWinSliderOffset wes n
 calcBitsSliderOffset ∷ [(Int,PaneBit)] → Int → Float
 calcBitsSliderOffset []       _ = 0.0
-calcBitsSliderOffset ((i,(PaneBitSlider text mn mx (Just val))):pbs) n = if (n ≡ i) then 6.0*val'/(mx' - mn') else calcBitsSliderOffset pbs n
+calcBitsSliderOffset ((i,(PaneBitSlider _ mn mx (Just val))):pbs) n = if (n ≡ i) then 6.0*val'/(mx' - mn') else calcBitsSliderOffset pbs n
   where val' = fromIntegral val
         mn'  = fromIntegral mn
         mx'  = fromIntegral mx
-calcBitsSliderOffset (pb:pbs) n = calcBitsSliderOffset pbs n
+calcBitsSliderOffset (_:pbs) n = calcBitsSliderOffset pbs n
 
 -- move slider
 moveSlider ∷ Double → Int → Window → Window
@@ -132,9 +132,9 @@ printWinDynList ∷ Window → String
 printWinDynList win = printElemDynList $ winElems win
 printElemDynList ∷ [WinElem] → String
 printElemDynList []       = "no elems"
-printElemDynList ((WinElemPane pos name bits):wes) = printBitsDynList bits ⧺ printElemDynList wes
-printElemDynList (we:wes) = printElemDynList wes
+printElemDynList ((WinElemPane _ _ bits):wes) = printBitsDynList bits ⧺ printElemDynList wes
+printElemDynList (_:wes) = printElemDynList wes
 printBitsDynList ∷ [(Int,PaneBit)] → String
 printBitsDynList [] = ""
-printBitsDynList ((i,(PaneBitSlider text mn mx (Just val))):pbs) = (show i) ⧺ ", " ⧺ text ⧺ ": " ⧺ (show val) ⧺ "\n" ⧺ printBitsDynList pbs
-printBitsDynList ((i,pb):pbs) = printBitsDynList pbs
+printBitsDynList ((i,(PaneBitSlider text _ _ (Just val))):pbs) = (show i) ⧺ ", " ⧺ text ⧺ ": " ⧺ (show val) ⧺ "\n" ⧺ printBitsDynList pbs
+printBitsDynList (_:pbs) = printBitsDynList pbs

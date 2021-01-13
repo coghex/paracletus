@@ -22,6 +22,7 @@ findWin name (win:wins)
 -- index searched by name
 findWinI ∷ String → [Window] → Maybe Int
 findWinI name wins = findWinIFunc 0 name wins
+findWinIFunc ∷ Int → String → [Window] → Maybe Int
 findWinIFunc _ _    []         = Nothing
 findWinIFunc n name (win:wins)
   | winTitle win ≡ name = Just n
@@ -43,7 +44,7 @@ loadNewBit pane (we:wes) bit = case we of
     | name ≡ pane → [WinElemPane pos name bits'] ⧺ loadNewBit pane wes bit
     | otherwise   → [WinElemPane pos name bits]  ⧺ loadNewBit pane wes bit
     where bits' = bits ⧺ [((length bits),bit)]
-  we                        → [we] ⧺ loadNewBit pane wes bit
+  we0                       → [we0] ⧺ loadNewBit pane wes bit
 
 -- returns requred extra textures
 calcWinModTexs ∷ Window → [String]
@@ -51,7 +52,7 @@ calcWinModTexs win = calcWinElemModTexs $ winElems win
 calcWinElemModTexs ∷ [WinElem] → [String]
 calcWinElemModTexs [] = []
 calcWinElemModTexs ((WinElemWorld _ _ dps):wes) = dps ⧺ calcWinElemModTexs wes
-calcWinElemModTexs (we:wes) = calcWinElemModTexs wes
+calcWinElemModTexs (_:wes) = calcWinElemModTexs wes
 
 replaceZones ∷ [((Int,Int),((Int,Int),Segment))] → (Int,Int) → [Zone] → [Zone]
 replaceZones []     _        zs = zs
@@ -85,7 +86,7 @@ findWorldData ∷ Window → Maybe (WorldParams,WorldData)
 findWorldData win = findWorldDataElems (winElems win)
 findWorldDataElems ∷ [WinElem] → Maybe (WorldParams,WorldData)
 findWorldDataElems [] = Nothing
-findWorldDataElems ((WinElemWorld wp wd dp):wes) = Just (wp,wd)
+findWorldDataElems ((WinElemWorld wp wd _):_) = Just (wp,wd)
 findWorldDataElems (_:wes) = findWorldDataElems wes
 
 findWorldDataM ∷ Maybe Window → Maybe (WorldParams,WorldData)

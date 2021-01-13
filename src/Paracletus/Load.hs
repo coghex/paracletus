@@ -6,7 +6,6 @@ where
 -- recreate the swapchain
 import Prelude()
 import UPrelude
-import Data.List (sort)
 import Artos.Data
 import Artos.Var
 import Artos.Queue
@@ -14,7 +13,6 @@ import Anamnesis.Data
 import Epiklesis.ArgV (changeWin)
 import Epiklesis.Data
 import Epiklesis.Shell
-import Epiklesis.ShCmd
 import Epiklesis.Window
 import Epiklesis.World
 import Paracletus.Buff
@@ -43,7 +41,7 @@ loadParacVulkan ∷ Env → IO ()
 loadParacVulkan env = do
   runLoadLoop env initDS TStop
   where initDS  = DrawState DSSNULL initShell cmds [] (-1) (-1) [] (FPS 30.0 30 False) initBuff 0
-        cmds    = ["newWindow", "newText", "newMenu", "newMenuBit", "newLink", "newWorld", "switchWindow", "setBackground", "luaModule", "newDynObj", "resizeWindow", "toggleFPS"]
+        cmds    = ["newWindow", "newText", "newMenu", "newMenuBit", "newLink", "newWorld", "switchWindow", "switchScreen", "setBackground", "luaModule", "newDynObj", "resizeWindow", "toggleFPS"]
 
 -- load loop runs with a delay so that
 -- it can sleep (ghc threads run like that)
@@ -211,9 +209,13 @@ processCommand env ds cmd = case cmd of
   LoadCmdShell shCmd → return $ ResDrawState $ evalShCmds env shCmd ds
   LoadCmdNewWin win → return $ ResDrawState ds'
     where ds' = ds { dsWins = win:(dsWins ds) }
+  LoadCmdSwitchScreen screen → case (currentWin ds) of
+    Nothing → return $ ResError $ "no window"
+    Just w  → return $ ResDrawState ds'
+      where ds' = ds { dsWins = replaceWin win (dsWins ds) }
+            win = w { winScreen = screen }
   -- TODO: get rid of winI, use head
   LoadCmdSwitchWin win → do
-    let eventQ = envEventQ env
     case (findWinI win (dsWins ds)) of
       Just n  → do
         let ds'  = changeWin n ds
@@ -224,7 +226,6 @@ processCommand env ds cmd = case cmd of
     where ds' = linkTest pos ds
   LoadCmdDyns → do
     let eventQ = envEventQ env
-        newVerts = VertsDF $ calcVertices $ loadTiles ds
         dyns   = loadDyns ds
     atomically $ writeQueue eventQ $ EventDyns $ dyns
     return ResSuccess
@@ -235,15 +236,14 @@ processCommand env ds cmd = case cmd of
     atomically $ writeQueue (envEventQ env) $ EventVerts newVerts
     atomically $ writeQueue (envEventQ env) $ EventDyns $ dyns
     return $ ResDrawState ds'
-  LoadCmdNewElem name elem → do
+  LoadCmdNewElem name el → do
     let wins = dsWins ds
     case (findWin name wins) of
       Nothing  → return $ ResError $ "no window " ⧺ name ⧺ " yet present"
       Just win → do
         let ds'    = ds { dsWins = replaceWin win' wins }
-            win'   = win { winElems = elems }
-            elems  = elem:(winElems win)
-            eventQ = envEventQ env
+            win'   = win { winElems = els }
+            els    = el:(winElems win)
         return $ ResDrawState ds'
   LoadCmdNewBit name pane bit → do
     let wins = dsWins ds
@@ -287,15 +287,16 @@ processCommand env ds cmd = case cmd of
       else do
         atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
         return $ ResSuccess
+  LoadCmdPrint PrintCam → case (currentWin ds) of
+    Nothing → return $ ResError "no window"
+    Just w  → do
+      atomically $ writeQueue (envEventQ env) $ EventLogDebug $ show $ winCursor w
+      return ResSuccess
+  LoadCmdPrint arg      → return $ ResError $ "no arg " ⧺ (show arg) ⧺ " known"
   LoadCmdNULL → return ResNULL
 
 genDynBuffs ∷ DrawState → [Dyns]
 genDynBuffs ds = dyns1
   where dyns0 = dsBuff ds
         dyns1 = genShBuff dyns0 0 $ dsShell ds
-        --dyns2 = case (currentWin ds) of
-        --          Nothing → dyns1
-        --          Just w  → case (findWorldData w) of
-        --              Nothing      → dyns1
-        --              Just (wp,wd) → genWorldBuff dyns1 1 wd
 

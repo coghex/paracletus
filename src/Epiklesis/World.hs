@@ -4,11 +4,9 @@ import Prelude()
 import UPrelude
 import Epiklesis.Border
 import Epiklesis.Data
-import Epiklesis.Elev
 import Epiklesis.Rand
 import Epiklesis.Map
 import Epiklesis.Window
-import Epiklesis.Zazz
 import Paracletus.Data
 import Paracletus.Buff
 
@@ -33,17 +31,19 @@ loadWorld ds = case (currentWin ds) of
                 , dsBuff = buffer }
     where buffer = case (findWorldData win') of
                      Nothing      → dsBuff ds
-                     Just (wp,wd) → setTileBuffs (dsNDefTex ds) (cx,cy) wp wd (dsBuff ds)
+                     Just (wp,wd) → case (winScreen win') of
+                       WinScreenElev → (dsBuff ds)
+                       WinScreenNULL → setTileBuffs (dsNDefTex ds) (cx,cy) wp wd (dsBuff ds)
                        where (cx,cy,_) = winCursor win
-          (cz,win') = case (findWorldData win) of
-            Nothing      → (-1, win)
-            Just (wp,wd) → (cz, win { winElems = replaceWorldWinElem wd' (winElems win) })
+          (win') = case (findWorldData win) of
+            Nothing      → (win)
+            Just (wp,wd) → (win { winElems = replaceWorldWinElem wd' (winElems win) })
               where wd'        = wd { wdZones = zones1 }
                     zones1     = setTileBorder wp zones0 (cx,cy)
                     zones0     = replaceZones newSegs0 zoneSize (wdZones wd)
                     newSegs0   = setTileData wp wd (cx,cy)--fixSegs wpGen $ genSegs wpGen $ evalScreenCursor segSize (-cx/64.0,-cy/64.0)
                     zoneSize   = wpZSize wp
-                    (cx,cy,cz) = winCursor win
+                    (cx,cy,_) = winCursor win
 
 -- proivides world data as dyndata,
 -- generates conts and tiles
@@ -58,8 +58,8 @@ genTileData wp wd ((zind,ind):inds) = [(zind,(ind,seg))] ⧺ genTileData wp wd i
   where seg = genSegData wp wd zind ind
 genSegData ∷ WorldParams → WorldData → (Int,Int) → (Int,Int) → Segment
 genSegData wp wd zind ind = case seg of
-  Segment grid e → Segment grid e
-  SegmentNULL    → Segment (stripGrid seg1) (stripGrid elev1)
+  Segment grid → Segment grid
+  SegmentNULL  → Segment (stripGrid seg1)
   where seg1     = seedConts ind' conts rands zeroSeg
         seg      = indexSeg ind $ zoneSegs zone
         zone     = indexZone (zw,zh) zind zones
@@ -70,11 +70,10 @@ genSegData wp wd zind ind = case seg of
         (zw,zh)  = wpZSize wp
         zeroSeg  = take (sh+2) (zip [-1..] (repeat (take (sw+2) (zip [-1..] (repeat (Spot 1 0 Nothing))))))
         ind'     = ((((fst ind)*sw) + ((fst zind)*zw*sw)), (((snd ind)*sh) + ((snd zind)*zh*sh)))
-        elev1    = seedElev ind' conts rands zeroElev
-        zeroElev = take (sh+2) (zip [-1..] (repeat (take (sw+2) (zip [-1..] (repeat (Elev 0))))))
 
 seedConts ∷ (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
 seedConts _   []     _      grid = grid
+seedConts _   _      []     grid = grid
 seedConts ind (c:cs) (r:rs) grid = seedConts ind cs rs spots
   where spots = seedSpots ind c r grid
 seedSpots ∷ (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
@@ -135,8 +134,8 @@ printElemWPs "sSize" ((WinElemWorld wp _ _):_) = "seg size: " ⧺ (show (wpSSize
 printElemWPs "zSize" ((WinElemWorld wp _ _):_) = "zone size: " ⧺ (show (wpZSize wp))
 printElemWPs "rands" ((WinElemWorld wp _ _):_) = "rands: " ⧺ (show (wpRands wp))
 printElemWPs "conts" ((WinElemWorld wp _ _):_) = "conts: " ⧺ (show (wpConts wp))
-printElemWPs param   ((WinElemWorld wp _ _):_) = "no world parameter " ⧺ param ⧺ " present"
-printElemWPs param (wp:wps) = printElemWPs param wps
+printElemWPs param   ((WinElemWorld _ _ _):_) = "no world parameter " ⧺ param ⧺ " present"
+printElemWPs param (_:wps) = printElemWPs param wps
 
 printSegs ∷ [((Int,Int),((Int,Int),Segment))] → String
 printSegs [] = ""
@@ -163,7 +162,7 @@ calcZone nDefTex (zw,zh) (w,h) (i,j) segs = calcSpot (zw+w*i,zh+h*j) nDefTex seg
   where seg   = (segs !! j) !! i
 calcSpot ∷ (Int,Int) → Int → Segment → [DynData]
 calcSpot _   _       SegmentNULL    = []
-calcSpot ind nDefTex (Segment grid _) = flatten $ map (calcGridRow ind nDefTex) (zip yinds grid')
+calcSpot ind nDefTex (Segment grid) = flatten $ map (calcGridRow ind nDefTex) (zip yinds grid')
   where yinds = take (length grid') [0..]
         grid' = map init $ map tail $ init $ tail grid
 calcGridRow ∷ (Int,Int) → Int → (Int,[Spot]) → [DynData]
@@ -176,4 +175,4 @@ calcGrid (cx,cy) y nDefTex (x,(Spot c t _)) = [dd]
         y' = (fromIntegral cy) + (fromIntegral y)
         ix = t `mod` 3
         iy = t `div` 3
-        c' = c + nDefTex
+        c' = c + 1 + nDefTex

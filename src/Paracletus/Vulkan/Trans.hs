@@ -8,7 +8,6 @@ import Prelude()
 import UPrelude
 import Control.Monad (replicateM)
 import Foreign.Ptr (castPtr,plusPtr)
-import Foreign.Storable (Storable)
 import GHC.Generics (Generic)
 import Graphics.Vulkan
 import Graphics.Vulkan.Core_1_0
@@ -81,11 +80,11 @@ updateTransObj cam device extent uniBuf = do
           (DF4 0   0  0.5  1)
         width = getField @"width" extent
         height = getField @"height" extent
-        aspectRatio = fromIntegral width / fromIntegral height
+        --aspectRatio = fromIntegral width / fromIntegral height
 
 updateTransDyn ∷ Int → [DynData] → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
 updateTransDyn _    []       _      _      _      = return ()
-updateTransDyn nDyn dyns device extent uniBuf = do
+updateTransDyn nDyn dyns device _      uniBuf = do
   let nDyn'   = (fromIntegral nDyn)
   uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf 0 (nDyn'*(bSizeOf @DynTransObject undefined)) VK_ZERO_FLAGS
   let updateTransDynFunc ∷ Int → [DynData] → Ptr α → Anamnesis ε σ ()
@@ -107,8 +106,8 @@ updateTransDyn nDyn dyns device extent uniBuf = do
   liftIO $ vkUnmapMemory device uniBuf
 
 updateTransTex ∷ Int → [DynData] → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
-updateTransTex _    []       _      _      _      = return ()
-updateTransTex nDyn dyns device extent uniBuf = do
+updateTransTex _    []   _      _      _      = return ()
+updateTransTex nDyn dyns device _      uniBuf = do
   let nDyn'   = (fromIntegral nDyn)
   uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf 0 (nDyn'*(bSizeOf @DynTexTransObject undefined)) VK_ZERO_FLAGS
   let updateTransTexFunc ∷ Int → [DynData] → Ptr α → Anamnesis ε σ ()
@@ -129,8 +128,8 @@ updateTransTex nDyn dyns device extent uniBuf = do
   liftIO $ vkUnmapMemory device uniBuf
 
 updateTransCam ∷ Int → [DynData] → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
-updateTransCam _    []       _      _      _      = return ()
-updateTransCam nDyn dyns device extent uniBuf = do
+updateTransCam _    []   _      _      _      = return ()
+updateTransCam nDyn dyns device _      uniBuf = do
   let nDyn'   = (fromIntegral nDyn)
   uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf 0 (nDyn'*(bSizeOf @CamTransObject undefined)) VK_ZERO_FLAGS
   let updateTransCamFunc ∷ Int → [DynData] → Ptr α → Anamnesis ε σ ()
@@ -152,8 +151,8 @@ updateTransCam nDyn dyns device extent uniBuf = do
   liftIO $ vkUnmapMemory device uniBuf
 
 updateTransCamTex ∷ Int → [DynData] → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
-updateTransCamTex _    []       _      _      _      = return ()
-updateTransCamTex nDyn dyns device extent uniBuf = do
+updateTransCamTex _    []   _      _      _      = return ()
+updateTransCamTex nDyn dyns device _      uniBuf = do
   let nDyn'   = (fromIntegral nDyn)
   uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf 0 (nDyn'*(bSizeOf @CamTexTransObject undefined)) VK_ZERO_FLAGS
   let updateTransCamTexFunc ∷ Int → [DynData] → Ptr α → Anamnesis ε σ ()
@@ -174,8 +173,8 @@ updateTransCamTex nDyn dyns device extent uniBuf = do
   liftIO $ vkUnmapMemory device uniBuf
 
 updateTransAux ∷ Int → [DynData] → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
-updateTransAux _    []       _      _      _      = return ()
-updateTransAux nDyn dyns device extent uniBuf = do
+updateTransAux _    []   _      _      _      = return ()
+updateTransAux nDyn dyns device _      uniBuf = do
   let nDyn'   = (fromIntegral nDyn)
   uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf 0 (nDyn'*(bSizeOf @AuxTransObject undefined)) VK_ZERO_FLAGS
   let updateTransAuxFunc ∷ Int → [DynData] → Ptr α → Anamnesis ε σ ()
@@ -197,8 +196,8 @@ updateTransAux nDyn dyns device extent uniBuf = do
   liftIO $ vkUnmapMemory device uniBuf
 
 updateTransAuxTex ∷ Int → [DynData] → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
-updateTransAuxTex _    []       _      _      _      = return ()
-updateTransAuxTex nDyn dyns device extent uniBuf = do
+updateTransAuxTex _    []   _      _      _      = return ()
+updateTransAuxTex nDyn dyns device _      uniBuf = do
   let nDyn'   = (fromIntegral nDyn)
   uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf 0 (nDyn'*(bSizeOf @AuxTexTransObject undefined)) VK_ZERO_FLAGS
   let updateTransAuxTexFunc ∷ Int → [DynData] → Ptr α → Anamnesis ε σ ()

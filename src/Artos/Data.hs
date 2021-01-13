@@ -33,6 +33,7 @@ data Event = EventError !GLFW.Error !String
 -- the loading thread
 data LoadCmd = LoadCmdNewWin Window
              | LoadCmdSwitchWin String
+             | LoadCmdSwitchScreen WinScreen
              | LoadCmdNewElem String WinElem
              | LoadCmdSetNDefTex Int
              | LoadCmdLink (Double,Double)

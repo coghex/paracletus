@@ -4,7 +4,6 @@ module Anamnesis.Event where
 import Prelude()
 import UPrelude
 import Control.Monad.State.Class (modify,gets)
-import Data.Time.Clock.System
 import System.Exit (exitWith, ExitCode(..))
 import qualified Paracletus.Oblatum.GLFW as GLFW
 import Anamnesis
@@ -61,7 +60,6 @@ processEvent event = case event of
                                             , stCamData = cams
                                             , stAuxData = aux }
   (EventVerts verts) → do
-    env ← ask
     stRel ← gets stReload
     case stRel of
       RSRecreate → modify $ \s → s { stVerts = verts }

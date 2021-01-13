@@ -7,10 +7,9 @@ import Data.List (isPrefixOf)
 import Data.List.Split (splitOn)
 import Anamnesis.Data
 import Epiklesis.Data
-import Epiklesis.Elev (elevAt)
 import Epiklesis.ShCmd
 import Epiklesis.World (printWorldParams)
-import Epiklesis.Window (currentWin,findWorldData)
+import Epiklesis.Window (currentWin)
 import Paracletus.Buff (clearBuff)
 import Paracletus.Data
 import Paracletus.Elem (calcTextBox, calcText)
@@ -30,7 +29,7 @@ closeShell sh = sh { shOpen = False }
 
 -- shell commands from loadcmdshell
 evalShCmds ∷ Env → ShellCmd → DrawState → DrawState
-evalShCmds env shCmd ds = case shCmd of
+evalShCmds _   shCmd ds = case shCmd of
     ShellCmdTab → ds { dsShell = tabShell (dsShell ds) $ dsCmds ds
                      , dsStatus = DSSLoadDyns }
     ShellCmdDelete → ds { dsShell = delShell (dsShell ds)
@@ -42,12 +41,6 @@ evalShCmds env shCmd ds = case shCmd of
       where str = case (currentWin ds) of
                     Nothing → "no window"
                     Just w  → show $ winCursor w
-    ShellCmdRet "elev" → ds { dsShell = (dsShell ds) { shRet = str }}
-      where str = case (currentWin ds) of
-                    Nothing → "no window"
-                    Just w  → case (findWorldData w) of
-                      Nothing      → "no world"
-                      Just (wp,wd) → show $ elevAt (winCursor w) wp wd
     ShellCmdRet "argv" → ds { dsShell = (dsShell ds) { shRet = str }}
       where str = case (currentWin ds) of
                     Nothing → "no window"
@@ -125,10 +118,9 @@ genShellStr sh
   | (height > 8) = shortret
   | otherwise    = retstring
   where prompt    = shPrompt sh
-        strsin    = shInpStr sh
         strsout   = shOutStr sh
         height    = length $ filter (≡ '\n') retstring
-        retstring = strsout ⧺ prompt-- ⧺ strsin
+        retstring = strsout ⧺ prompt
         shortret  = flattenWith '\n' $ drop (height - 8) (splitOn "\n" retstring)
         flattenWith ∷ Char → [String] → String
         flattenWith _  []         = ""

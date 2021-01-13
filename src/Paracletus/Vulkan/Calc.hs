@@ -11,7 +11,6 @@ import UPrelude
 import Graphics.Vulkan.Core_1_0
 import Numeric.DataFrame
 import Epiklesis.Data
-import Paracletus.Data
 import Paracletus.Vulkan.Atlas
 import Paracletus.Vulkan.Vertex
 
@@ -36,7 +35,6 @@ vertices ts = fromList $ combineVertices (1∷Int) (1∷Int) (1∷Int) ts
           withPos f = map (\(S v) → S v { pos = fromHom ∘ f ∘ toHomPoint $ pos v })
           withTC f = map (\(S v) → S v { texCoord = f $ texCoord v })
           withScale f = map (\(S v) → S v { pos = f $ pos v })
-          withMove f = map (\(S v) → S v { move = f $ move v })
         combineVertices nAux nCam nTile ((MTile (x',y') (xscale',yscale') (ax',ay') (sx,sy) t'):tts) = withMove (+ vec3 0 0 1) (withTC (indexAtlas ax ay sx sy) (withTC (+ vec3 0 0 t) (withPos (+ vec4 x0 y0 0 0) (withScale (* vec3 xscale yscale 1) vertsqs)))) ⧺ combineVertices nAux nCam nTile tts where
           (x0,y0) = (realToFrac(2*x'), realToFrac(2*y'))
           ( ax,  ay) = (fromIntegral ax', fromIntegral ay')

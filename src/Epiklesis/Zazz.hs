@@ -2,9 +2,7 @@ module Epiklesis.Zazz where
 -- a collection of land generation functions exist
 import Prelude()
 import UPrelude
-import Epiklesis.Map
 import Epiklesis.Data
-import Paracletus.Data
 
 calcGridZazz ∷ [[Spot]] → [[Cards Spot]] → [[Spot]]
 calcGridZazz []         _            = []
@@ -17,5 +15,5 @@ calcRowZazz _          []           = []
 calcRowZazz (spot:row) (cards:crow) = [spot'] ⧺ calcRowZazz row crow
   where spot' = calcSpotZazz spot cards
 calcSpotZazz ∷ Spot → Cards Spot → Spot
-calcSpotZazz (Spot c t b) (Cards (n,s,e,w)) = Spot c t b
+calcSpotZazz (Spot c t b) (Cards (_,_,_,_)) = Spot c t b
 

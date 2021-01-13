@@ -5,7 +5,6 @@ import UPrelude
 import Epiklesis.Map
 import Epiklesis.Data
 import Epiklesis.Window
-import Epiklesis.Zazz
 import Paracletus.Data
 
 -- adds in corners on top of existing edges
@@ -47,22 +46,22 @@ calcZoneCornerBuff nDefTex (zw,zh) (w,h) (z:zs) (zind,(i,j))
   where (zw',zh') = (w*zw*(fst zind),h*zh*(snd zind))
 calcSegCornerBuff ∷ (Int,Int) → Int → Segment → [DynData]
 calcSegCornerBuff _   _       SegmentNULL    = []
-calcSegCornerBuff ind nDefTex (Segment grid _) = flatten $ map (calcGridRowCornerBuff ind nDefTex) (zip yinds grid')
+calcSegCornerBuff ind nDefTex (Segment grid) = flatten $ map (calcGridRowCornerBuff ind nDefTex) (zip yinds grid')
   where yinds = take (length grid') [0..]
         grid' = map init $ map tail $ init $ tail grid
 calcGridRowCornerBuff ∷ (Int,Int) → Int → (Int,[Spot]) → [DynData]
 calcGridRowCornerBuff ind nDefTex (j,spots) = flatten $ map (calcGridCorner ind j nDefTex) (zip xinds spots)
   where xinds = take (length spots) [0..]
 calcGridCorner ∷ (Int,Int) → Int → Int → (Int,Spot) → [DynData]
-calcGridCorner _       _ _       (_,(Spot c t Nothing)) = []
-calcGridCorner (cx,cy) y nDefTex (x,(Spot c t (Just (nw,ne,sw,se)))) = ddnw ⧺ ddne ⧺ ddsw ⧺ ddse
+calcGridCorner _       _ _       (_,(Spot _ _ Nothing)) = []
+calcGridCorner (cx,cy) y nDefTex (x,(Spot c _ (Just (nw,ne,sw,se)))) = ddnw ⧺ ddne ⧺ ddsw ⧺ ddse
   where ddnw = if nw then [DynData c' (2*x',2*y') (1,1) (1,8)] else []
         ddne = if ne then [DynData c' (2*x',2*y') (1,1) (0,8)] else []
         ddsw = if sw then [DynData c' (2*x',2*y') (1,1) (0,9)] else []
         ddse = if se then [DynData c' (2*x',2*y') (1,1) (2,8)] else []
         x'   = (fromIntegral cx) + (fromIntegral x)
         y'   = (fromIntegral cy) + (fromIntegral y)
-        c'   = c + nDefTex
+        c'   = c + 1 + nDefTex
 
 -- adds in borders where possible
 setTileBorder ∷ WorldParams → [Zone] → (Float,Float) → [Zone]
@@ -70,9 +69,10 @@ setTileBorder wp zones (cx,cy) = calcBorder zones cards $ map (fixCurs wp) $ tak
   where cards = zoneCards zones
 calcBorder ∷ [Zone] → [Cards Zone] → [((Int,Int),(Int,Int))] → [Zone]
 calcBorder []     _      _    = []
+calcBorder _      []     _    = []
 calcBorder (z:zs) (c:cs) inds = [calcZoneBorder z c inds] ⧺ calcBorder zs cs inds
 calcZoneBorder ∷ Zone → Cards Zone → [((Int,Int),(Int,Int))] → Zone
-calcZoneBorder zone cards []                = zone
+calcZoneBorder zone _     []                = zone
 calcZoneBorder zone cards ((zind,ind):inds)
   | (zoneIndex zone)≡zind = calcZoneBorder zone' cards inds
   | otherwise = calcZoneBorder zone cards inds
@@ -84,15 +84,16 @@ calcSegsBorder segs ind = replaceSeg ind seg1 segs
         seg0  = (segs !! (snd ind)) !! (fst ind)
 calcSegBorder ∷ Segment → Segment
 calcSegBorder SegmentNULL    = SegmentNULL
-calcSegBorder (Segment grid0 e) = Segment grid2 e
+calcSegBorder (Segment grid0) = Segment grid2
   where grid1   = calcGridBorder grid0 scards0
         scards0 = cardinals grid0
         grid2   = calcGridCorners grid1 scards1
         scards1 = cardinals grid1
-        grid3   = calcGridZazz grid2 scards1
+        --grid3   = calcGridZazz grid2 scards1
 
 calcGridBorder ∷ [[Spot]] → [[Cards Spot]] → [[Spot]]
 calcGridBorder []         _            = []
+calcGridBorder _          []           = []
 calcGridBorder (row:grid) (crow:cgrid) = [row'] ⧺ calcGridBorder grid cgrid
   where row' = calcRowBorder row crow
 calcRowBorder ∷ [Spot] → [Cards Spot] → [Spot]

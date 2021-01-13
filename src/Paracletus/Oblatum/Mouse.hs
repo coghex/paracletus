@@ -7,7 +7,6 @@ import Control.Monad (when)
 import Control.Monad.State.Class (modify',gets)
 import Anamnesis
 import Anamnesis.Data
-import Anamnesis.Util
 import Artos.Data
 import Artos.Queue
 import Artos.Var
@@ -69,11 +68,11 @@ linkTest pos ds = case (currentWin ds) of
     where elems = winElems win
 linkTestFunc ∷ (Double,Double) → [WinElem] → DrawState → DrawState
 linkTestFunc _   []           ds = ds
-linkTestFunc pos (elem:elems) ds = case (elem) of
+linkTestFunc pos (el:els) ds = case (el) of
   WinElemLink lpos lbox lact → case (testLink pos lpos lbox) of
     True  → evalLink pos lact ds
-    False → linkTestFunc pos elems ds
-  _                          → linkTestFunc pos elems ds
+    False → linkTestFunc pos els ds
+  _                          → linkTestFunc pos els ds
 testLink ∷ (Double,Double) → (Double,Double) → (Double,Double) → Bool
 testLink (x1,y1) (x2,y2) (w,h)
   | ((abs(x1 - x2)) < w) ∧ ((abs(y1 - y2)) < h) = True
@@ -112,6 +111,7 @@ toggleAction _ ie = ie
 
 addLink ∷ LinkAction → InputState → InputState
 addLink (LinkSlider n) is = is { isElems = (isElems is) ⧺ [IESlider False n] }
+addLink _ is              = is
 
 falseInputElems ∷ [InputElem] → [InputElem]
 falseInputElems []       = []
@@ -150,5 +150,5 @@ sliderPressed ∷ InputState → Int
 sliderPressed is = sliderPressedElem (isElems is)
 sliderPressedElem ∷ [InputElem] → Int
 sliderPressedElem [] = (-1)
-sliderPressedElem ((IESlider True n):ies) = n
+sliderPressedElem ((IESlider True n):_) = n
 sliderPressedElem (_:ies) = sliderPressedElem ies

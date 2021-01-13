@@ -27,6 +27,7 @@ loadEpiklesis env = do
     _ ← Lua.runWith ls $ do
       Lua.registerHaskellFunction "logDebug" (hsLogDebug env)
       Lua.registerHaskellFunction "toggleFPS" (hsToggleFPS env)
+      Lua.registerHaskellFunction "switchScreen" (hsSwitchScreen env)
       Lua.registerHaskellFunction "rawExit" (hsExit env)
       Lua.registerHaskellFunction "rawNewWindow" (hsNewWindow env)
       Lua.registerHaskellFunction "rawNewPane" (hsNewPane env)
@@ -71,8 +72,8 @@ epiklesisLoop TStart env modFiles = do
       n     = 1000
   if delay > 0 then threadDelay delay else return ()
   epiklesisLoop tsNew env modFiles
-epiklesisLoop TStop env modFiles = return ()
-epiklesisLoop TNULL env modFiles = return ()
+epiklesisLoop TStop _   _        = return ()
+epiklesisLoop TNULL _   _        = return ()
 
 findModFiles ∷ String → IO (String)
 findModFiles path = do

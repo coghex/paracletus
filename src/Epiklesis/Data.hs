@@ -105,10 +105,14 @@ data Window = Window { winTitle  ∷ String
                      , winCursor ∷ (Float,Float,Float)
                      , winAccel  ∷ (Float,Float)
                      , winElems  ∷ [WinElem]
+                     , winScreen ∷ WinScreen
                      }
 
 -- types define some behavior
 data WinType = WinTypeMenu | WinTypeGame | WinTypeNULL deriving (Show, Eq)
+
+-- screens define behavior on a per type basis
+data WinScreen = WinScreenElev | WinScreenNULL
 
 -- possible arguments from previous window
 data WinArgV = WinArgUWP UserWorldParams | WinArgNULL deriving (Show, Eq)
@@ -148,10 +152,7 @@ data Zone = Zone { zoneIndex ∷ (Int,Int)
 -- segments are finite, thus faster
 data Segment = SegmentNULL
              | Segment { segGrid ∷ [[Spot]]
-                       , segElev ∷ [[Elev]]
                        } deriving (Show, Eq)
--- elevation in float
-data Elev = Elev Float deriving (Show, Eq)
 
 -- spots can be of a certain image,
 -- with a certain atlas subtile

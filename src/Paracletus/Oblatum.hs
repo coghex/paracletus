@@ -124,7 +124,7 @@ processInput ∷ Anamnesis ε σ ()
 processInput = do
   st ← get
   let is = stInput st
-      ks = keySt   is
+      --ks = keySt   is
   --if ((keyUp ks) ∨ (keyLeft ks) ∨ (keyDown ks) ∨ (keyRight ks) ∨ (((abs (fst (keyAccel ks))) > 0.0) ∨ (abs (snd (keyAccel ks)) > 0.0))) then moveCamWithKeys
   if (accelCap is) then moveCamWithKeys
   else return ()

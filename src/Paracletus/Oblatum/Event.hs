@@ -7,7 +7,6 @@ import Control.Monad (when)
 import Control.Monad.State.Class (modify',gets)
 import Anamnesis
 import Anamnesis.Data
-import Anamnesis.Util (logDebug)
 import Paracletus.Data
 import Artos.Data
 import Artos.Queue

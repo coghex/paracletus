@@ -7,7 +7,6 @@ import Artos.Data
 import Artos.Queue
 import Artos.Var
 import Epiklesis.Data
-import Epiklesis.Command (hsLogDebug)
 
 loadShCmds ∷ Env → IO ()
 loadShCmds env = do

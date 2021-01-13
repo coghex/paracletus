@@ -28,6 +28,6 @@ genFPSTiles = [tile1,tile2,tile3,tile4]
         tile2 = DTile (DMFPS 2) (6.8,4.0) (chW',chH') (0,0) (1,1) chIndex
         tile3 = DTile (DMFPS 1) (7.6,4.0) (chW',chH') (0,0) (1,1) chIndex
         tile4 = DTile (DMFPS 0) (8.4,4.0) (chW',chH') (0,0) (1,1) chIndex
-        TTFData chIndex chW chH chX chY = indexTTF TextSize30px '0'
+        TTFData chIndex chW chH _   _   = indexTTF TextSize30px '0'
         chW'  = chW
         chH'  = chH

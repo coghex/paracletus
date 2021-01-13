@@ -3,16 +3,13 @@ module Epiklesis.Map where
 import Prelude()
 import UPrelude
 import Epiklesis.Data
-import Epiklesis.Window
-import Paracletus.Buff
-import Paracletus.Data
 
 -- takes a grid with indices and gets rid of them
 stripGrid ∷ [(α,[(α,β)])] → [[β]]
-stripGrid ((a,b):ys) = (stripRow b) : stripGrid ys
+stripGrid ((_,b):ys) = (stripRow b) : stripGrid ys
 stripGrid _          = [[]]
 stripRow ∷ [(α,β)] → [β]
-stripRow ((a,b):ys) = b : stripRow ys
+stripRow ((_,b):ys) = b : stripRow ys
 stripRow _          = []
 
 -- returns in (n,s,e,w) format surrounding elements
@@ -79,7 +76,7 @@ zoneCardInds ((Cards (n,s,e,w)):cards) = n' ⧺ s' ⧺ e' ⧺ w' ⧺ "\n" ⧺ zo
 zoneCards ∷ [Zone] → [Cards Zone]
 zoneCards zones = zoneCardsF zones zones
 zoneCardsF ∷ [Zone] → [Zone] → [Cards Zone]
-zoneCardsF z0 []     = []
+zoneCardsF _  []     = []
 zoneCardsF z0 (z:zs) = [cards] ⧺ zoneCardsF z0 zs
   where cards = zoneCardsR (zoneIndex z) z0 $ Cards (Nothing,Nothing,Nothing,Nothing)
 zoneCardsR ∷ (Int,Int) → [Zone] → Cards Zone → Cards Zone
@@ -134,16 +131,16 @@ zoneEdges (Cards (n,s,e,w)) = Cards (n',s',e',w')
 segEdges ∷ Cards Segment → Cards [Spot]
 segEdges (Cards (n,s,e,w)) = Cards (n',s',e',w')
   where n' = case n of
-               Just (Segment grid _) → Just $ last grid
+               Just (Segment grid) → Just $ last grid
                _                   → Nothing
         s' = case s of
-               Just (Segment grid _) → Just $ head grid
+               Just (Segment grid) → Just $ head grid
                _                   → Nothing
         e' = case e of
-               Just (Segment grid _) → Just $ map head grid
+               Just (Segment grid) → Just $ map head grid
                _                   → Nothing
         w' = case w of
-               Just (Segment grid _) → Just $ map last grid
+               Just (Segment grid) → Just $ map last grid
                _                   → Nothing
 
 -- finds specified seg in zones
@@ -161,30 +158,6 @@ indexZone (w,h) ind []     = Zone ind $ take h $ repeat $ take w $ repeat $ Segm
 indexZone size  ind (z:zs)
   | (zoneIndex z) ≡ ind = z
   | otherwise           = indexZone size ind zs
-
-
--- sets buffs for the map
--- TODO: distribute across the buffers
-setMapBuffs ∷ Int → (Float,Float) → WorldParams → WorldData → [Dyns] → [Dyns]
-setMapBuffs nDefTex (cx,cy) wp wd oldBuff = calcMapBuffs 1 nDefTex wp wd (evalScreenCursor segSize (-cx/64.0,-cy/64)) oldBuff
-  where segSize = wpSSize wp
-calcMapBuffs ∷ Int → Int → WorldParams → WorldData → [(Int,Int)] → [Dyns] → [Dyns]
-calcMapBuffs _ _       _  _  []       buff = buff
-calcMapBuffs n nDefTex wp wd (sc:scs) buff = calcMapBuffs (n + 1) nDefTex wp wd scs dyns
-  where dyns = setTileBuff n (calcMapBuff nDefTex (sh*sw) wp wd sc) buff
-        (sw,sh) = wpSSize wp
-calcMapBuff ∷ Int → Int → WorldParams → WorldData → (Int,Int) → Dyns
-calcMapBuff nDefTex size wp wd curs = Dyns $ res ⧺ (take (size - (length res)) (repeat (DynData 0 (0,0) (1,1) (0,0))))
-  where res     = calcMap nDefTex wp wd curs
-
-calcMap ∷ Int → WorldParams → WorldData → (Int,Int) → [DynData]
-calcMap nDefTex wp wd curs = [testtile]
-  where testtile = DynData (nDefTex+1) (0,0) (w,h) (1,0)
-        (zw,zh)   = (fromIntegral zw', fromIntegral zh')
-        (zw',zh') = wpZSize wp
-        (w,h)     = (fromIntegral w', fromIntegral h')
-        (w',h')   = wpSSize wp
-
 
 fixCurs ∷ WorldParams → (Int,Int) → ((Int,Int),(Int,Int))
 fixCurs wp (i,j) = ((zi,zj),(i',j'))

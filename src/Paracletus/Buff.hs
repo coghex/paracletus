@@ -5,7 +5,6 @@ import Prelude ()
 import UPrelude
 import Data.List.Split (splitOn)
 import Epiklesis.Data
-import Epiklesis.Window
 import Paracletus.Data
 import Paracletus.Oblatum.Font
 
@@ -63,7 +62,7 @@ clearDDs (Dyns dds) = Dyns $ take (length dds) $ repeat $ DynData 0 (0,0) (1,1) 
 
 -- set a buff to the current world screen
 genWorldBuff ∷ [Dyns] → Int → WorldData → [Dyns]
-genWorldBuff buff b wd = setTileBuff b dyns buff
+genWorldBuff buff b _ = setTileBuff b dyns buff
   where dyns = genWorldDyns (buff !! b)
 genWorldDyns ∷ Dyns → Dyns
 genWorldDyns dyns = dyns
@@ -89,6 +88,6 @@ genStrDDs pos (ch:str) (_ :dds) = [dd'] ⧺ genStrDDs pos' str dds
 
 -- convert char to dyndata
 genStrDD ∷ (Double,Double) → Char → (DynData,Double)
-genStrDD (x,y) ' ' = (DynData 0 (0,0) (1,1) (0,0),x + 0.5)
+genStrDD (x,_) ' ' = (DynData 0 (0,0) (1,1) (0,0),x + 0.5)
 genStrDD (x,y) ch  = (DynData chIndex (realToFrac(x + chX + 0.5*(1.0 - chX)),realToFrac(y + chY)) (realToFrac(0.5*chW),realToFrac(0.5*chH)) (0,0), x + chX)
   where TTFData chIndex chW chH chX chY = indexTTF TextSize30px ch

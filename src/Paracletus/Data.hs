@@ -12,7 +12,6 @@ import Numeric.DataFrame
 import Paracletus.Vulkan.Vertex
 import Artos.Var
 import Paracletus.Vulkan.Data
-import Paracletus.Vulkan.Vertex
 import qualified Paracletus.Oblatum.GLFW as GLFW
 
 data GraphicsLayer = GLUnknown | Vulkan | OpenGL | OpenGLES deriving (Show, Eq)
