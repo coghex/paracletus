@@ -15,5 +15,5 @@ calcRowZazz _          []           = []
 calcRowZazz (spot:row) (cards:crow) = [spot'] ⧺ calcRowZazz row crow
   where spot' = calcSpotZazz spot cards
 calcSpotZazz ∷ Spot → Cards Spot → Spot
-calcSpotZazz (Spot c t b) (Cards (_,_,_,_)) = Spot c t b
+calcSpotZazz (Spot c t b e) (Cards (_,_,_,_)) = Spot c t b e
 

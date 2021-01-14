@@ -19,12 +19,12 @@ calcGridCorners spots cards = map (calcRowCorners) $ zip spots cards
 calcRowCorners ∷ ([Spot],[Cards Spot]) → [Spot]
 calcRowCorners (spots,cards) = map (calcCorners) $ zip spots cards
 calcCorners ∷ (Spot,Cards Spot) → Spot
-calcCorners ((Spot c t b), Cards (n,s,e,w)) = case (n,s,e,w) of
-  (Nothing,_      ,_      ,_      ) → Spot c t b
-  (_      ,Nothing,_      ,_      ) → Spot c t b
-  (_      ,_      ,Nothing,_      ) → Spot c t b
-  (_      ,_      ,_      ,Nothing) → Spot c t b
-  (Just (Spot _ n0 _),Just (Spot _ s0 _),Just (Spot _ e0 _),Just (Spot _ w0 _)) → if (nw ∨ ne ∨ sw ∨ se) then Spot c t (Just (nw,ne,sw,se)) else Spot c t b
+calcCorners (Spot c t b elev, Cards (n,s,e,w)) = case (n,s,e,w) of
+  (Nothing,_      ,_      ,_      ) → Spot c t b elev
+  (_      ,Nothing,_      ,_      ) → Spot c t b elev
+  (_      ,_      ,Nothing,_      ) → Spot c t b elev
+  (_      ,_      ,_      ,Nothing) → Spot c t b elev
+  (Just (Spot _ n0 _ _),Just (Spot _ s0 _ _),Just (Spot _ e0 _ _),Just (Spot _ w0 _ _)) → if nw ∨ ne ∨ sw ∨ se then Spot c t (Just (nw,ne,sw,se)) elev else Spot c t b elev
     where nw     = nleft  ∧ wright
           ne     = nright ∧ eleft
           sw     = sright ∧ wleft
@@ -59,8 +59,8 @@ calcGridRowCornerBuff ∷ (Int,Int) → Int → (Int,[Spot]) → [DynData]
 calcGridRowCornerBuff ind nDefTex (j,spots) = flatten $ map (calcGridCorner ind j nDefTex) (zip xinds spots)
   where xinds = take (length spots) [0..]
 calcGridCorner ∷ (Int,Int) → Int → Int → (Int,Spot) → [DynData]
-calcGridCorner _       _ _       (_,(Spot _ _ Nothing)) = []
-calcGridCorner (cx,cy) y nDefTex (x,(Spot c _ (Just (nw,ne,sw,se)))) = ddnw ⧺ ddne ⧺ ddsw ⧺ ddse
+calcGridCorner _       _ _       (_,(Spot _ _ Nothing _)) = []
+calcGridCorner (cx,cy) y nDefTex (x,(Spot c _ (Just (nw,ne,sw,se)) _)) = ddnw ⧺ ddne ⧺ ddsw ⧺ ddse
   where ddnw = if nw then [DynData c' (2*x',2*y') (1,1) (1,8)] else []
         ddne = if ne then [DynData c' (2*x',2*y') (1,1) (0,8)] else []
         ddsw = if sw then [DynData c' (2*x',2*y') (1,1) (0,9)] else []
@@ -108,7 +108,7 @@ calcRowBorder _          []           = []
 calcRowBorder (spot:row) (cards:crow) = [spot'] ⧺ calcRowBorder row crow
   where spot' = calcSpotBorder spot cards
 calcSpotBorder ∷ Spot → Cards Spot → Spot
-calcSpotBorder (Spot c t b) (Cards (n,s,e,w)) = Spot c t' b
+calcSpotBorder (Spot c t b elev) (Cards (n,s,e,w)) = Spot c t' b elev
   where t' = if      (n' ∧ s' ∧ e' ∧ w') then 13
              else if (n' ∧ s' ∧ e'     ) then 20
              else if (n' ∧ s' ∧      w') then 18
@@ -127,21 +127,21 @@ calcSpotBorder (Spot c t b) (Cards (n,s,e,w)) = Spot c t' b
              else t
         n' = case n of
                Nothing → False
-               Just (Spot c0 _ _)
+               Just (Spot c0 _ _ _)
                  | (c0 ≢ c)  → True
                  | otherwise → False
         s' = case s of
                Nothing → False
-               Just (Spot c0 _ _)
+               Just (Spot c0 _ _ _)
                  | (c0 ≢ c)  → True
                  | otherwise → False
         e' = case e of
                Nothing → False
-               Just (Spot c0 _ _)
+               Just (Spot c0 _ _ _)
                  | (c0 ≢ c)  → True
                  | otherwise → False
         w' = case w of
                Nothing → False
-               Just (Spot c0 _ _)
+               Just (Spot c0 _ _ _)
                  | (c0 ≢ c)  → True
                  | otherwise → False

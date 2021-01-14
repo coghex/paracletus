@@ -4,7 +4,7 @@ import Prelude()
 import UPrelude
 import Epiklesis.Border ( calcCornerBuff, setTileBorder )
 import Epiklesis.Data
---import Epiklesis.Elev
+import Epiklesis.Elev
 import Epiklesis.Rand ( genConts, genRands )
 import Epiklesis.Map
     ( fixCurs, indexSeg, indexZone, seedDistance, stripGrid )
@@ -40,9 +40,10 @@ loadWorld ds = case (currentWin ds) of
     where buffer = case (findWorldData win') of
                      Nothing      → dsBuff ds
                      Just (wp,wd) → case (winScreen win') of
-                       WinScreenElev → (dsBuff ds)
+                       WinScreenElev → setElevBuff (dsNDefTex ds) (cx,cy) wp wd (dsBuff ds)
+                         where (cx,cy,_) = winCursor win
                        WinScreenNULL → setTileBuffs (dsNDefTex ds) (cx,cy) wp wd (dsBuff ds)
-                       where (cx,cy,_) = winCursor win
+                         where (cx,cy,_) = winCursor win
           (win') = case (findWorldData win) of
             Nothing      → (win)
             Just (wp,wd) → (win { winElems = replaceWorldWinElem wd' (winElems win) })
@@ -76,7 +77,7 @@ genSegData wp wd zind ind = case seg of
         conts    = wpConts wp
         (sw,sh)  = wpSSize wp
         (zw,zh)  = wpZSize wp
-        zeroSeg  = take (sh+2) (zip [-1..] (repeat (take (sw+2) (zip [-1..] (repeat (Spot 1 0 Nothing))))))
+        zeroSeg  = take (sh+2) (zip [-1..] (repeat (take (sw+2) (zip [-1..] (repeat (Spot 1 0 Nothing 0.0))))))
         ind'     = ((((fst ind)*sw) + ((fst zind)*zw*sw)), (((snd ind)*sh) + ((snd zind)*zh*sh)))
 
 seedConts ∷ (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
@@ -91,9 +92,9 @@ rowSpots ∷ Int → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → [(Int
 rowSpots _ _   _ _ []             = []
 rowSpots j ind c r ((i,spot):row) = [(i,spotSpots i j ind c r spot)] ⧺ rowSpots j ind c r row
 spotSpots ∷ Int → Int → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → Spot → Spot
-spotSpots i j (zi,zj) (rand,cont) ((w,x),(y,z)) (Spot c t b)
-  | seedDistance i' j' w x y z < (rand*maxS) = Spot c' t' b
-  | otherwise                                = Spot c t b
+spotSpots i j (zi,zj) (rand,cont) ((w,x),(y,z)) (Spot c t b e)
+  | seedDistance i' j' w x y z < (rand*maxS) = Spot c' t' b (e + 1.0)
+  | otherwise                                = Spot c t b e
   where c'   = cont
         t'   = 0
         i'   = i + zi
@@ -177,7 +178,7 @@ calcGridRow ∷ (Int,Int) → Int → (Int,[Spot]) → [DynData]
 calcGridRow ind nDefTex (j,spots) = flatten $ map (calcGrid ind j nDefTex) (zip xinds spots)
   where xinds = take (length spots) [0..]
 calcGrid ∷ (Int,Int) → Int → Int → (Int,Spot) → [DynData]
-calcGrid (cx,cy) y nDefTex (x,(Spot c t _)) = [dd]
+calcGrid (cx,cy) y nDefTex (x,(Spot c t _ _)) = [dd]
   where dd = DynData c' (2*x',2*y') (1,1) (ix,iy)
         x' = (fromIntegral cx) + (fromIntegral x)
         y' = (fromIntegral cy) + (fromIntegral y)

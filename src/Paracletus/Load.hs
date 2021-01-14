@@ -35,7 +35,7 @@ import Epiklesis.Window
       replaceWin,
       replaceWorldWinElem )
 import Epiklesis.World ( loadWorld )
-import Paracletus.Buff ( genShBuff, initBuff )
+import Paracletus.Buff ( genShBuff, initBuff, clearDyns)
 import Paracletus.Data
     ( Cardinal(CardNULL),
       Dyns,
@@ -238,7 +238,8 @@ processCommand env ds cmd = case cmd of
   LoadCmdSwitchScreen screen → case (currentWin ds) of
     Nothing → return $ ResError $ "no window"
     Just w  → return $ ResDrawState ds'
-      where ds' = ds { dsWins = replaceWin win (dsWins ds) }
+      where ds' = ds { dsWins = replaceWin win (dsWins ds)
+                     , dsBuff = clearDyns (dsBuff ds) }
             win = w { winScreen = screen }
   -- TODO: get rid of winI, use head
   LoadCmdSwitchWin win → do
