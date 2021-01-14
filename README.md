@@ -16,24 +16,24 @@ and mac; probably anything with GHC and vulkan.
 to build use `cabal new-build paracletus` to
 download dependencies and compile.
 `glslangValidator` must be in your path or
-passed as a cabal argument as `cabal`
-`--extra-lib-dirs=...\glslangValidator.exe`
-`new-build paracletus`.
+passed as a cabal argument as `cabal
+--extra-lib-dirs=...\glslangValidator.exe
+new-build paracletus`.
 
 ## Usage
 
-use `./dist-newstyle/build/[arch]/ghc-[ver]/`
-`abfa-[ver]/x/abfa/opt/build/abfa/abfa +RTS`
-`-s -M[x]m -N[n]` to run with x megabytes and
+use `./dist-newstyle/build/[arch]/ghc-[ver]/
+abfa-[ver]/x/abfa/opt/build/abfa/abfa +RTS
+-s -M[x]m -N[n]` to run with x megabytes and
 n cores.
 
 performance is increased drastically by disabling
 the development flag, but compilation takes
 forever.
 
-to create profiling files, use `cabal new-build`
-`--enable-library-profiling --enable-profiling`
-`abfa` to build, and `-prof -fprof-auto` in the
+to create profiling files, use `cabal new-build
+--enable-library-profiling --enable-profiling
+abfa` to build, and `-prof -fprof-auto` in the
 ghc-options of the cabal file.  run with flags
 `+RTS -s -p -hy -M[x]m -N[n]`
 
