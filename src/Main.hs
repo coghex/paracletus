@@ -1,10 +1,10 @@
 module Main where
 import Prelude()
 import UPrelude
-import Artos
-import Paracletus
-import Paracletus.Data
-import Anamnesis.Init
+import Artos (checkStatus)
+import Paracletus (runParacletus)
+import Paracletus.Data (GraphicsLayer(..))
+import Anamnesis.Init (runAnamnesis)
 -- where the magic happens...
 main ∷ IO ()
 main = runAnamnesis checkStatus (runParacletus Vulkan)

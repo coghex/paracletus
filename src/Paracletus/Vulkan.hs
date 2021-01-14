@@ -14,34 +14,82 @@ import Graphics.Vulkan.Core_1_0
 import Graphics.Vulkan.Ext.VK_KHR_swapchain
 import Anamnesis
 import Anamnesis.Data
-import Anamnesis.Event
-import Anamnesis.Foreign
+    ( Env(envLoadQ, envLoadCh),
+      LoopControl(..),
+      ReloadState(RSNULL, RSRecreate),
+      State(stVerts, stFPS, stAuxData, stCamData, stDynData, stCam,
+            stTick, stNDefTex, stModTexs, stReload, stWindow) )
+import Anamnesis.Event ( processEvents )
+import Anamnesis.Foreign ( mallocRes, newArrayRes )
 import Anamnesis.Util
+    ( getTime, logDebug, logExcept, logInfo, loop )
 import Artos.Data
-import Artos.Except
-import Artos.Queue
+    ( LoadCmd(LoadCmdSetFPS, LoadCmdSetNDefTex), TState(TStart) )
+import Artos.Except ( testEx, ExType(ExParacletus) )
+import Artos.Queue ( writeChan, writeQueue )
 import Artos.Var
-import Epiklesis
+    ( atomically, modifyTVar', newTVar, readTVar, writeTVar )
+import Epiklesis ( loadEpiklesis )
 import Epiklesis.Data
+    ( DynMap(DMNULL), Tile(ATile, DMTile, GTile) )
 import Paracletus.Data
-import Paracletus.Load
+    ( DevQueues(graphicsQueue),
+      Dyns(Dyns),
+      FPS(FPS),
+      GraphicsLayer(Vulkan),
+      ParacResult(ParacError),
+      TextureData(pipelineLayout, depthFormat, descTexInfo,
+                  descSetLayout, nimages),
+      Verts(VertsNULL, VertsDF),
+      VulkanLoopData(..) )
+import Paracletus.Load ( loadParacletus )
 import Paracletus.Vulkan.Buffer
-import Paracletus.Vulkan.Calc
-import Paracletus.Vulkan.Command
+    ( createIndexBuffer, createVertexBuffer )
+import Paracletus.Vulkan.Calc ( calcVertices )
+import Paracletus.Vulkan.Command ( createCommandPool )
 import Paracletus.Vulkan.Data
+    ( GQData(GQData),
+      SwapchainInfo(swapExtent, swapImgFormat, swapImgs) )
 import Paracletus.Vulkan.Desc
+    ( createDescriptorPool,
+      createDescriptorSets,
+      prepareDescriptorSet )
 import Paracletus.Vulkan.Device
+    ( createGraphicsDevice,
+      getMaxUsableSampleCount,
+      pickPhysicalDevice,
+      querySwapchainSupport )
 import Paracletus.Vulkan.Draw
-import Paracletus.Vulkan.Foreign
-import Paracletus.Vulkan.Instance
-import Paracletus.Vulkan.Load
-import Paracletus.Vulkan.Pres
+    ( createCommandBuffers,
+      createFrameFences,
+      createFrameSemaphores,
+      createFramebuffers,
+      drawFrame,
+      RenderData(RenderData, auxTexMemoryMutator, auxMemoryMutator,
+                 camTexMemoryMutator, camMemoryMutator, texMemoryMutator,
+                 dynMemoryMutator, memoryMutator, auxTexMemories, auxMemories,
+                 camTexMemories, camMemories, texMemories, dynMemories, memories,
+                 cmdBuffersPtr, inFlightFences, imageAvailableSems,
+                 renderFinishedSems, frameIndexRef, imgIndexPtr, queues, swapInfo,
+                 dev) )
+import Paracletus.Vulkan.Foreign ( runVk )
+import Paracletus.Vulkan.Instance ( createGLFWVulkanInstance )
+import Paracletus.Vulkan.Load ( loadVulkanTextures )
+import Paracletus.Vulkan.Pres ( createSurface, createSwapchain )
 import Paracletus.Vulkan.Pipeline
-import Paracletus.Vulkan.Shader
+    ( createGraphicsPipeline, createRenderPass )
+import Paracletus.Vulkan.Shader ( makeShader )
 import Paracletus.Vulkan.Texture
+    ( createColorAttImgView, createDepthAttImgView, createImageView )
 import Paracletus.Vulkan.Trans
-import Paracletus.Vulkan.Vertex
+import Paracletus.Vulkan.Vertex ( dfLen, vertIADs, vertIBD )
 import Paracletus.Oblatum
+    ( getCurTick,
+      glfwMainLoop,
+      glfwWaitEventsMeanwhile,
+      initGLFWWindow,
+      loadLoop,
+      processInput )
 import Paracletus.Oblatum.GLFW (pollEvents)
 
 runParacVulkan ∷ Anamnesis ε σ ()
@@ -67,7 +115,7 @@ runParacVulkan = do
     let gqdata = GQData pdev dev commandPool (graphicsQueue queues)
     texData ← loadVulkanTextures gqdata []
     env ← ask
-    -- *** CHILD THREADS
+    -- CHILD THREADS
     -- epiklesis is the lua engine
     _ ← liftIO $ forkIO $ loadEpiklesis env
     -- paracletus loads drawstate into verticies
@@ -99,7 +147,7 @@ vulkLoop ∷ VulkanLoopData → Anamnesis ε σ (LoopControl)
 vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulkanSurface texData msaaSamples shaderVert shaderFrag imgIndexPtr windowSizeChanged frameIndexRef renderFinishedSems imageAvailableSems inFlightFences) = do
   swapInfo ← createSwapchain dev scsd queues vulkanSurface
   let swapchainLen = length (swapImgs swapInfo)
-  -- *** BUFFERS
+  -- BUFFERS
   -- obj buffer contains global trans matricies
   (transObjMems, transObjBufs) ← unzip ⊚ createTransObjBuffers pdev dev swapchainLen
   transObjMemories ← newArrayRes transObjMems
@@ -131,13 +179,13 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
   (transAuxTexMems, transAuxTexBufs) ← unzip ⊚ createTransAuxTexBuffers pdev dev swapchainLen nAuxObjs
   auxTexDescBufInfos ← mapM (transAuxTexBufferInfo nAuxObjs) transAuxTexBufs
   transAuxTexMemories ← newArrayRes transAuxTexMems
-  -- *** DESCRIPTOR POOL
+  -- DESCRIPTOR POOL
   descriptorPool ← createDescriptorPool dev swapchainLen (nimages texData)
   descriptorSetLayouts ← newArrayRes $ replicate swapchainLen $ descSetLayout texData
   descriptorSets ← createDescriptorSets dev descriptorPool swapchainLen descriptorSetLayouts
   let bufInfos = zip7 descriptorBufferInfos dynDescBufInfos dynTexDescBufInfos camDescBufInfos camTexDescBufInfos auxDescBufInfos auxTexDescBufInfos
   forM_ (zip bufInfos descriptorSets) $ \((bufInfo, dynBufInfo, dynTexDescBufInfo, camBufInfo, camTexBufInfo, auxBufInfo, auxTexBufInfo), dSet) → prepareDescriptorSet dev bufInfo dynBufInfo dynTexDescBufInfo camBufInfo camTexBufInfo auxBufInfo auxTexBufInfo (descTexInfo texData) dSet (nimages texData)
-  -- *** PIPELINE
+  -- PIPELINE
   imgViews ← mapM (\image → createImageView dev image (swapImgFormat swapInfo) VK_IMAGE_ASPECT_COLOR_BIT 1) (swapImgs swapInfo)
   renderPass ← createRenderPass dev swapInfo (depthFormat texData) msaaSamples
   graphicsPipeline ← createGraphicsPipeline dev swapInfo vertIBD vertIADs [shaderVert,shaderFrag] renderPass (pipelineLayout texData) msaaSamples

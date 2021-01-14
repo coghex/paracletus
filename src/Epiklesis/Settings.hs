@@ -2,7 +2,7 @@ module Epiklesis.Settings where
 -- various user defined settings occur
 import Prelude()
 import UPrelude
-import Anamnesis.Data
+import Anamnesis.Data ( Settings(Settings) )
 import qualified Foreign.Lua as Lua
 import qualified Paracletus.Oblatum.GLFW as GLFW
 

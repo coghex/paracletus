@@ -5,15 +5,24 @@ module Anamnesis.Init
 import Prelude()
 import UPrelude
 import qualified Control.Monad.Logger as Logger
-import Data.Time.Clock.System
+import Data.Time.Clock.System ( getSystemTime )
 import qualified Foreign.Lua as Lua
-import Anamnesis
+import Anamnesis ( Anamnesis(unAnamnate) )
 import Anamnesis.Data
-import Epiklesis.Settings
-import Artos.Except
-import Artos.Queue
-import Artos.Var
+    ( AnamnResult(AnamnSuccess),
+      Env(..),
+      ReloadState(RSNULL),
+      State(..) )
+import Epiklesis.Settings ( initSettings )
+import Artos.Except ( AExcept(AExcept), ExType(ExAnamnesis) )
+import Artos.Queue ( newCmdQueue, newQueue, newTChan )
+import Artos.Var ( atomically, newTVar, TVar )
 import Paracletus.Data
+    ( Dyns(Dyns),
+      FPS(FPS),
+      ISKeys(ISKeys, keyRight, keyDown, keyLeft, keyUp),
+      InputState(..),
+      Verts(VertsNULL) )
 
 runAnamnesis ∷ (Either AExcept α → IO σ) → Anamnesis ε σ α → IO σ
 runAnamnesis c p = do

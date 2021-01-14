@@ -2,9 +2,16 @@ module Paracletus.Vulkan.Atlas where
 import Prelude()
 import UPrelude
 import Graphics.Vulkan.Core_1_0
-import Numeric.DataFrame
-import Anamnesis
+    ( VkPhysicalDevice,
+      VkDevice,
+      VkCommandPool,
+      VkQueue,
+      VkImageView,
+      VkSampler )
+import Numeric.DataFrame ( Vec3f, DataFrame(Vec3), Vector3(vec3) )
+import Anamnesis ( Anamnesis )
 import Paracletus.Vulkan.Texture
+    ( createTextureImageView, createTextureSampler )
 
 -- segment width/height specifies single
 -- tex size in pixels, texture width/height

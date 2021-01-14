@@ -7,24 +7,50 @@ where
 import Prelude()
 import UPrelude
 import Artos.Data
-import Artos.Var
+import Artos.Var ( atomically )
 import Artos.Queue
+    ( readChan, tryReadChan, tryReadQueue, writeQueue )
 import Anamnesis.Data
 import Epiklesis.ArgV (changeWin)
 import Epiklesis.Data
-import Epiklesis.Shell
+    ( DSStatus(DSSLogDebug, DSSLoadCap, DSSLoadDyns, DSSRecreate,
+               DSSEvalShell, DSSLoadVerts, DSSLoadWorld, DSSLoadInput, DSSExit,
+               DSSNULL),
+      DrawState(DrawState, dsShell, dsTiles, dsNDefTex, dsWins, dsFPS,
+                dsBuff, dsStatus),
+      LinkAction(LinkSlider),
+      PaneBit(PaneBitSlider),
+      WinElem(WinElemLink),
+      WinType(WinTypeGame),
+      Window(winType, winScreen, winAccel, winElems, winCursor),
+      WorldData(wdCam) )
+import Epiklesis.Shell ( evalShCmds, evalShell, initShell )
 import Epiklesis.Window
-import Epiklesis.World
-import Paracletus.Buff
+    ( calcWinModTexs,
+      currentWin,
+      findWin,
+      findWinI,
+      findWorldData,
+      loadNewBit,
+      replaceWin,
+      replaceWorldWinElem )
+import Epiklesis.World ( loadWorld )
+import Paracletus.Buff ( genShBuff, initBuff )
 import Paracletus.Data
-import Paracletus.Draw
-import Paracletus.Dyn
-import Paracletus.Elem
-import Paracletus.Vulkan.Calc
+    ( Cardinal(CardNULL),
+      Dyns,
+      FPS(..),
+      GraphicsLayer(OpenGLES, OpenGL, Vulkan),
+      PrintArg(PrintCam),
+      Verts(VertsDF) )
+import Paracletus.Draw ( loadTiles )
+import Paracletus.Dyn ( loadDyns, moveSlider )
+import Paracletus.Elem ( findBitPos )
+import Paracletus.Vulkan.Calc ( calcVertices )
 import Paracletus.Oblatum.Event (findDir, calcCam, decell, accelIS)
 import Paracletus.Oblatum.Mouse (linkTest)
 import Control.Concurrent (threadDelay)
-import Data.Time.Clock
+import Data.Time.Clock ( diffUTCTime, getCurrentTime )
 
 loadParacletus ∷ Env -> GraphicsLayer → IO ()
 loadParacletus env Vulkan   = loadParacVulkan env

@@ -5,7 +5,7 @@ module Paracletus.Vulkan.Device where
 -- the first suitable device is chosen
 import Prelude()
 import UPrelude
-import Control.Monad
+import Control.Monad ( when, forM )
 import Data.List ((\\))
 import qualified Data.Map as Map
 import Foreign.Ptr (plusPtr)
@@ -15,12 +15,17 @@ import Graphics.Vulkan.Core_1_0
 import Graphics.Vulkan.Ext.VK_KHR_surface
 import Graphics.Vulkan.Ext.VK_KHR_swapchain
 import Graphics.Vulkan.Marshal.Create
-import Anamnesis
-import Anamnesis.Foreign
-import Anamnesis.Util
-import Artos.Except
+    ( (&*), createVk, set, setListRef, setStrListRef, setVkRef )
+import Anamnesis ( MonadIO(liftIO), Anamnesis )
+import Anamnesis.Foreign ( allocaPeek, newArrayRes )
+import Anamnesis.Util ( allocResource, isDev, logDebug, logExcept )
+import Artos.Except ( ExType(ExParacletus) )
 import Paracletus.Data
+    ( DevQueues(DevQueues),
+      ParacResult(VulkanError),
+      SwapchainSupportDetails(..) )
 import Paracletus.Vulkan.Foreign
+    ( allocaPeekVk, asListVk, runVk, withVkPtr )
 #ifdef mingw32_HOST_OS
 vkLayerValidation ∷ String
 vkLayerValidation = "VK_LAYER_KHRONOS_validation"

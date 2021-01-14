@@ -7,15 +7,25 @@ import Control.Monad.State.Class (modify,gets)
 import System.Exit (exitWith, ExitCode(..))
 import qualified Paracletus.Oblatum.GLFW as GLFW
 import Anamnesis
+    ( MonadIO(liftIO), MonadReader(ask), MonadState(get), Anamnesis )
 import Anamnesis.Data
-import Anamnesis.Util
+    ( Env(envLoadQ, envEventQ),
+      ReloadState(RSReload, RSRecreate),
+      State(stFPS, stModTexs, stVerts, stReload, stAuxData, stCamData,
+            stDynData, stInput, stCam, stWindow) )
+import Anamnesis.Util ( logDebug, logExcept, logInfo, logWarn )
 import Artos.Data
-import Artos.Except
-import Artos.Queue
-import Artos.Var
+    ( Event(..), LoadCmd(LoadCmdVerts, LoadCmdWorld) )
+import Artos.Except ( ExType(ExParacletus) )
+import Artos.Queue ( tryReadQueue, writeQueue )
+import Artos.Var ( atomically )
 import Paracletus.Data
-import Paracletus.Oblatum.Event
+    ( FPS(..),
+      InputState(inpCap, accelCap),
+      PrintArg(PrintNULL, PrintCam) )
+import Paracletus.Oblatum.Event ( evalKey )
 import Paracletus.Oblatum.Mouse
+    ( addLink, evalMouse, evalScroll, toggleLink )
 
 -- reads event channel, then
 -- executes events in order

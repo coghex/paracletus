@@ -2,7 +2,7 @@ module Epiklesis.Zazz where
 -- a collection of land generation functions exist
 import Prelude()
 import UPrelude
-import Epiklesis.Data
+import Epiklesis.Data ( Cards(..), Spot(Spot) )
 
 calcGridZazz ∷ [[Spot]] → [[Cards Spot]] → [[Spot]]
 calcGridZazz []         _            = []

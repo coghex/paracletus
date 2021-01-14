@@ -6,12 +6,25 @@ module Paracletus.Data where
 import Prelude()
 import UPrelude
 import Graphics.Vulkan
+    ( Word32,
+      Ptr,
+      VkPipelineLayout,
+      VkQueue,
+      VkDescriptorSetLayout,
+      VkFence,
+      VkSemaphore,
+      VkSurfaceKHR )
 import Graphics.Vulkan.Core_1_0
+    ( VkFormat,
+      VkSampleCountFlagBits,
+      VkDescriptorImageInfo,
+      VkPipelineShaderStageCreateInfo )
 import Graphics.Vulkan.Ext.VK_KHR_surface
-import Numeric.DataFrame
-import Paracletus.Vulkan.Vertex
-import Artos.Var
-import Paracletus.Vulkan.Data
+    ( VkPresentModeKHR, VkSurfaceCapabilitiesKHR, VkSurfaceFormatKHR )
+import Numeric.DataFrame ( DataFrame, XN )
+import Paracletus.Vulkan.Vertex ( Vertex )
+import Artos.Var ( TVar )
+import Paracletus.Vulkan.Data ( GQData )
 import qualified Paracletus.Oblatum.GLFW as GLFW
 
 data GraphicsLayer = GLUnknown | Vulkan | OpenGL | OpenGLES deriving (Show, Eq)

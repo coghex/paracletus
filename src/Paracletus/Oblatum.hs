@@ -9,15 +9,35 @@ import Control.Monad (when, unless, forever)
 import Control.Monad.State.Class (gets, modify)
 import Data.Time.Clock (getCurrentTime, utctDayTime)
 import Anamnesis
+    ( MonadIO(liftIO),
+      MonadReader(ask),
+      MonadState(get),
+      Anamnesis,
+      Anamnesis' )
 import Anamnesis.Data
+    ( Env(envEventQ),
+      LoopControl(ContinueLoop),
+      ReloadState(RSNULL),
+      State(stInput, stFPS, stReload) )
 import Anamnesis.Util
-import Artos.Except
-import Artos.Var
+    ( allocResource,
+      locally,
+      logDebug,
+      logExcept,
+      logInfo,
+      occupyThreadAndFork )
+import Artos.Except ( ExType(ExParacletus) )
+import Artos.Var ( atomically, writeTVar, TVar )
 import Paracletus.Data
+    ( FPS(FPS),
+      InputState(mouse3, mouse1, accelCap),
+      ParacResult(GLFWError) )
 import Paracletus.Oblatum.Callback
-import Paracletus.Oblatum.Event
+    ( errorCallback, keyCallback, mouseButtonCallback, scrollCallback )
+import Paracletus.Oblatum.Event ( moveCamWithKeys )
 import Paracletus.Oblatum.GLFW (WindowHint(..),ClientAPI(..))
 import Paracletus.Oblatum.Mouse
+    ( moveCamWithMouse, moveSliderWithMouse, sliderPressed )
 import qualified Paracletus.Oblatum.GLFW as GLFW
 
 -- setting of glfw callbacks and hints

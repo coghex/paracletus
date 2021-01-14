@@ -1,7 +1,7 @@
 module Epiklesis.Data where
 -- data for generating verticies from lua
-import Paracletus.Data
-import System.Random
+import Paracletus.Data ( Dyns, FPS )
+import System.Random ( StdGen )
 
 -- draw state is kept in a seperate thread
 -- and calculated into verticies

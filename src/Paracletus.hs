@@ -3,12 +3,12 @@ module Paracletus where
 -- a graphics layer is chosen
 -- and glfw instance is begun
 import Prelude()
-import UPrelude
-import Anamnesis
-import Anamnesis.Util
-import Artos.Except
-import Paracletus.Data
-import Paracletus.Vulkan
+import UPrelude ( ($) )
+import Anamnesis (Anamnesis(..))
+import Anamnesis.Util (logExcept)
+import Artos.Except (ExType(..))
+import Paracletus.Data (GraphicsLayer(..),ParacResult(..))
+import Paracletus.Vulkan (runParacVulkan)
 
 runParacletus ∷ GraphicsLayer → Anamnesis ε σ ()
 runParacletus Vulkan   = runParacVulkan

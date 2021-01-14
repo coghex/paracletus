@@ -2,7 +2,7 @@ module Epiklesis.Rand where
 -- some helper functions to generate random lists
 --import Prelude()
 --import UPrelude
-import System.Random
+import System.Random ( StdGen, Random(randomRs) )
 
 -- rands help generate random ellipses
 genRands ∷ StdGen → StdGen → Int → Int → Int → [((Int,Int),(Int,Int))]

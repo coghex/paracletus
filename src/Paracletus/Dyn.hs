@@ -3,10 +3,17 @@ module Paracletus.Dyn where
 import Prelude()
 import UPrelude
 import Data.List.Split (splitOn)
-import Paracletus.Data
+import Paracletus.Data ( DynData(DynData), Dyns(..), FPS(..) )
 import Epiklesis.Data
-import Epiklesis.Shell
-import Epiklesis.Window
+    ( DrawState(dsShell, dsFPS, dsBuff, dsTiles),
+      DynMap(DMSlider, DMShCursor, DMSliderVal, DMFPS, DMNULL, DMBuff),
+      PaneBit(PaneBitSlider),
+      Shell(shCursor, shOutStr, shInpStr),
+      Tile(DTile, MTile, GTile, ATile, DMTile),
+      WinElem(WinElemPane),
+      Window(winElems) )
+import Epiklesis.Shell ( findCursPos )
+import Epiklesis.Window ( currentWin )
 
 -- loads in reverse so the trans functions
 -- can be mmap recursively without index

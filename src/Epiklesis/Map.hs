@@ -3,6 +3,11 @@ module Epiklesis.Map where
 import Prelude()
 import UPrelude
 import Epiklesis.Data
+    ( Cards(..),
+      Segment(SegmentNULL, Segment),
+      Spot,
+      WorldParams(wpZSize),
+      Zone(..) )
 
 -- takes a grid with indices and gets rid of them
 stripGrid ∷ [(α,[(α,β)])] → [[β]]

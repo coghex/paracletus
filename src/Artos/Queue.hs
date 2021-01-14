@@ -1,7 +1,7 @@
 module Artos.Queue where
 -- an event queue is defined
 import qualified Control.Concurrent.STM as STM
-import Artos.Data
+import Artos.Data ( Event, LoadCmd )
 
 -- type synonym for ease of use
 type Queue = STM.TQueue

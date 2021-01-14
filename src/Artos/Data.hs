@@ -1,9 +1,10 @@
 module Artos.Data where
 -- various data structures for threads
 import Prelude()
-import UPrelude
+import UPrelude ( Eq, Show, Bool, Double, Float, Int, String )
 import Epiklesis.Data
-import Paracletus.Data
+    ( LinkAction, PaneBit, ShellCmd, WinElem, WinScreen, Window )
+import Paracletus.Data ( Dyns, FPS, ISKeys, PrintArg, Verts )
 import qualified Paracletus.Oblatum.GLFW as GLFW
 
 -- timer state is used for all the timers

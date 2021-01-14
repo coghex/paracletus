@@ -11,15 +11,20 @@ import Control.Monad (when)
 import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import qualified Foreign.Marshal.Array as Foreign
 import Foreign.Storable (Storable)
-import Foreign.Ptr
+import Foreign.Ptr ( Ptr )
 import qualified Foreign.Storable as Storable
-import GHC.Stack
+import GHC.Stack ( HasCallStack, prettyCallStack, callStack )
 import Graphics.Vulkan
-import Graphics.Vulkan.Core_1_0
-import Artos.Except
+import Graphics.Vulkan.Core_1_0 ( VkResult(VK_SUCCESS) )
+import Artos.Except ( AExcept(AExcept), ExType(ExParacletus) )
 import Anamnesis
-import Anamnesis.Data
-import Anamnesis.Foreign
+    ( MonadIO(liftIO),
+      MonadError(throwError),
+      MonadState(state),
+      Anamnesis(..),
+      Anamnesis' )
+import Anamnesis.Data ( State(stStatus) )
+import Anamnesis.Foreign ( alloca, allocaArray, liftIOWith, touch )
 
 -- runs io vulkan command,
 -- throwing unique exception

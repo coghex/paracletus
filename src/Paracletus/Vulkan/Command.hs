@@ -7,15 +7,16 @@ import Prelude()
 import UPrelude
 import Graphics.Vulkan
 import Graphics.Vulkan.Core_1_0
-import Graphics.Vulkan.Marshal.Create
+import Graphics.Vulkan.Marshal.Create ( (&*), createVk, set )
 import Graphics.Vulkan.Marshal.Create.DataFrame
-import Numeric.DataFrame
-import Anamnesis
-import Anamnesis.Foreign
-import Anamnesis.Util
-import Paracletus.Data
-import Paracletus.Vulkan.Foreign
-import Paracletus.Vulkan.Sync
+    ( setDFRef, withDFPtr )
+import Numeric.DataFrame ( unScalar )
+import Anamnesis ( MonadIO(liftIO), Anamnesis )
+import Anamnesis.Foreign ( allocaPeek, allocaPeekDF, newArrayRes )
+import Anamnesis.Util ( allocResource, bracket, locally )
+import Paracletus.Data ( DevQueues(..) )
+import Paracletus.Vulkan.Foreign ( runVk, withVkPtr )
+import Paracletus.Vulkan.Sync ( createFence )
 
 createCommandPool ∷ VkDevice → DevQueues → Anamnesis ε σ VkCommandPool
 createCommandPool dev DevQueues{..} =

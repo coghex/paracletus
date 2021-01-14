@@ -3,12 +3,16 @@ module Paracletus.Draw where
 import Prelude()
 import UPrelude
 import Epiklesis.Data
+    ( DrawState(dsNDefTex, dsShell, dsFPS),
+      DynMap(DMFPS),
+      Tile(DTile) )
 import Epiklesis.Shell (loadShell)
-import Epiklesis.Window
-import Paracletus.Buff
+import Epiklesis.Window ( currentWin )
+import Paracletus.Buff ( loadTileBuff )
 import Paracletus.Data
-import Paracletus.Elem
-import Paracletus.Oblatum.Font
+    ( FPS(FPS), TTFData(TTFData), TextSize(TextSize30px) )
+import Paracletus.Elem ( loadWindow )
+import Paracletus.Oblatum.Font ( indexTTF )
 
 loadTiles ∷ DrawState → [Tile]
 loadTiles ds = winTiles ⧺ shTiles ⧺ fpsTiles ⧺ buffTiles

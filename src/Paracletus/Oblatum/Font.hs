@@ -3,13 +3,13 @@ module Paracletus.Oblatum.Font where
 --import Prelude()
 --import UPrelude
 import FreeType
-import Control.Monad
-import Data.Char
-import Data.Word
-import Foreign.Marshal.Array
-import Foreign.Marshal.Utils
-import Foreign.Storable
-import Paracletus.Data
+import Control.Monad ( when )
+import Data.Char ( ord )
+import Data.Word ( Word8 )
+import Foreign.Marshal.Array ( peekArray )
+import Foreign.Marshal.Utils ( with )
+import Foreign.Storable ( Storable(peek) )
+import Paracletus.Data ( TTFData(TTFData), TextSize(..) )
 
 data FontTex = FontTex Int Int [Word8]
 

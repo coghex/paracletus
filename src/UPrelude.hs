@@ -14,8 +14,8 @@ import Prelude hiding ((>>=), (=<<))
 import qualified Data.Bits as B
 import qualified Data.Functor as F
 import qualified System.FilePath as FP
-import Control.Monad.Unicode
-import Control.Applicative.Unicode
+import Control.Monad.Unicode ( (=≪), (↢), (↣), (≫), (≫=) )
+import Control.Applicative.Unicode ( (∅), (⊛) )
 
 -- this function should be in prelude
 flatten ∷ [[α]] → [α]

@@ -3,8 +3,15 @@ module Epiklesis.ArgV where
 import Prelude()
 import UPrelude
 import Epiklesis.Data
-import Epiklesis.Window
-import Epiklesis.World
+    ( DSStatus(DSSLoadVerts),
+      DrawState(dsStatus, dsWins, dsLastI, dsWinI),
+      PaneBit(PaneBitSlider),
+      UserWorldParams(UserWorldParams),
+      WinArgV(..),
+      WinElem(WinElemWorld, WinElemPane),
+      Window(winElems, winArgV) )
+import Epiklesis.Window ( replaceWin )
+import Epiklesis.World ( genWorldParams )
 
 -- changing windows triggers argVs
 changeWin ∷ Int → DrawState → DrawState

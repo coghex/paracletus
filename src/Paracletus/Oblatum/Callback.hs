@@ -1,8 +1,9 @@
 module Paracletus.Oblatum.Callback where
 -- callbacks for GLFW are defined
 import Artos.Data
-import Artos.Queue
-import Artos.Var
+    ( Event(EventScroll, EventMouseButton, EventKey, EventError) )
+import Artos.Queue ( Queue, writeQueue )
+import Artos.Var ( atomically )
 import qualified Paracletus.Oblatum.GLFW as GLFW
 
 errorCallback ∷ Queue Event → GLFW.Error → String → IO ()

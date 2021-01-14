@@ -2,10 +2,16 @@ module Epiklesis.Border where
 -- borders between biomes are set
 import Prelude()
 import UPrelude
-import Epiklesis.Map
+import Epiklesis.Map ( cardinals, fixCurs, zoneCards )
 import Epiklesis.Data
-import Epiklesis.Window
-import Paracletus.Data
+    ( Cards(..),
+      Segment(Segment, SegmentNULL),
+      Spot(Spot),
+      WorldData(wdZones),
+      WorldParams(wpSSize, wpZSize),
+      Zone(..) )
+import Epiklesis.Window ( evalScreenCursor, replaceSeg )
+import Paracletus.Data ( DynData(DynData) )
 
 -- adds in corners on top of existing edges
 calcGridCorners ∷ [[Spot]] → [[Cards Spot]] → [[Spot]]

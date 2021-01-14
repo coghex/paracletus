@@ -12,18 +12,26 @@ import Graphics.Vulkan
 import Graphics.Vulkan.Core_1_0
 import Graphics.Vulkan.Ext.VK_KHR_swapchain
 import Graphics.Vulkan.Marshal.Create
-import Graphics.Vulkan.Marshal.Create.DataFrame
-import Numeric.DataFrame
-import Anamnesis
-import Anamnesis.Data
+    ( (&*), createVk, set, setListCountAndRef, setListRef, setVk )
+import Graphics.Vulkan.Marshal.Create.DataFrame ( setVec )
+import Numeric.DataFrame ( Vector4(vec4) )
+import Anamnesis ( MonadIO(liftIO), MonadState(get), Anamnesis )
+import Anamnesis.Data ( State(stStatus) )
 import Anamnesis.Foreign
-import Anamnesis.Util
-import Artos.Except
-import Artos.Var
-import Paracletus.Data
-import Paracletus.Vulkan.Data
+    ( allocaPeek,
+      mallocArrayRes,
+      newArrayRes,
+      peek,
+      peekArray,
+      ptrAtIndex )
+import Anamnesis.Util ( allocResource )
+import Artos.Except ( testEx )
+import Artos.Var ( atomically, readTVar, writeTVar, TVar )
+import Paracletus.Data ( DevQueues(..) )
+import Paracletus.Vulkan.Data ( SwapchainInfo(..) )
 import Paracletus.Vulkan.Foreign
-import Paracletus.Vulkan.Sync
+    ( runVk, withVkArrayLen, withVkPtr )
+import Paracletus.Vulkan.Sync ( createFence, createSemaphore )
 
 _MAX_FRAMES_IN_FLIGHT ∷ Int
 _MAX_FRAMES_IN_FLIGHT = 2

@@ -1,8 +1,8 @@
 {-# LANGUAGE Strict #-}
 module Artos where
 -- overarching error handling
-import System.Exit
-import Artos.Except
+import System.Exit ( exitFailure )
+import Artos.Except ( displayException, AExcept )
 -- fails IO, thus everything,
 -- when an error is returned
 -- by any of the submodules.

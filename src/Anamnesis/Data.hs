@@ -4,10 +4,10 @@ module Anamnesis.Data where
 import Data.Time.Clock.System
 import qualified Control.Monad.Logger as Logger
 import qualified Foreign.Lua as Lua
-import Artos.Data
-import Artos.Except
-import Artos.Queue
-import Paracletus.Data
+import Artos.Data ( Event, LoadCmd, TState )
+import Artos.Except ( AExcept )
+import Artos.Queue ( Queue, TChan )
+import Paracletus.Data ( Dyns, FPS, InputState, Verts )
 import qualified Paracletus.Oblatum.GLFW as GLFW
 
 -- possible results of anamnesis

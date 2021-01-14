@@ -9,17 +9,18 @@ import Data.Bits (testBit)
 import Foreign.Ptr (castPtr)
 import Graphics.Vulkan
 import Graphics.Vulkan.Core_1_0
-import Graphics.Vulkan.Marshal.Create
-import Graphics.Vulkan.Marshal.Create.DataFrame
-import Numeric.DataFrame
-import Anamnesis
-import Anamnesis.Foreign
+import Graphics.Vulkan.Marshal.Create ( (&*), createVk, set )
+import Graphics.Vulkan.Marshal.Create.DataFrame ( getVec )
+import Numeric.DataFrame ( DataFrame(XFrame), XN, ixOff, bSizeOf )
+import Anamnesis ( MonadIO(liftIO), Anamnesis )
+import Anamnesis.Foreign ( allocaPeek, poke )
 import Anamnesis.Util
-import Artos.Except
-import Paracletus.Data
-import Paracletus.Vulkan.Command
-import Paracletus.Vulkan.Foreign
-import Paracletus.Vulkan.Vertex
+    ( allocResource, allocResource', locally, logExcept )
+import Artos.Except ( ExType(ExParacletus) )
+import Paracletus.Data ( ParacResult(VulkanError) )
+import Paracletus.Vulkan.Command ( runCommandsOnce )
+import Paracletus.Vulkan.Foreign ( runVk, withVkPtr )
+import Paracletus.Vulkan.Vertex ( Vertex )
 
 createBuffer ∷ VkPhysicalDevice → VkDevice → VkDeviceSize → VkBufferUsageFlags → VkMemoryPropertyFlags → Anamnesis ε σ (VkDeviceMemory, VkBuffer)
 createBuffer pdev dev bSize bUsage bMemPropFlags = do

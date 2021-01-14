@@ -2,13 +2,21 @@ module Epiklesis.World where
 -- world related functions exist
 import Prelude()
 import UPrelude
-import Epiklesis.Border
+import Epiklesis.Border ( calcCornerBuff, setTileBorder )
 import Epiklesis.Data
-import Epiklesis.Rand
+--import Epiklesis.Elev
+import Epiklesis.Rand ( genConts, genRands )
 import Epiklesis.Map
+    ( fixCurs, indexSeg, indexZone, seedDistance, stripGrid )
 import Epiklesis.Window
-import Paracletus.Data
-import Paracletus.Buff
+    ( replaceWin,
+      currentWin,
+      replaceZones,
+      replaceWorldWinElem,
+      findWorldData,
+      evalScreenCursor )
+import Paracletus.Data ( DynData(DynData), Dyns(..) )
+import Paracletus.Buff ( setTileBuff )
 
 -- world parameters set from argV
 genWorldParams ∷ UserWorldParams → WorldParams → WorldParams

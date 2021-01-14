@@ -6,15 +6,24 @@ import UPrelude
 import Control.Monad (when)
 import Control.Monad.State.Class (modify',gets)
 import Anamnesis
-import Anamnesis.Data
+    ( MonadIO(liftIO), MonadReader(ask), MonadState(get), Anamnesis )
+import Anamnesis.Data ( Env(envLoadQ), State(stWindow, stInput) )
 import Artos.Data
-import Artos.Queue
-import Artos.Var
-import Epiklesis.ArgV
+    ( LoadCmd(LoadCmdMouseCam, LoadCmdMoveSlider, LoadCmdLink,
+              LoadCmdScroll) )
+import Artos.Queue ( writeQueue )
+import Artos.Var ( atomically )
+import Epiklesis.ArgV ( changeWin )
 import Epiklesis.Data
-import Epiklesis.Window
+    ( DSStatus(DSSLoadInput, DSSLoadVerts, DSSExit),
+      DrawState(dsWins, dsLastI, dsWinI, dsStatus),
+      LinkAction(LinkLink, LinkSlider, LinkBack, LinkExit),
+      WinElem(WinElemLink),
+      Window(winElems) )
+import Epiklesis.Window ( currentWin, findWinI, replaceWin )
 import Paracletus.Data
-import Paracletus.Dyn
+    ( InputElem(..), InputState(mouse3, isElems, mouse1) )
+import Paracletus.Dyn ( moveSlider )
 import qualified Paracletus.Oblatum.GLFW as GLFW
       
 -- TODO: un-hardcode the pixels here

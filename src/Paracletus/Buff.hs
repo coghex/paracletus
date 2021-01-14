@@ -5,8 +5,17 @@ import Prelude ()
 import UPrelude
 import Data.List.Split (splitOn)
 import Epiklesis.Data
+    ( Shell(shOpen, shInpStr, shOutStr),
+      WorldData,
+      WorldParams(wpSSize),
+      DynMap(DMBuff),
+      Tile(DTile, ATile, DMTile) )
 import Paracletus.Data
-import Paracletus.Oblatum.Font
+    ( DynData(DynData),
+      Dyns(..),
+      TTFData(TTFData),
+      TextSize(TextSize30px) )
+import Paracletus.Oblatum.Font ( indexTTF )
 
 initBuff ∷ [Dyns]
 initBuff = [shDyns,aDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns]

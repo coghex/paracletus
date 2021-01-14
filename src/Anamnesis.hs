@@ -8,15 +8,16 @@ module Anamnesis
 -- the application is defined
 -- as a continuation monad
 import UPrelude
-import Control.Monad.IO.Class
-import Control.Monad.Error.Class
-import Control.Monad.Reader.Class
-import Control.Monad.State.Class
+import Control.Monad.IO.Class ( MonadIO(..) )
+import Control.Monad.Error.Class ( MonadError(..) )
+import Control.Monad.Reader.Class ( MonadReader(..) )
+import Control.Monad.State.Class ( MonadState(..), gets )
 import qualified Control.Monad.Logger as Logger
 import Data.Tuple (swap)
-import Artos.Except
+import Artos.Except ( AExcept )
 import Artos.Var
-import Anamnesis.Data
+    ( atomically, modifyTVar, readTVar, writeTVar, TVar )
+import Anamnesis.Data ( Env, State(stLogFunc) )
 -- monadic typeclass instances
 -- inlined for exporting
 -- ε = env, σ = state

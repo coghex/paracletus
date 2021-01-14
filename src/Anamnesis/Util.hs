@@ -10,18 +10,25 @@ module Anamnesis.Util where
 -- and some threading functions
 import Prelude()
 import UPrelude
-import Control.Concurrent
+import Control.Concurrent ( forkFinally, myThreadId, throwTo )
 import qualified Control.Monad.Logger.CallStack as LoggerCS
 import Data.String (fromString)
 import Data.Time.Clock.System
-import GHC.Stack
-import Graphics.Vulkan
-import System.Exit
+    ( SystemTime(systemNanoseconds, systemSeconds), getSystemTime )
+import GHC.Stack ( HasCallStack, prettyCallStack, callStack )
+import Graphics.Vulkan ( Int64 )
+import System.Exit ( ExitCode(ExitSuccess) )
 import Anamnesis
+    ( MonadIO(liftIO),
+      MonadError(throwError),
+      MonadState(get),
+      Anamnesis(..),
+      Anamnesis' )
 import Anamnesis.Data
-import Artos
-import Artos.Except
-import Artos.Var
+    ( LoopControl(ContinueLoop), State(stStartT) )
+import Artos ( checkStatus )
+import Artos.Except ( AExcept(AExcept), ExType, Exceptable )
+import Artos.Var ( atomically, newTVar, readTVar )
 
 -- for c functions that have to run in the main
 -- thread for as long as the program runs

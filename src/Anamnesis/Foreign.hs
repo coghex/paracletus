@@ -14,10 +14,12 @@ import Foreign.Storable (Storable)
 import qualified Foreign.Storable as Storable
 import qualified GHC.Base as GHC
 import Numeric.DataFrame
+    ( Nat, PrimBytes, DataFrame, InferKnownBackend(inferKnownBackend) )
 import Numeric.DataFrame.IO
-import Numeric.Dimensions
-import Anamnesis
-import Artos.Except
+    ( newPinnedDataFrame, unsafeFreezeDataFrame, withDataFramePtr )
+import Numeric.Dimensions ( Dict(Dict), Dimensions )
+import Anamnesis ( MonadIO(liftIO), Anamnesis(..), Anamnesis' )
+import Artos.Except ( AExcept )
 -- modified pointer functions
 -- from various libraries
 peek ∷ Storable α ⇒ Ptr α → Anamnesis ε σ α

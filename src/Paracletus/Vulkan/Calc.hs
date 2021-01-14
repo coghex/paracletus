@@ -8,11 +8,19 @@ where
 -- outside of parent thread
 import Prelude()
 import UPrelude
-import Graphics.Vulkan.Core_1_0
+import Graphics.Vulkan.Core_1_0 ( Word32 )
 import Numeric.DataFrame
-import Epiklesis.Data
-import Paracletus.Vulkan.Atlas
+    ( Nat,
+      DataFrame(S),
+      XN,
+      fromList,
+      HomTransform4(toHomPoint, fromHom),
+      Vector3(vec3),
+      Vector4(vec4) )
+import Epiklesis.Data ( Tile(ATile, DMTile, DTile, MTile, GTile) )
+import Paracletus.Vulkan.Atlas ( indexAtlas )
 import Paracletus.Vulkan.Vertex
+    ( atLeastThree, Vertex(Vertex, move, texCoord, pos) )
 
 -- determines dataframes from drawstate
 calcVertices ∷ [Tile] →  (DataFrame Vertex '[XN 0], DataFrame Word32 '[XN 3])

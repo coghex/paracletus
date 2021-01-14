@@ -10,14 +10,21 @@ module Paracletus.Vulkan.Vertex where
 import Prelude()
 import UPrelude
 import qualified Control.Monad.ST as ST
-import Data.Maybe
+import Data.Maybe ( fromMaybe )
 import GHC.Generics (Generic)
 import Graphics.Vulkan.Core_1_0
-import Graphics.Vulkan.Marshal.Create
+    ( Word32,
+      VkFormat(VK_FORMAT_R32G32B32A32_SFLOAT,
+               VK_FORMAT_R32G32B32_SFLOAT),
+      VkVertexInputRate(VK_VERTEX_INPUT_RATE_VERTEX),
+      VkVertexInputAttributeDescription,
+      VkVertexInputBindingDescription )
+import Graphics.Vulkan.Marshal.Create ( (&*), createVk, set )
 import Graphics.Vulkan.Marshal.Create.DataFrame()
 import Numeric.DataFrame
 import qualified Numeric.DataFrame.ST as ST
 import Numeric.Dimensions
+    ( Dimensions(dims), KnownDimType, dimVal, All, BoundedDims )
 
 data Vertex = Vertex { pos      ∷ Vec3f
                      , color    ∷ Vec4f

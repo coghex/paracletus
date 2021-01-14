@@ -4,6 +4,14 @@ module Epiklesis.Window where
 import Prelude()
 import UPrelude
 import Epiklesis.Data
+    ( DrawState(dsWins, dsWinI),
+      PaneBit,
+      Segment(SegmentNULL),
+      WinElem(WinElemWorld, WinElemPane),
+      Window(winElems, winTitle),
+      WorldData,
+      WorldParams,
+      Zone(Zone) )
 
 -- replaces specific window in windows
 replaceWin ∷ Window → [Window] → [Window]

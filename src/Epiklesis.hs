@@ -4,16 +4,27 @@ module Epiklesis
 import Prelude()
 import UPrelude
 import Data.List (sort)
-import Data.Time.Clock
+import Data.Time.Clock ( diffUTCTime, getCurrentTime )
 import qualified Foreign.Lua as Lua
 import System.Directory (getDirectoryContents)
 import System.FilePath (combine)
 import Anamnesis.Data
 import Artos.Data
-import Artos.Thread
+import Artos.Thread ( threadDelay )
 import Artos.Queue
-import Artos.Var
+import Artos.Var ( atomically )
 import Epiklesis.Command
+    ( hsExit,
+      hsLogDebug,
+      hsNewLink,
+      hsNewPane,
+      hsNewPaneBit,
+      hsNewText,
+      hsNewWindow,
+      hsNewWorld,
+      hsSwitchScreen,
+      hsSwitchWindow,
+      hsToggleFPS )
 
 loadEpiklesis ∷ Env → IO ()
 loadEpiklesis env = do

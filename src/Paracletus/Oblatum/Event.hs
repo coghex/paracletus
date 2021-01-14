@@ -6,12 +6,22 @@ import UPrelude
 import Control.Monad (when)
 import Control.Monad.State.Class (modify',gets)
 import Anamnesis
+    ( MonadIO(liftIO), MonadReader(ask), MonadState(get), Anamnesis )
 import Anamnesis.Data
+    ( Env(envLoadQ), Settings(sKeyLayout), State(stInput, stSettings) )
 import Paracletus.Data
+    ( Cardinal(..),
+      ISKeys(keyRight, keyDown, keyLeft, keyUp),
+      InputState(accelCap, keySt, inpCap) )
 import Artos.Data
-import Artos.Queue
-import Artos.Var
+    ( LoadCmd(LoadCmdMoveCam, LoadCmdWorld, LoadCmdShell) )
+import Artos.Queue ( writeQueue )
+import Artos.Var ( atomically )
 import Epiklesis.Data
+    ( ShellCmd(ShellCmdControl, ShellCmdCursor, ShellCmdDown,
+               ShellCmdUp, ShellCmdExec, ShellCmdString, ShellCmdTab,
+               ShellCmdDelete, ShellCmdClose, ShellCmdOpen),
+      ShellControl(ShCtlE, ShCtlA, ShCtlC) )
 import qualified Paracletus.Oblatum.GLFW as GLFW
 
 evalKey ∷ GLFW.Window → GLFW.Key → GLFW.KeyState → GLFW.ModifierKeys → Anamnesis ε σ ()

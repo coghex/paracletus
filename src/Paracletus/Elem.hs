@@ -5,8 +5,8 @@ import UPrelude
 import Data.List.Split (splitOn)
 import Epiklesis.Data
 import Paracletus.Buff
-import Paracletus.Data
-import Paracletus.Oblatum.Font
+import Paracletus.Data ( TTFData(TTFData, chX), TextSize(..) )
+import Paracletus.Oblatum.Font ( indexTTF )
 
 -- finds tiles from a window
 loadWindow ∷ Int → Window → [Tile]
