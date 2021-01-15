@@ -53,7 +53,7 @@ calcElevGridRow ind nDefTex (j,spots) = flatten $ map (calcElevGrid ind j nDefTe
   where xinds = take (length spots) [0..]
 calcElevGrid ∷ (Int,Int) → Int → Int → (Int,Spot) → [DynData]
 calcElevGrid (cx,cy) y nDefTex (x,Spot _ _ _ e) = [dd]
-  where dd = DynData nDefTex (2*x',2*y') (1,1) (ix,iy)
+  where dd = DynData nDefTex (2*x',2*y') (1 + (1/14),1 + (1/14)) (ix,iy)
         x' = fromIntegral cx + fromIntegral x
         y' = fromIntegral cy + fromIntegral y
         ix = round e `mod` 3

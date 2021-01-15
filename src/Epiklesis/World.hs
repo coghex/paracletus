@@ -179,7 +179,7 @@ calcGridRow ind nDefTex (j,spots) = flatten $ map (calcGrid ind j nDefTex) (zip 
   where xinds = take (length spots) [0..]
 calcGrid ∷ (Int,Int) → Int → Int → (Int,Spot) → [DynData]
 calcGrid (cx,cy) y nDefTex (x,(Spot c t _ _)) = [dd]
-  where dd = DynData c' (2*x',2*y') (1,1) (ix,iy)
+  where dd = DynData c' (2*x',2*y') (1 + (1/14),1 + (1/14)) (ix,iy)
         x' = (fromIntegral cx) + (fromIntegral x)
         y' = (fromIntegral cy) + (fromIntegral y)
         ix = t `mod` 3

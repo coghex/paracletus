@@ -61,12 +61,14 @@ calcGridRowCornerBuff ind nDefTex (j,spots) = flatten $ map (calcGridCorner ind 
 calcGridCorner ∷ (Int,Int) → Int → Int → (Int,Spot) → [DynData]
 calcGridCorner _       _ _       (_,(Spot _ _ Nothing _)) = []
 calcGridCorner (cx,cy) y nDefTex (x,(Spot c _ (Just (nw,ne,sw,se)) _)) = ddnw ⧺ ddne ⧺ ddsw ⧺ ddse
-  where ddnw = if nw then [DynData c' (2*x',2*y') (1,1) (1,8)] else []
-        ddne = if ne then [DynData c' (2*x',2*y') (1,1) (0,8)] else []
-        ddsw = if sw then [DynData c' (2*x',2*y') (1,1) (0,9)] else []
-        ddse = if se then [DynData c' (2*x',2*y') (1,1) (2,8)] else []
+  where ddnw = if nw then [DynData c' (2*x',2*y') (w,h) (1,8)] else []
+        ddne = if ne then [DynData c' (2*x',2*y') (w,h) (0,8)] else []
+        ddsw = if sw then [DynData c' (2*x',2*y') (w,h) (0,9)] else []
+        ddse = if se then [DynData c' (2*x',2*y') (w,h) (2,8)] else []
         x'   = (fromIntegral cx) + (fromIntegral x)
         y'   = (fromIntegral cy) + (fromIntegral y)
+        w    = 1 + (1/14)
+        h    = 1 + (1/14)
         c'   = c + 1 + nDefTex
 
 -- adds in borders where possible
