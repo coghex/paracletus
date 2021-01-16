@@ -4,6 +4,7 @@ module Anamnesis.Data where
 import Data.Time.Clock.System
 import qualified Control.Monad.Logger as Logger
 import qualified Foreign.Lua as Lua
+import Numeric.Noise.Perlin ( Perlin )
 import Artos.Data ( Event, LoadCmd, TState )
 import Artos.Except ( AExcept )
 import Artos.Queue ( Queue, TChan )
@@ -20,6 +21,7 @@ data Env = Env { envEventQ ∷ Queue Event
                , envLoadQ  ∷ Queue LoadCmd
                , envLoadCh ∷ TChan TState
                , envLuaCh  ∷ TChan TState
+               , envPerlin ∷ Perlin
                , envLuaSt  ∷ Lua.State }
 -- state holds mutable data, and the
 -- current status of the whole App

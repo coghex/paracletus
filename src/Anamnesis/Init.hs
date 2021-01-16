@@ -13,6 +13,7 @@ import Anamnesis.Data
       Env(..),
       ReloadState(RSNULL),
       State(..) )
+import Epiklesis.Noise ( makePerlin )
 import Epiklesis.Settings ( initSettings )
 import Artos.Except ( AExcept(AExcept), ExType(ExAnamnesis) )
 import Artos.Queue ( newCmdQueue, newQueue, newTChan )
@@ -36,10 +37,12 @@ initEnv = do
   newC1 ← newTChan
   newC2 ← newTChan
   newLS ← Lua.newstate
+  let newPn = makePerlin 1 1 1 1
   let env = Env { envEventQ = newQ1
                 , envLoadQ  = newQ2
                 , envLoadCh = newC1
                 , envLuaCh  = newC2
+                , envPerlin = newPn
                 , envLuaSt  = newLS }
   envChan ← atomically $ newTVar env
   return (envChan,env)
