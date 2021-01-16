@@ -245,7 +245,8 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
           _ ← logDebug $ "vulkan khr out of date"
           return True
         False → logExcept ParacError ExParacletus "unknown drawFrame error" )
-      sizeChanged ← liftIO $ atomically $ readTVar windowSizeChanged
+      --sizeChanged ← liftIO $ atomically $ readTVar windowSizeChanged
+      let sizeChanged = False
       -- logic here
       processEvents
       processInput
@@ -274,7 +275,8 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
     let stateRecreate = case (stateRec) of
                           RSRecreate → True
                           _          → False
-    sizeChanged ← liftIO $ atomically $ readTVar windowSizeChanged
+    --sizeChanged ← liftIO $ atomically $ readTVar windowSizeChanged
+    let sizeChanged = False
     return $ if shouldLoad ∨ sizeChanged ∨ stateRecreate then AbortLoop else ContinueLoop
   return $ if shouldExit then AbortLoop else ContinueLoop
 

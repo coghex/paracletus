@@ -8,8 +8,14 @@ all controlled by lua scripts.
 
 pre-requisites for building include [vulkan](https://vulkan.lunarg.org/sdk/home), [glfw](https://www.glfw.org/download.html),
 and [freetype2](https://download.savannah.gnu.org/releases/freetype/).  all of these should be in
-most package managers.  works on windows, linux,
+most package managers.  there are other libraries
+such as libgmp3, libtinfo, glfw, and x11 stuff
+that is also required.  works on windows, linux,
 and mac; probably anything with GHC and vulkan.
+if vulkan acts up and displays weird artifacts,
+its because vulkan ships configured to override
+your validation layers, run vkconfig and click
+the box "fully controlled by vulkan application"
 
 ## Building
 
