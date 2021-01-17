@@ -1,7 +1,8 @@
 module Epiklesis.Data where
 -- data for generating verticies from lua
-import Paracletus.Data ( Dyns, FPS )
+import Numeric.Noise.Perlin ( Perlin )
 import System.Random ( StdGen )
+import Paracletus.Data ( Dyns, FPS )
 
 -- draw state is kept in a seperate thread
 -- and calculated into verticies
@@ -122,9 +123,11 @@ data WinElem
 -- world parameters help generate world
 data WorldParams = WorldParams { wpSSize ∷ (Int,Int)
                                , wpZSize ∷ (Int,Int)
+                               , wpSize  ∷ (Int,Int)
                                , wpRands ∷ [((Int,Int),(Int,Int))]
                                , wpConts ∷ [(Int,Int)]
                                , wpStdGs ∷ [StdGen]
+                               , wpPerl  ∷ Perlin
                                }
 -- data stored with each world
 data WorldData = WorldData { wdCam   ∷ (Float,Float)

@@ -2,12 +2,14 @@ module Epiklesis.World where
 -- world related functions exist
 import Prelude()
 import UPrelude
+import Numeric.Noise.Perlin ( Perlin )
 import Epiklesis.Border ( calcCornerBuff, setTileBorder )
 import Epiklesis.Data
-import Epiklesis.Elev
+import Epiklesis.Elev ( setElevBuff )
 import Epiklesis.Rand ( genConts, genRands )
 import Epiklesis.Map
     ( fixCurs, indexSeg, indexZone, seedDistance, stripGrid )
+import Epiklesis.Noise ( getNoise )
 import Epiklesis.Window
     ( replaceWin,
       currentWin,
@@ -21,7 +23,8 @@ import Paracletus.Buff ( setTileBuff )
 -- world parameters set from argV
 genWorldParams ∷ UserWorldParams → WorldParams → WorldParams
 genWorldParams uwp wp = wp { wpRands = rands
-                           , wpConts = conts }
+                           , wpConts = conts
+                           , wpSize  = (w,h) }
   where rands   = genRands sg0 sg1 ncont w h
         conts   = genConts sg0 sg1 ncont
         sg0     = (wpStdGs wp) !! 0
@@ -69,7 +72,7 @@ genSegData ∷ WorldParams → WorldData → (Int,Int) → (Int,Int) → Segment
 genSegData wp wd zind ind = case seg of
   Segment grid → Segment grid
   SegmentNULL  → Segment (stripGrid seg1)
-  where seg1     = seedConts ind' conts rands zeroSeg
+  where seg1     = seedConts p ind' maxp conts rands zeroSeg
         seg      = indexSeg ind $ zoneSegs zone
         zone     = indexZone (zw,zh) zind zones
         zones    = wdZones wd
@@ -77,29 +80,33 @@ genSegData wp wd zind ind = case seg of
         conts    = wpConts wp
         (sw,sh)  = wpSSize wp
         (zw,zh)  = wpZSize wp
+        maxp     = wpSize  wp
         zeroSeg  = take (sh+2) (zip [-1..] (repeat (take (sw+2) (zip [-1..] (repeat (Spot 1 0 Nothing 0.0))))))
         ind'     = ((((fst ind)*sw) + ((fst zind)*zw*sw)), (((snd ind)*sh) + ((snd zind)*zh*sh)))
+        p        = wpPerl wp
 
-seedConts ∷ (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
-seedConts _   []     _      grid = grid
-seedConts _   _      []     grid = grid
-seedConts ind (c:cs) (r:rs) grid = seedConts ind cs rs spots
-  where spots = seedSpots ind c r grid
-seedSpots ∷ (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
-seedSpots _   _ _ []             = []
-seedSpots ind c r ((j,row):grid) = [(j,(rowSpots j ind c r row))] ⧺ seedSpots ind c r grid
-rowSpots ∷ Int → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → [(Int,Spot)] → [(Int,Spot)]
-rowSpots _ _   _ _ []             = []
-rowSpots j ind c r ((i,spot):row) = [(i,spotSpots i j ind c r spot)] ⧺ rowSpots j ind c r row
-spotSpots ∷ Int → Int → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → Spot → Spot
-spotSpots i j (zi,zj) (rand,cont) ((w,x),(y,z)) (Spot c t b e)
-  | seedDistance i' j' w x y z < (rand*maxS) = Spot c' t' b (e + 1.0)
-  | otherwise                                = Spot c t b e
+seedConts ∷ Perlin → (Int,Int) → (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
+seedConts _ _   _    []     _      grid = grid
+seedConts _ _   _    _      []     grid = grid
+seedConts p ind maxp (c:cs) (r:rs) grid = seedConts p ind maxp cs rs spots
+  where spots = seedSpots p ind maxp c r grid
+seedSpots ∷ Perlin → (Int,Int) → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
+seedSpots _ _   _    _ _ []             = []
+seedSpots p ind maxp c r ((j,row):grid) = [(j,(rowSpots p j ind maxp c r row))] ⧺ seedSpots p ind maxp c r grid
+rowSpots ∷ Perlin → Int → (Int,Int) → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → [(Int,Spot)] → [(Int,Spot)]
+rowSpots _ _ _   _    _ _ []             = []
+rowSpots p j ind maxp c r ((i,spot):row) = [(i,spotSpots p i j ind maxp c r spot)] ⧺ rowSpots p j ind maxp c r row
+spotSpots ∷ Perlin → Int → Int → (Int,Int) → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → Spot → Spot
+spotSpots p i j (zi,zj) (maxw,maxh) (rand,cont) ((w,x),(y,z)) (Spot c t b e)
+  | dist < (rand*100000) = Spot c' t' b e''
+  | otherwise          = Spot c  t  b e
   where c'   = cont
         t'   = 0
         i'   = i + zi
         j'   = j + zj
-        maxS = 100000
+        dist = seedDistance i' j' w x y z
+        e''  = max 0 $ min 60 $ e'
+        e'   = e + 1 + (1000000*(1 + (getNoise (maxw + i') (maxh + j') p)) / (100000 + (fromIntegral dist)))
 
 -- proivides world data as dyndata,
 -- loads from window object
