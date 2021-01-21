@@ -2,6 +2,7 @@ module Paracletus.Text where
 -- methods to set text dyns are found
 import Prelude()
 import UPrelude
+import Data.List.Split (splitOn)
 import Epiklesis.Data ( WorldData(..) )
 import Paracletus.Buff ( genStrDDs )
 import Paracletus.Data
@@ -10,13 +11,14 @@ import Paracletus.Data
 calcTextBuff ∷ WorldData → Dyns
 calcTextBuff wd = case (wdSelect wd) of
   Nothing → Dyns $ replicate 196 $ DynData 0 (0,0) (1,1) (0,0)
-  Just cs → Dyns $ genTextBuffer (-10,8) $ "cursor: (" ⧺ (show (fst cs)) ⧺ ", " ⧺ (show (snd cs)) ⧺ ")"
+  Just cs → Dyns $ genTextBuffer (-10,8) $ "cursor: (" ⧺ (show (fst cs)) ⧺ ", " ⧺ (show (snd cs)) ⧺ ")\nTile: "
 
 genTextBuffer ∷ (Double,Double) → String → [DynData]
 genTextBuffer (x,y) str = res ⧺ replicate (196 - length res) (DynData 0 (0,0) (1,1) (0,0))
-  where res  = tb ⧺ genStrDDs (x,y) str dyns
+  where res  = tb ⧺ genStrDDs x (x,y) str dyns
         dyns = replicate (length str) $ DynData 0 (0,0) (1,1) (0,0)
-        tb   = genTextBoxBuffer (x,y+0.75) (16, 2)
+        tb   = genTextBoxBuffer (x,y+0.75) (16, h)
+        h    = fromIntegral $ 2 * length (splitOn "\n" str)
 
 genTextBoxBuffer ∷ (Double,Double) → (Double,Double) → [DynData]
 genTextBoxBuffer (x,y) (sx,sy) = [middleTile,leftTile,rightTile,topTile,bottomTile,topLeftTile,topRightTile,botLeftTile,botRightTile]

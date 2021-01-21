@@ -90,12 +90,13 @@ genShBuff buff b sh
         y    = fromIntegral $ length $ splitOn "\n" $ shOutStr sh
         str  = shInpStr sh
 genStrDyns ∷ (Double,Double) → String → Dyns → Dyns
-genStrDyns pos str (Dyns dyns) = Dyns $ genStrDDs pos str dyns
-genStrDDs ∷ (Double,Double) → String → [DynData] → [DynData]
-genStrDDs _   _        []       = []
-genStrDDs pos []       (_ :dds) = [dd'] ⧺ genStrDDs pos [] dds
+genStrDyns pos str (Dyns dyns) = Dyns $ genStrDDs (fst pos) pos str dyns
+genStrDDs ∷ Double → (Double,Double) → String → [DynData] → [DynData]
+genStrDDs _  _   _        []       = []
+genStrDDs x0 pos []       (_ :dds) = [dd'] ⧺ genStrDDs x0 pos [] dds
   where dd' = DynData 0 (0,0) (1,1) (0,0)
-genStrDDs pos (ch:str) (_ :dds) = [dd'] ⧺ genStrDDs pos' str dds
+genStrDDs x0 (x,y) ('\n':str) dds  = genStrDDs x0 (x0,y - 1) str dds
+genStrDDs x0 pos (ch:str) (_ :dds) = [dd'] ⧺ genStrDDs x0 pos' str dds
   where (dd',x') = genStrDD pos ch
         pos'     = (x',(snd pos))
 
