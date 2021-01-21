@@ -130,8 +130,9 @@ data WorldParams = WorldParams { wpSSize ∷ (Int,Int)
                                , wpPerl  ∷ Perlin
                                }
 -- data stored with each world
-data WorldData = WorldData { wdCam   ∷ (Float,Float)
-                           , wdZones ∷ [Zone]
+data WorldData = WorldData { wdCam    ∷ (Float,Float)
+                           , wdZones  ∷ [Zone]
+                           , wdSelect ∷ Maybe (Int,Int)
                            } deriving (Show, Eq)
 -- zones are infinite, but slow
 data Zone = Zone { zoneIndex ∷ (Int,Int)

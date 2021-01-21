@@ -99,7 +99,7 @@ rowSpots p j ind maxp c r ((i,spot):row) = [(i,spotSpots p i j ind maxp c r spot
 spotSpots ∷ Perlin → Int → Int → (Int,Int) → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → Spot → Spot
 spotSpots p i j (zi,zj) (maxw,maxh) (rand,cont) ((w,x),(y,z)) (Spot c t b e)
   | dist < (rand*100000) = Spot c' t' b e''
-  | otherwise          = Spot c  t  b e
+  | otherwise            = Spot c  t  b e
   where c'   = cont
         t'   = 0
         i'   = i + zi
@@ -119,7 +119,9 @@ setTileBuffs nDefTex (cx,cy) wp wd dyns0 = dyns2
 
 calcAuxBuff ∷ Int → WorldParams → WorldData → [(Int,Int)] → Dyns
 calcAuxBuff nDefTex wp wd curs = Dyns $ res ⧺ (take (size - (length res)) (repeat (DynData 0 (0,0) (1,1) (0,0))))
-  where res  = calcCornerBuff nDefTex wp wd curs
+  where res  = reverse $ case (wdSelect wd) of
+                 Nothing  → calcCornerBuff nDefTex wp wd curs
+                 Just sel → [DynData 115 (fromIntegral (fst sel), fromIntegral (snd sel)) (1,1) (0,0)] ⧺ calcCornerBuff nDefTex wp wd curs
         size = 512
 
 calcWorldBuffs ∷ Int → Int → WorldParams → WorldData → [(Int,Int)] → [Dyns] → [Dyns]

@@ -145,6 +145,6 @@ hsNewWorld env win sx sy zx zy dp = do
       sgs = [mkStdGen 0, mkStdGen 1]
       perlin = makePerlin 1 4 0.05 0.5
       wp = WorldParams (sx,sy) (zx,zy) (10,10) [] [] sgs perlin
-      wd = WorldData (1.0,1.0) [Zone (0,0) initSegs]
+      wd = WorldData (1.0,1.0) [Zone (0,0) initSegs] Nothing
       initSegs = take zy (repeat (take zx (repeat (SegmentNULL))))
   Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewElem win (WinElemWorld wp wd dps)

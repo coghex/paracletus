@@ -23,6 +23,7 @@ loadVulkanTextures (GQData pdev dev cmdPool cmdQueue) fps = do
   -- textures for default usage.
   let tex1Path     = "dat/tex/alpha.png"
       texAlph      = "dat/tex/alph.png"
+      texCursor    = "dat/tex/cursor.png"
       texboxPath   = "dat/tex/box"
       texmboxPath  = "dat/tex/mbox"
       textMenuPath = "dat/tex/menu"
@@ -31,12 +32,14 @@ loadVulkanTextures (GQData pdev dev cmdPool cmdQueue) fps = do
   mboxTexs ← loadNTexs pdev dev cmdPool cmdQueue texmboxPath
   (textureView1, mipLevels1) ← createTextureImageView pdev dev cmdPool cmdQueue tex1Path
   (texViewAlph, mipLevelsAlph) ← createTextureImageView pdev dev cmdPool cmdQueue texAlph
+  (texViewCurs, mipLevelsCurs) ← createTextureImageView pdev dev cmdPool cmdQueue texCursor
   menuTexs ← loadNTexs pdev dev cmdPool cmdQueue textMenuPath
   --fontTexs16 ← createFontImageViews pdev dev cmdPool cmdQueue texFont 16
   fontTexs30 ← createFontImageViews pdev dev cmdPool cmdQueue texFont 30
   modTexViews ← createTextureImageViews pdev dev cmdPool cmdQueue fps
   textureSampler1 ← createTextureSampler dev mipLevels1
   texSamplerAlph  ← createTextureSampler dev mipLevelsAlph
+  texSamplerCurs  ← createTextureSampler dev mipLevelsCurs
   texSamplersMod  ← createTextureSamplers dev $ snd . unzip $ modTexViews
   --let (ftexs16, fmipLvls16) = unzip fontTexs16
   let (ftexs30, fmipLvls30) = unzip fontTexs30
@@ -45,9 +48,9 @@ loadVulkanTextures (GQData pdev dev cmdPool cmdQueue) fps = do
   let (btexs, bsamps) = unzip boxTexs
       (mbtexs, mbsamps) = unzip mboxTexs
       (menutexs, menusamps) = unzip menuTexs
-      defaultTexs = ([textureView1,texViewAlph] ⧺ btexs ⧺ mbtexs ⧺ menutexs ⧺ ftexs30)-- ⧺ ftexs16)
+      defaultTexs = ([textureView1,texViewAlph] ⧺ btexs ⧺ mbtexs ⧺ menutexs ⧺ ftexs30 ⧺ [texViewCurs])-- ⧺ ftexs16)
       texViews = defaultTexs ⧺ (fst (unzip modTexViews))
-      texSamps = [textureSampler1, texSamplerAlph] ⧺ bsamps ⧺ mbsamps ⧺ menusamps ⧺ font30Samplers ⧺ texSamplersMod-- ⧺ font16Samplers ⧺ texSamplersMod
+      texSamps = [textureSampler1,texSamplerAlph] ⧺ bsamps ⧺ mbsamps ⧺ menusamps ⧺ font30Samplers ⧺ texSamplersMod ⧺ [texSamplerCurs]-- ⧺ font16Samplers ⧺ texSamplersMod
   modify $ \s → s { stNDefTex = length defaultTexs }
   descriptorTextureInfo ← textureImageInfos texViews texSamps
   depthFormat ← findDepthFormat pdev
