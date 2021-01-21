@@ -25,7 +25,7 @@ loadWinElem _ (WinElemPane pos _ bits)    = (calcTextBox size posOffset s) ⧺ c
   where s = calcPaneBoxSize size bits
         posOffset = ((fst pos) - 0.5, (snd pos) + 0.5)
         size = TextSize30px
-loadWinElem _ (WinElemWorld wp _ _)      = loadWorldBuff wp ⧺ loadAuxBuff
+loadWinElem _ (WinElemWorld wp _ _)      = loadWorldBuff wp ⧺ loadAuxBuff ⧺ loadTextBuff
 loadWinElem _ (WinElemLink _ _ _)         = []
 loadWinElem _ (WinElemNULL)               = []
 

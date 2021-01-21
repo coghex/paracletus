@@ -18,16 +18,20 @@ import Paracletus.Data
 import Paracletus.Oblatum.Font ( indexTTF )
 
 initBuff ∷ [Dyns]
-initBuff = [shDyns,aDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns]
-  where shDyns = Dyns $ take 64 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
+initBuff = [shDyns,aDyns,tDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns,wDyns]
+  where shDyns = Dyns $ take 64  $ repeat $ DynData 0 (0,0) (1,1) (0,0)
         aDyns  = Dyns $ take 512 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
         wDyns  = Dyns $ take 196 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
+        tDyns  = Dyns $ take 196 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
 
 loadTileBuff ∷ [Tile]
 loadTileBuff = makeTileBuff 0 64
 
+loadTextBuff ∷ [Tile]
+loadTextBuff = makeTileBuff 2 196
+
 loadWorldBuff ∷ WorldParams → [Tile]
-loadWorldBuff wp = makeWTileBuff 2 size ⧺ makeWTileBuff 3 size ⧺ makeWTileBuff 4 size ⧺ makeWTileBuff 5 size ⧺ makeWTileBuff 6 size ⧺ makeWTileBuff 7 size ⧺ makeWTileBuff 8 size ⧺ makeWTileBuff 9 size ⧺ makeWTileBuff 10 size
+loadWorldBuff wp = makeWTileBuff 3 size ⧺ makeWTileBuff 4 size ⧺ makeWTileBuff 5 size ⧺ makeWTileBuff 6 size ⧺ makeWTileBuff 7 size ⧺ makeWTileBuff 8 size ⧺ makeWTileBuff 9 size ⧺ makeWTileBuff 10 size ⧺ makeWTileBuff 11 size
   where size = sw*sh
         (sw,sh) = wpSSize wp
 

@@ -49,6 +49,7 @@ executable paracletus
                    Paracletus.Dyn
                    Paracletus.Elem
                    Paracletus.Load
+                   Paracletus.Text
                    Paracletus.TH
                    Paracletus.Vulkan
                    Paracletus.Vulkan.Atlas

@@ -89,13 +89,14 @@ linklessMouseTest pos ds = case (currentWin ds) of
   Just win → case (findWorldData win) of
     Nothing      → ds
     Just (wp,wd) → ds { dsWins = replaceWin (win { winElems = replaceWorldWinElem wd' (winElems win) }) (dsWins ds) }
-      where wd'     = wd { wdSelect = Just (x',y') }
-            (x',y') = (2 * round (zx*x), 2 * round (zy*y))
-            (x,y)   = pos
-            zx      = -1 / (realToFrac z)
+      where wd'        = wd { wdSelect = Just (x',y') }
+            (x',y')    = (round (zx*x - cx'), round (zy*y - cy'))
+            (x,y)      = pos
+            zx         = -1 / (realToFrac cz)
             -- TODO: unhardcode with aspect ratio
-            zy      = -(2/3) / (realToFrac z)
-            (_,_,z) = winCursor win
+            zy         = -(2/3) / (realToFrac cz)
+            (cx,cy,cz) = winCursor win
+            (cx',cy')  = (realToFrac cx / 64.0, realToFrac cy / 64.0)
 
 -- various link actions defined here
 evalLink ∷ (Double,Double) → LinkAction → DrawState → DrawState

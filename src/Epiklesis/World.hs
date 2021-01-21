@@ -19,6 +19,7 @@ import Epiklesis.Window
       evalScreenCursor )
 import Paracletus.Data ( DynData(DynData), Dyns(..) )
 import Paracletus.Buff ( setTileBuff )
+import Paracletus.Text ( calcTextBuff )
 
 -- world parameters set from argV
 genWorldParams ∷ UserWorldParams → WorldParams → WorldParams
@@ -111,17 +112,18 @@ spotSpots p i j (zi,zj) (maxw,maxh) (rand,cont) ((w,x),(y,z)) (Spot c t b e)
 -- proivides world data as dyndata,
 -- loads from window object
 setTileBuffs ∷ Int → (Float,Float) → WorldParams → WorldData → [Dyns] → [Dyns]
-setTileBuffs nDefTex (cx,cy) wp wd dyns0 = dyns2
-  where dyns1   = calcWorldBuffs 2 nDefTex wp wd curs dyns0
+setTileBuffs nDefTex (cx,cy) wp wd dyns0 = dyns3
+  where dyns1   = calcWorldBuffs 3 nDefTex wp wd curs dyns0
         curs    = take 9 (evalScreenCursor segSize (-cx/64.0,-cy/64.0))
         segSize = wpSSize wp
         dyns2   = setTileBuff 1 (calcAuxBuff nDefTex wp wd curs) dyns1
+        dyns3   = setTileBuff 2 (calcTextBuff wd) dyns2
 
 calcAuxBuff ∷ Int → WorldParams → WorldData → [(Int,Int)] → Dyns
 calcAuxBuff nDefTex wp wd curs = Dyns $ res ⧺ (take (size - (length res)) (repeat (DynData 0 (0,0) (1,1) (0,0))))
   where res  = reverse $ case (wdSelect wd) of
                  Nothing  → calcCornerBuff nDefTex wp wd curs
-                 Just sel → [DynData 115 (fromIntegral (fst sel), fromIntegral (snd sel)) (1,1) (0,0)] ⧺ calcCornerBuff nDefTex wp wd curs
+                 Just sel → [DynData 115 (fromIntegral (2*(fst sel)), fromIntegral (2*(snd sel))) (1,1) (0,0)] ⧺ calcCornerBuff nDefTex wp wd curs
         size = 512
 
 calcWorldBuffs ∷ Int → Int → WorldParams → WorldData → [(Int,Int)] → [Dyns] → [Dyns]
