@@ -99,15 +99,15 @@ rowSpots _ _ _   _    _ _ []             = []
 rowSpots p j ind maxp c r ((i,spot):row) = [(i,spotSpots p i j ind maxp c r spot)] ⧺ rowSpots p j ind maxp c r row
 spotSpots ∷ Perlin → Int → Int → (Int,Int) → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → Spot → Spot
 spotSpots p i j (zi,zj) (maxw,maxh) (rand,cont) ((w,x),(y,z)) (Spot c t b e)
-  | dist < (rand*100000) = Spot c' t' b e''
-  | otherwise            = Spot c  t  b e
-  where c'   = cont
+  | dist < (rand*100000) = Spot c' t' b e'
+  | otherwise            = Spot c  t  b e0
+  where c'   = if e' < 0 then 1 else cont
         t'   = 0
         i'   = i + zi
         j'   = j + zj
         dist = seedDistance i' j' w x y z
-        e''  = max 0 $ min 60 $ e'
-        e'   = e + 1 + (1000000*(1 + (getNoise (maxw + i') (maxh + j') p)) / (100000 + (fromIntegral dist)))
+        e0   = e + (10000000*((getNoise (maxw + i') (maxh + j') p)) / (100000 + (fromIntegral dist)))
+        e'   = e0 + 1
 
 -- proivides world data as dyndata,
 -- loads from window object

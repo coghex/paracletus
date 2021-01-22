@@ -3,14 +3,21 @@ module Epiklesis.Elev where
 import Prelude()
 import UPrelude
 import Epiklesis.Data
+    ( Segment(Segment, SegmentNULL),
+      Spot(Spot),
+      WorldData(wdZones),
+      WorldParams(wpZSize, wpSSize),
+      Zone(zoneIndex, zoneSegs) )
 import Epiklesis.Map (fixCurs)
-import Epiklesis.Window
-import Paracletus.Buff
-import Paracletus.Data
+import Epiklesis.Window ( evalScreenCursor )
+import Paracletus.Buff ( setTileBuff )
+import Paracletus.Data ( DynData(DynData), Dyns(..) )
+import Paracletus.Text ( calcTextBuff )
 
 setElevBuff ∷ Int → (Float,Float) → WorldParams → WorldData → [Dyns] → [Dyns]
-setElevBuff nDefTex (cx,cy) wp wd dyns0 = dyns1
-  where dyns1   = calcWorldElevBuffs 2 nDefTex wp wd curs dyns0
+setElevBuff nDefTex (cx,cy) wp wd dyns0 = dyns2
+  where dyns1   = calcWorldElevBuffs 3 nDefTex wp wd curs dyns0
+        dyns2   = setTileBuff 2 (calcTextBuff wp wd) dyns1
         curs    = take 9 $ evalScreenCursor segSize (-cx/64.0,-cy/64.0)
         segSize = wpSSize wp
 
@@ -56,5 +63,6 @@ calcElevGrid (cx,cy) y nDefTex (x,Spot _ _ _ e) = [dd]
   where dd = DynData nDefTex (2*x',2*y') (1 + (1/14),1 + (1/14)) (ix,iy)
         x' = fromIntegral cx + fromIntegral x
         y' = fromIntegral cy + fromIntegral y
-        ix = round e `mod` 3
-        iy = round e `div` 3
+        e' = max 0 $ min 60 e
+        ix = round e' `mod` 3
+        iy = round e' `div` 3
