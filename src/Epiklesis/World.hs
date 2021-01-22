@@ -117,7 +117,7 @@ setTileBuffs nDefTex (cx,cy) wp wd dyns0 = dyns3
         curs    = take 9 (evalScreenCursor segSize (-cx/64.0,-cy/64.0))
         segSize = wpSSize wp
         dyns2   = setTileBuff 1 (calcAuxBuff nDefTex wp wd curs) dyns1
-        dyns3   = setTileBuff 2 (calcTextBuff wd) dyns2
+        dyns3   = setTileBuff 2 (calcTextBuff wp wd) dyns2
 
 calcAuxBuff ∷ Int → WorldParams → WorldData → [(Int,Int)] → Dyns
 calcAuxBuff nDefTex wp wd curs = Dyns $ res ⧺ (take (size - (length res)) (repeat (DynData 0 (0,0) (1,1) (0,0))))

@@ -2,22 +2,27 @@ module Paracletus.Text where
 -- methods to set text dyns are found
 import Prelude()
 import UPrelude
-import Data.List.Split (splitOn)
-import Epiklesis.Data ( WorldData(..) )
+import Data.List.Split ( splitOn )
+import Text.Printf ( printf )
+import Epiklesis.Data ( WorldParams(..), WorldData(..), Spot(..) )
+import Epiklesis.Map ( indexWorldZones )
 import Paracletus.Buff ( genStrDDs )
 import Paracletus.Data
     ( DynData(..), Dyns(..) )
 
-calcTextBuff ∷ WorldData → Dyns
-calcTextBuff wd = case (wdSelect wd) of
+calcTextBuff ∷ WorldParams → WorldData → Dyns
+calcTextBuff wp wd = case (wdSelect wd) of
   Nothing → Dyns $ replicate 196 $ DynData 0 (0,0) (1,1) (0,0)
-  Just cs → Dyns $ genTextBuffer (-10,8) $ "cursor: (" ⧺ (show (fst cs)) ⧺ ", " ⧺ (show (snd cs)) ⧺ ")\nTile: "
+  Just cs → Dyns $ genTextBuffer (-16,8) $ "cursor: (" ⧺ (show (fst cs)) ⧺ ", " ⧺ (show (snd cs)) ⧺ ")\n" ⧺ spot
+    where spot = case (indexWorldZones cs wp wd) of
+                   Nothing → "no tile"
+                   Just t  → "Cont: " ⧺ (show (spotCont t)) ⧺ ", Tile: " ⧺ (show (spotTile t)) ⧺ ", Elev: " ⧺ (printf "%.2f" (spotElev t))
 
 genTextBuffer ∷ (Double,Double) → String → [DynData]
 genTextBuffer (x,y) str = res ⧺ replicate (196 - length res) (DynData 0 (0,0) (1,1) (0,0))
   where res  = tb ⧺ genStrDDs x (x,y) str dyns
         dyns = replicate (length str) $ DynData 0 (0,0) (1,1) (0,0)
-        tb   = genTextBoxBuffer (x,y+0.75) (16, h)
+        tb   = genTextBoxBuffer (x,y+0.75) (32, h)
         h    = fromIntegral $ 2 * length (splitOn "\n" str)
 
 genTextBoxBuffer ∷ (Double,Double) → (Double,Double) → [DynData]

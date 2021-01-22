@@ -4,6 +4,27 @@ import Prelude()
 import UPrelude
 import Epiklesis.Data
 
+indexWorldZones ∷ (Int,Int) → WorldParams → WorldData → Maybe Spot
+indexWorldZones (i,j) wp wd = indexWorldZone (i,j) wp $ wdZones wd
+indexWorldZone ∷ (Int,Int) → WorldParams → [Zone] → Maybe Spot
+indexWorldZone _     _  []     = Nothing
+indexWorldZone (i,j) wp (z:zs)
+  | (zoneIndex z) ≡ (zi,zj) = indexWorldSegs (si,sj) wp $ zoneSegs z
+  | otherwise               = indexWorldZone (i,j) wp zs
+  where (zi,zj) = (i `div` zwidth, j `div` zheight)
+        (si,sj) = (i `mod` zwidth, j `mod` zheight)
+        (zwidth,zheight) = (zw*sw,zh*sh)
+        (zw,zh) = wpZSize wp
+        (sw,sh) = wpSSize wp
+indexWorldSegs ∷ (Int,Int) → WorldParams → [[Segment]] → Maybe Spot
+indexWorldSegs (i,j) wp segs = indexWorldSeg (gi,gj) $ (segs !! sj) !! si
+  where (si,sj) = (i `div` swidth, j `div` sheight)
+        (gi,gj) = (i `mod` swidth, j `mod` sheight)
+        (swidth,sheight) = wpSSize wp
+indexWorldSeg ∷ (Int,Int) → Segment → Maybe Spot
+indexWorldSeg _     SegmentNULL    = Nothing
+indexWorldSeg (i,j) (Segment grid) = Just $ (grid !! (j + 1)) !! (i + 1)
+
 -- takes a grid with indices and gets rid of them
 stripGrid ∷ [(α,[(α,β)])] → [[β]]
 stripGrid ((_,b):ys) = (stripRow b) : stripGrid ys
