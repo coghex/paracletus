@@ -11,7 +11,7 @@ import Epiklesis.Data
       WorldParams(wpSSize, wpZSize),
       Zone(..) )
 import Epiklesis.Window ( evalScreenCursor, replaceSeg )
-import Epiklesis.Zazz ( calcGridZazz, calcGridCliff, calcGridExtra )
+import Epiklesis.Zazz ( calcGridZazz, calcGridCliff, calcGridExtra, calcGridFluff )
 import Paracletus.Data ( DynData(DynData) )
 
 -- adds in corners on top of existing edges
@@ -93,7 +93,7 @@ calcSegsBorder segs ind = replaceSeg ind seg1 segs
         seg0  = (segs !! (snd ind)) !! (fst ind)
 calcSegBorder ∷ Segment → Segment
 calcSegBorder SegmentNULL    = SegmentNULL
-calcSegBorder (Segment grid0) = Segment grid5
+calcSegBorder (Segment grid0) = Segment grid6
   where grid1   = calcGridBorder grid0 scards0
         scards0 = cardinals grid0
         grid2   = calcGridCorners grid1 scards1
@@ -103,6 +103,8 @@ calcSegBorder (Segment grid0) = Segment grid5
         grid4   = calcGridCliff grid3 scards3
         scards4 = cardinals grid4
         grid5   = calcGridExtra grid4 scards4
+        scards5 = cardinals grid5
+        grid6   = calcGridFluff grid5 scards5
 
 calcGridBorder ∷ [[Spot]] → [[Cards Spot]] → [[Spot]]
 calcGridBorder []         _            = []

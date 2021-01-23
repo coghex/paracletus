@@ -121,7 +121,8 @@ calcElevExtra (Spot c 42 b elev) n s e w
   | otherwise                = 42
   where eCliff = cliffed (spotTile e)
         wCliff = cliffed (spotTile w)
-        sCliff = cliffed (spotTile n)
+        sCliff = cliffed (spotTile n) ∧ contB
+        contB  = (spotCont n) ≡ c
 calcElevExtra (Spot c t  b elev) n s e w = t
 
 cliffed ∷ Int → Bool
@@ -134,3 +135,19 @@ cliffed 44 = False
 cliffed 45 = False
 cliffed 46 = False
 cliffed _  = True
+
+-- fills in all the empty gaps
+calcGridFluff ∷ [[Spot]] → [[Cards Spot]] → [[Spot]]
+calcGridFluff []         _            = []
+calcGridFluff _          []           = []
+calcGridFluff (row:grid) (crow:cgrid) = [row'] ⧺ calcGridFluff grid cgrid
+  where row' = calcRowFluff row crow
+calcRowFluff ∷ [Spot] → [Cards Spot] → [Spot]
+calcRowFluff []         _            = []
+calcRowFluff _          []           = []
+calcRowFluff (spot:row) (cards:crow) = [spot'] ⧺ calcRowFluff row crow
+  where spot' = calcSpotFluff spot cards
+calcSpotFluff ∷ Spot → Cards Spot → Spot
+calcSpotFluff (Spot c 0 b el) (Cards (n,s,e,w)) = Spot c t' b el
+  where t' = 1
+calcSpotFluff (Spot c t b el) (Cards (n,s,e,w)) = Spot c t b el

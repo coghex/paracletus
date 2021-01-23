@@ -23,7 +23,7 @@ indexWorldSegs (i,j) wp segs = indexWorldSeg (gi,gj) $ (segs !! sj) !! si
         (swidth,sheight) = wpSSize wp
 indexWorldSeg ∷ (Int,Int) → Segment → Maybe Spot
 indexWorldSeg _     SegmentNULL    = Nothing
-indexWorldSeg (i,j) (Segment grid) = Just $ (grid !! (j + 1)) !! (i + 1)
+indexWorldSeg (i,j) (Segment grid) = Just $ (grid !! (j + 2)) !! (i + 2)
 
 -- takes a grid with indices and gets rid of them
 stripGrid ∷ [(α,[(α,β)])] → [[β]]
