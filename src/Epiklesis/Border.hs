@@ -11,6 +11,7 @@ import Epiklesis.Data
       WorldParams(wpSSize, wpZSize),
       Zone(..) )
 import Epiklesis.Window ( evalScreenCursor, replaceSeg )
+import Epiklesis.Zazz ( calcGridZazz, calcGridCliff, calcGridExtra )
 import Paracletus.Data ( DynData(DynData) )
 
 -- adds in corners on top of existing edges
@@ -54,7 +55,7 @@ calcSegCornerBuff ∷ (Int,Int) → Int → Segment → [DynData]
 calcSegCornerBuff _   _       SegmentNULL    = []
 calcSegCornerBuff ind nDefTex (Segment grid) = flatten $ map (calcGridRowCornerBuff ind nDefTex) (zip yinds grid')
   where yinds = take (length grid') [0..]
-        grid' = map init $ map tail $ init $ tail grid
+        grid' = map (init ∘ init) $ map (tail ∘ tail) $ (init ∘ init) $ (tail ∘ tail) grid
 calcGridRowCornerBuff ∷ (Int,Int) → Int → (Int,[Spot]) → [DynData]
 calcGridRowCornerBuff ind nDefTex (j,spots) = flatten $ map (calcGridCorner ind j nDefTex) (zip xinds spots)
   where xinds = take (length spots) [0..]
@@ -71,7 +72,7 @@ calcGridCorner (cx,cy) y nDefTex (x,(Spot c _ (Just (nw,ne,sw,se)) _)) = ddnw �
         h    = 1 + (1/14)
         c'   = c + 1 + nDefTex
 
--- adds in borders where possible
+-- adds in borders and cliffs where possible
 setTileBorder ∷ WorldParams → [Zone] → (Float,Float) → [Zone]
 setTileBorder wp zones (cx,cy) = calcBorder zones cards $ map (fixCurs wp) $ take 9 $ evalScreenCursor (wpSSize wp) (-cx/64.0,-cy/64.0)
   where cards = zoneCards zones
@@ -92,12 +93,16 @@ calcSegsBorder segs ind = replaceSeg ind seg1 segs
         seg0  = (segs !! (snd ind)) !! (fst ind)
 calcSegBorder ∷ Segment → Segment
 calcSegBorder SegmentNULL    = SegmentNULL
-calcSegBorder (Segment grid0) = Segment grid2
+calcSegBorder (Segment grid0) = Segment grid5
   where grid1   = calcGridBorder grid0 scards0
         scards0 = cardinals grid0
         grid2   = calcGridCorners grid1 scards1
         scards1 = cardinals grid1
-        --grid3   = calcGridZazz grid2 scards1
+        grid3   = calcGridZazz grid2 scards1
+        scards3 = cardinals grid3
+        grid4   = calcGridCliff grid3 scards3
+        scards4 = cardinals grid4
+        grid5   = calcGridExtra grid4 scards4
 
 calcGridBorder ∷ [[Spot]] → [[Cards Spot]] → [[Spot]]
 calcGridBorder []         _            = []

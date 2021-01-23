@@ -82,7 +82,7 @@ genSegData wp wd zind ind = case seg of
         (sw,sh)  = wpSSize wp
         (zw,zh)  = wpZSize wp
         maxp     = wpSize  wp
-        zeroSeg  = take (sh+2) (zip [-1..] (repeat (take (sw+2) (zip [-1..] (repeat (Spot 1 0 Nothing 0.0))))))
+        zeroSeg  = take (sh+4) (zip [-2..] (repeat (take (sw+4) (zip [-2..] (repeat (Spot 1 0 Nothing 0.0))))))
         ind'     = ((((fst ind)*sw) + ((fst zind)*zw*sw)), (((snd ind)*sh) + ((snd zind)*zh*sh)))
         p        = wpPerl wp
 
@@ -184,7 +184,7 @@ calcSpot ∷ (Int,Int) → Int → Segment → [DynData]
 calcSpot _   _       SegmentNULL    = []
 calcSpot ind nDefTex (Segment grid) = flatten $ map (calcGridRow ind nDefTex) (zip yinds grid')
   where yinds = take (length grid') [0..]
-        grid' = map init $ map tail $ init $ tail grid
+        grid' = map (init ∘ init) $ map (tail ∘ tail) $ (init ∘ init) $ (tail ∘ tail) grid
 calcGridRow ∷ (Int,Int) → Int → (Int,[Spot]) → [DynData]
 calcGridRow ind nDefTex (j,spots) = flatten $ map (calcGrid ind j nDefTex) (zip xinds spots)
   where xinds = take (length spots) [0..]
