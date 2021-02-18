@@ -71,12 +71,226 @@ calcSpotCliff (Spot c t b el) (Cards (n,s,e,w)) = Spot c t' b el
                    Just s0 → case w of
                      Nothing → t
                      Just w0 → calcElevCliff (Spot c t b el) n0 s0 e0 w0
+
 calcElevCliff ∷ Spot → Spot → Spot → Spot → Spot → Int
+calcElevCliff (Spot c 0 b elev) n s e w
+  | lbPlat ∧ rbPlat ∧ ltPlat ∧ rtPlat = 19
+  | lbPlat ∧ rbPlat = 16
+  | ltPlat ∧ rtPlat = 10
+  | brPlat ∧ blPlat ∧ trPlat ∧ tlPlat = 22
+  | brPlat ∧ trPlat = 14
+  | blPlat ∧ tlPlat = 12
+  | otherwise       = 0
+  where rbPlat = rbplatauable $ spotTile e
+        lbPlat = lbplatauable $ spotTile w
+        rtPlat = rtplatauable $ spotTile e
+        ltPlat = ltplatauable $ spotTile w
+        brPlat = brplatauable $ spotTile s
+        blPlat = blplatauable $ spotTile s
+        trPlat = trplatauable $ spotTile n
+        tlPlat = tlplatauable $ spotTile n
 calcElevCliff (Spot c t b elev) n s e w
   | nCliff          = 42
   | otherwise       = t
   where nCliff = (spotCont s ≡ c) ∧ cliffable (spotTile s)
 
+-- platauable lb means left bottom, i.e. tile to the left has
+-- cliff on bottom, rt means right top, etc...
+brplatauable ∷ Int → Bool
+brplatauable  9 = True
+brplatauable 10 = True
+brplatauable 11 = True
+brplatauable 13 = True
+brplatauable 14 = True
+brplatauable 17 = True
+brplatauable 18 = True
+brplatauable 19 = True
+brplatauable 20 = True
+brplatauable 21 = True
+brplatauable 22 = True
+brplatauable 23 = True
+brplatauable 39 = True
+brplatauable 40 = True
+brplatauable 41 = True
+brplatauable 42 = True
+brplatauable 43 = True
+brplatauable 44 = True
+brplatauable 45 = True
+brplatauable 46 = True
+brplatauable 47 = True
+brplatauable _  = False
+
+blplatauable ∷ Int → Bool
+blplatauable  9 = True
+blplatauable 10 = True
+blplatauable 11 = True
+blplatauable 12 = True
+blplatauable 13 = True
+blplatauable 15 = True
+blplatauable 18 = True
+blplatauable 19 = True
+blplatauable 20 = True
+blplatauable 21 = True
+blplatauable 22 = True
+blplatauable 23 = True
+blplatauable 39 = True
+blplatauable 40 = True
+blplatauable 41 = True
+blplatauable 42 = True
+blplatauable 43 = True
+blplatauable 44 = True
+blplatauable 45 = True
+blplatauable 46 = True
+blplatauable 47 = True
+blplatauable _  = False
+
+trplatauable ∷ Int → Bool
+trplatauable  9 = True
+trplatauable 10 = True
+trplatauable 11 = True
+trplatauable 13 = True
+trplatauable 14 = True
+trplatauable 17 = True
+trplatauable 18 = True
+trplatauable 19 = True
+trplatauable 20 = True
+trplatauable 21 = True
+trplatauable 22 = True
+trplatauable 23 = True
+trplatauable 39 = True
+trplatauable 40 = True
+trplatauable 41 = True
+trplatauable 42 = True
+trplatauable 43 = True
+trplatauable 44 = True
+trplatauable 45 = True
+trplatauable 46 = True
+trplatauable 47 = True
+trplatauable _  = False
+
+tlplatauable ∷ Int → Bool
+tlplatauable  9 = True
+tlplatauable 10 = True
+tlplatauable 11 = True
+tlplatauable 12 = True
+tlplatauable 13 = True
+tlplatauable 15 = True
+tlplatauable 18 = True
+tlplatauable 19 = True
+tlplatauable 20 = True
+tlplatauable 21 = True
+tlplatauable 22 = True
+tlplatauable 23 = True
+tlplatauable 39 = True
+tlplatauable 40 = True
+tlplatauable 41 = True
+tlplatauable 42 = True
+tlplatauable 43 = True
+tlplatauable 44 = True
+tlplatauable 45 = True
+tlplatauable 46 = True
+tlplatauable 47 = True
+tlplatauable _  = False
+
+lbplatauable ∷ Int → Bool
+lbplatauable 11 = True
+lbplatauable 13 = True
+lbplatauable 14 = True
+lbplatauable 15 = True
+lbplatauable 16 = True
+lbplatauable 17 = True
+lbplatauable 18 = True
+lbplatauable 19 = True
+lbplatauable 20 = True
+lbplatauable 21 = True
+lbplatauable 22 = True
+lbplatauable 23 = True
+lbplatauable 39 = True
+lbplatauable 40 = True
+lbplatauable 41 = True
+lbplatauable 42 = True
+lbplatauable 43 = True
+lbplatauable 44 = True
+lbplatauable 45 = True
+lbplatauable 46 = True
+lbplatauable 47 = True
+lbplatauable _  = False
+
+rbplatauable ∷ Int → Bool
+rbplatauable  9 = True
+rbplatauable 12 = True
+rbplatauable 13 = True
+rbplatauable 15 = True
+rbplatauable 16 = True
+rbplatauable 17 = True
+rbplatauable 18 = True
+rbplatauable 19 = True
+rbplatauable 20 = True
+rbplatauable 21 = True
+rbplatauable 22 = True
+rbplatauable 23 = True
+rbplatauable 39 = True
+rbplatauable 40 = True
+rbplatauable 41 = True
+rbplatauable 42 = True
+rbplatauable 43 = True
+rbplatauable 44 = True
+rbplatauable 45 = True
+rbplatauable 46 = True
+rbplatauable 47 = True
+rbplatauable _  = False
+
+ltplatauable ∷ Int → Bool
+ltplatauable  9 = True
+ltplatauable 10 = True
+ltplatauable 11 = True
+ltplatauable 13 = True
+ltplatauable 14 = True
+ltplatauable 17 = True
+ltplatauable 18 = True
+ltplatauable 19 = True
+ltplatauable 20 = True
+ltplatauable 21 = True
+ltplatauable 22 = True
+ltplatauable 23 = True
+ltplatauable 39 = True
+ltplatauable 40 = True
+ltplatauable 41 = True
+ltplatauable 42 = True
+ltplatauable 43 = True
+ltplatauable 44 = True
+ltplatauable 45 = True
+ltplatauable 46 = True
+ltplatauable 47 = True
+ltplatauable _  = False
+
+rtplatauable ∷ Int → Bool
+rtplatauable  9 = True
+rtplatauable 10 = True
+rtplatauable 11 = True
+rtplatauable 12 = True
+rtplatauable 13 = True
+rtplatauable 14 = True
+rtplatauable 15 = True
+rtplatauable 17 = True
+rtplatauable 18 = True
+rtplatauable 19 = True
+rtplatauable 20 = True
+rtplatauable 21 = True
+rtplatauable 22 = True
+rtplatauable 23 = True
+rtplatauable 39 = True
+rtplatauable 40 = True
+rtplatauable 41 = True
+rtplatauable 42 = True
+rtplatauable 43 = True
+rtplatauable 44 = True
+rtplatauable 45 = True
+rtplatauable 46 = True
+rtplatauable 47 = True
+rtplatauable _  = False
+
+-- whether or not cliffs should go here
 cliffable ∷ Int → Bool
 cliffable 13 = True
 cliffable 15 = True
