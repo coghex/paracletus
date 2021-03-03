@@ -21,37 +21,21 @@ loadVulkanTextures ∷ GQData → [FilePath] → Anamnesis ε σ (TextureData)
 loadVulkanTextures (GQData pdev dev cmdPool cmdQueue) fps = do
   -- the engine reserves the first few
   -- textures for default usage.
-  let tex1Path     = "dat/tex/alpha.png"
-      texAlph      = "dat/tex/alph.png"
-      texCursor    = "dat/tex/cursor.png"
-      texboxPath   = "dat/tex/box"
-      texmboxPath  = "dat/tex/mbox"
-      textMenuPath = "dat/tex/menu"
-      texFont      = "dat/font/asdf.ttf"
-  boxTexs ← loadNTexs pdev dev cmdPool cmdQueue texboxPath
-  mboxTexs ← loadNTexs pdev dev cmdPool cmdQueue texmboxPath
+  let tex0Path     = "dat/tex/alpha.png"
+      tex1Path     = "dat/tex/texture.jpg"
+      fontPath     = "dat/font/asdf.ttf"
+  (textureView0, mipLevels0) ← createTextureImageView pdev dev cmdPool cmdQueue tex0Path
+  textureSampler0 ← createTextureSampler dev mipLevels0
   (textureView1, mipLevels1) ← createTextureImageView pdev dev cmdPool cmdQueue tex1Path
-  (texViewAlph, mipLevelsAlph) ← createTextureImageView pdev dev cmdPool cmdQueue texAlph
-  (texViewCurs, mipLevelsCurs) ← createTextureImageView pdev dev cmdPool cmdQueue texCursor
-  menuTexs ← loadNTexs pdev dev cmdPool cmdQueue textMenuPath
-  --fontTexs16 ← createFontImageViews pdev dev cmdPool cmdQueue texFont 16
-  fontTexs30 ← createFontImageViews pdev dev cmdPool cmdQueue texFont 30
-  modTexViews ← createTextureImageViews pdev dev cmdPool cmdQueue fps
   textureSampler1 ← createTextureSampler dev mipLevels1
-  texSamplerAlph  ← createTextureSampler dev mipLevelsAlph
-  texSamplerCurs  ← createTextureSampler dev mipLevelsCurs
-  texSamplersMod  ← createTextureSamplers dev $ snd . unzip $ modTexViews
-  --let (ftexs16, fmipLvls16) = unzip fontTexs16
-  let (ftexs30, fmipLvls30) = unzip fontTexs30
-  --font16Samplers ← createTextureSamplers dev fmipLvls16
-  font30Samplers ← createTextureSamplers dev fmipLvls30
-  let (btexs, bsamps) = unzip boxTexs
-      (mbtexs, mbsamps) = unzip mboxTexs
-      (menutexs, menusamps) = unzip menuTexs
-      defaultTexs = ([textureView1,texViewAlph] ⧺ btexs ⧺ mbtexs ⧺ menutexs ⧺ ftexs30 ⧺ [texViewCurs])-- ⧺ ftexs16)
+  modTexViews ← createTextureImageViews pdev dev cmdPool cmdQueue fps
+  texSamplersMod ← createTextureSamplers dev $ snd . unzip $ modTexViews
+  fontTexs ← createFontImageViews pdev dev cmdPool cmdQueue fontPath 16
+  let (ftexs, fmipLvls) = unzip fontTexs
+  fontSamplers ← createTextureSamplers dev fmipLvls
+  let defaultTexs = ([textureView0, textureView1] ⧺ ftexs)
       texViews = defaultTexs ⧺ (fst (unzip modTexViews))
-      texSamps = [textureSampler1,texSamplerAlph] ⧺ bsamps ⧺ mbsamps ⧺ menusamps ⧺ font30Samplers ⧺ texSamplersMod ⧺ [texSamplerCurs]-- ⧺ font16Samplers ⧺ texSamplersMod
-  modify $ \s → s { stNDefTex = length defaultTexs }
+      texSamps = [textureSampler0, textureSampler1] ⧺ fontSamplers ⧺ texSamplersMod
   descriptorTextureInfo ← textureImageInfos texViews texSamps
   depthFormat ← findDepthFormat pdev
   let nimages = length texViews

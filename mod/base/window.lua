@@ -14,33 +14,11 @@ function window:initMenu (n)
     self.lwName = n
     rawNewWindow (n,"menu")
 end
-function window:initGame (n)
-    self.lwName = n
-    rawNewWindow (n,"game")
-end
-function window:newWorld (sw,sh,zw,zh,dp)
-    rawNewWorld ((self.lwName),sw,sh,zw,zh,dp)
-end
 function window:switchWindow ()
     rawSwitchWindow (self.lwName)
 end
 function window:newText (x,y,args)
     rawNewText (self.lwName,x,y,args,false)
-end
-function window:newLink (x,y,args,hook)
-    if ((type(hook)) == "string") then
-      ret = hook
-    else
-      ret = hook ()
-    end
-    rawNewText (self.lwName,x,y,args,ret,true)
-    rawNewLink (self.lwName,x,y,args,ret)
-end
-function window:addPane (pane)
-    rawNewPane (self.lwName,pane.pPosx,pane.pPosy,pane.pName)
-    for i,b in pairs(pane.pBits) do
-        rawNewPaneBit (self.lwName,pane.pName,b)
-    end
 end
 
 return window

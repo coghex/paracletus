@@ -8,20 +8,14 @@ import Control.Monad.State.Class (modify',gets)
 import Anamnesis
     ( MonadIO(liftIO), MonadReader(ask), MonadState(get), Anamnesis )
 import Anamnesis.Data
-    ( Env(envLoadQ), Settings(sKeyLayout), State(stInput, stSettings) )
-import Paracletus.Data
-    ( Cardinal(..),
+    ( Env(..), Settings(sKeyLayout), State(..),
+      Cardinal(..),
       ISKeys(keyRight, keyDown, keyLeft, keyUp),
-      InputState(accelCap, keySt, inpCap) )
-import Artos.Data
-    ( LoadCmd(LoadCmdMoveCam, LoadCmdWorld, LoadCmdShell) )
+      InputState(..) )
+import Anamnesis.Util ( logDebug, logInfo )
+import Artos.Data ( LoadCmd(..), Event(..) )
 import Artos.Queue ( writeQueue )
 import Artos.Var ( atomically )
-import Epiklesis.Data
-    ( ShellCmd(ShellCmdControl, ShellCmdCursor, ShellCmdDown,
-               ShellCmdUp, ShellCmdExec, ShellCmdString, ShellCmdTab,
-               ShellCmdDelete, ShellCmdClose, ShellCmdOpen),
-      ShellControl(ShCtlE, ShCtlA, ShCtlC) )
 import qualified Paracletus.Oblatum.GLFW as GLFW
 
 evalKey ∷ GLFW.Window → GLFW.Key → GLFW.KeyState → GLFW.ModifierKeys → Anamnesis ε σ ()
@@ -33,78 +27,8 @@ evalKey window k ks mk = do
   -- glfw is parent thread, so this
   -- will close everything
   when (GLFW.keyCheck False keyLayout k "ESC") $ liftIO $ GLFW.setWindowShouldClose window True
-  when (GLFW.keyCheck cap keyLayout k "SH") $ if (ks ≡ GLFW.KeyState'Pressed) then
-    liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell ShellCmdOpen
-    else return ()
-  when (GLFW.keyCheck cap keyLayout k "H") $ do
-    liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdWorld
-  when (GLFW.keyCheck cap keyLayout k "UP") $ do
-    let oldIS = stInput st
-    if (keyUp (keySt oldIS)) then
-      if (ks ≡ GLFW.KeyState'Released) then do
-        let newIS = oldIS { keySt = (keySt oldIS) { keyUp = False } }
-        modify' $ \s → s { stInput = newIS }
-      else return ()
-    else if (ks ≡ GLFW.KeyState'Pressed) then do
-      let newIS = oldIS { accelCap = True
-                        , keySt = (keySt oldIS) { keyUp = True } }
-      modify' $ \s → s { stInput = newIS }
-    else return ()
-  when (GLFW.keyCheck cap keyLayout k "LFT") $ do
-    let oldIS = stInput st
-    if (keyLeft (keySt oldIS)) then
-      if (ks ≡ GLFW.KeyState'Released) then do
-        let newIS = oldIS { keySt = (keySt oldIS) { keyLeft = False } }
-        modify' $ \s → s { stInput = newIS }
-      else return ()
-    else if (ks ≡ GLFW.KeyState'Pressed) then do
-      let newIS = oldIS { accelCap = True
-                        , keySt = (keySt oldIS) { keyLeft = True } }
-      modify' $ \s → s { stInput = newIS }
-    else return ()
-  when (GLFW.keyCheck cap keyLayout k "DWN") $ do
-    let oldIS = stInput st
-    if (keyDown (keySt oldIS)) then
-      if (ks ≡ GLFW.KeyState'Released) then do
-        let newIS = oldIS { keySt = (keySt oldIS) { keyDown = False } }
-        modify' $ \s → s { stInput = newIS }
-      else return ()
-    else if (ks ≡ GLFW.KeyState'Pressed) then do
-      let newIS = oldIS { accelCap = True
-                        , keySt = (keySt oldIS) { keyDown = True } }
-      modify' $ \s → s { stInput = newIS }
-    else return ()
-  when (GLFW.keyCheck cap keyLayout k "RGT") $ do
-    let oldIS = stInput st
-    if (keyRight (keySt oldIS)) then
-      if (ks ≡ GLFW.KeyState'Released) then do
-        let newIS = oldIS { keySt = (keySt oldIS) { keyRight = False } }
-        modify' $ \s → s { stInput = newIS }
-      else return ()
-    else if (ks ≡ GLFW.KeyState'Pressed) then do
-      let newIS = oldIS { accelCap = True
-                        , keySt = (keySt oldIS) { keyRight = True } }
-      modify' $ \s → s { stInput = newIS }
-    else return ()
-  when cap $ if (ks ≡ GLFW.KeyState'Pressed) then do
-      if (GLFW.keyCheck False keyLayout k "SH") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell ShellCmdClose
-      else if (GLFW.keyCheck False keyLayout k "DEL") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdDelete
-      else if (GLFW.keyCheck False keyLayout k "TAB") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdTab
-      else if (GLFW.keyCheck False keyLayout k "SPC") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdString " "
-      else if (GLFW.keyCheck False keyLayout k "RET") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdExec
-      else if (GLFW.keyCheck False keyLayout k "UPA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdUp
-      else if (GLFW.keyCheck False keyLayout k "DNA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdDown
-      else if (GLFW.keyCheck False keyLayout k "RTA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdCursor 1
-      else if (GLFW.keyCheck False keyLayout k "LFA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdCursor (-1)
-      else if (GLFW.modifierKeysControl mk) then
-        if (GLFW.keyCheck False keyLayout k "C") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdControl ShCtlC
-        else if (GLFW.keyCheck False keyLayout k "A") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdControl ShCtlA
-        else if (GLFW.keyCheck False keyLayout k "E") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdControl ShCtlE
-        else return ()
-      else do
-          ch ← liftIO $ GLFW.calcInpKey k mk
-          liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdShell $ ShellCmdString ch
-    else return ()
+  when (ks ≡ GLFW.KeyState'Pressed) $ do
+    when (GLFW.keyCheck False keyLayout k "L") $ liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
 
 -- mouse bools move cam acceleration each frame
 moveCamWithKeys ∷ Anamnesis ε σ ()
@@ -112,7 +36,7 @@ moveCamWithKeys = do
   env ← ask
   is  ← gets stInput
   let loadQ    = envLoadQ env 
-  liftIO $ atomically $ writeQueue loadQ $ LoadCmdMoveCam (keySt is)
+  return ()--liftIO $ atomically $ writeQueue loadQ $ LoadCmdMoveCam (keySt is)
   --st  ← get
   --let oldIS    = stInput st
   --    newIS    = oldIS { keySt = (keySt oldIS) { keyAccel = newaccel } }

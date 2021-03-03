@@ -1,4 +1,4 @@
--- recompilation flag
+--recompilation flag
 --{-# OPTIONS_GHC -fforce-recomp #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE Strict #-}
@@ -19,8 +19,8 @@ import Paracletus.Vulkan.Foreign
 
 makeShader ∷ VkDevice → Anamnesis ε σ (VkPipelineShaderStageCreateInfo, VkPipelineShaderStageCreateInfo)
 makeShader dev = do
-  shaderVert ← createVkShaderStageCI dev $(compileGLSL ("dat/shd/triangle.vert")) VK_SHADER_STAGE_VERTEX_BIT
-  shaderFrag ← createVkShaderStageCI dev $(compileGLSL ("dat/shd/triangle.frag")) VK_SHADER_STAGE_FRAGMENT_BIT
+  shaderVert ← createVkShaderStageCI dev $(compileGLSL ("dat/shd/tile.vert")) VK_SHADER_STAGE_VERTEX_BIT
+  shaderFrag ← createVkShaderStageCI dev $(compileGLSL ("dat/shd/tile.frag")) VK_SHADER_STAGE_FRAGMENT_BIT
   return (shaderVert, shaderFrag)
 
 createVkShaderStageCI ∷ VkDevice → (CSize, Ptr Word32) → VkShaderStageFlagBits → Anamnesis ε σ VkPipelineShaderStageCreateInfo

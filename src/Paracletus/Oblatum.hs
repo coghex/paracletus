@@ -16,6 +16,7 @@ import Anamnesis
       Anamnesis' )
 import Anamnesis.Data
     ( Env(envEventQ),
+      InputState(mouse3, mouse1),
       LoopControl(ContinueLoop),
       ReloadState(RSNULL),
       State(stInput, stFPS, stReload) )
@@ -29,15 +30,11 @@ import Anamnesis.Util
 import Artos.Except ( ExType(ExParacletus) )
 import Artos.Var ( atomically, writeTVar, TVar )
 import Paracletus.Data
-    ( FPS(FPS),
-      InputState(mouse3, mouse1, accelCap),
-      ParacResult(GLFWError) )
+    ( ParacResult(GLFWError), FPS(..) )
 import Paracletus.Oblatum.Callback
     ( errorCallback, keyCallback, mouseButtonCallback, scrollCallback )
 import Paracletus.Oblatum.Event ( moveCamWithKeys )
 import Paracletus.Oblatum.GLFW (WindowHint(..),ClientAPI(..))
-import Paracletus.Oblatum.Mouse
-    ( moveCamWithMouse, moveSliderWithMouse, sliderPressed )
 import qualified Paracletus.Oblatum.GLFW as GLFW
 
 -- setting of glfw callbacks and hints
@@ -144,15 +141,16 @@ processInput ∷ Anamnesis ε σ ()
 processInput = do
   st ← get
   let is = stInput st
+  return ()
       --ks = keySt   is
   --if ((keyUp ks) ∨ (keyLeft ks) ∨ (keyDown ks) ∨ (keyRight ks) ∨ (((abs (fst (keyAccel ks))) > 0.0) ∨ (abs (snd (keyAccel ks)) > 0.0))) then moveCamWithKeys
-  if (accelCap is) then moveCamWithKeys
-  else return ()
-  case (mouse1 is) of
-    Just _  → if ((sliderPressed is) > 0) then do
-                moveSliderWithMouse is
-              else return ()
-    Nothing → return ()
-  case (mouse3 is) of
-    Just pos → moveCamWithMouse pos
-    Nothing  → return ()
+  --if (accelCap is) then moveCamWithKeys
+  --else return ()
+  --case (mouse1 is) of
+  --  Just _  → if ((sliderPressed is) > 0) then do
+  --              moveSliderWithMouse is
+  --            else return ()
+  --  Nothing → return ()
+  --case (mouse3 is) of
+  --  Just pos → moveCamWithMouse pos
+  --  Nothing  → return ()

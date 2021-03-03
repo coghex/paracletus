@@ -14,17 +14,6 @@ import Artos.Thread ( threadDelay )
 import Artos.Queue
 import Artos.Var ( atomically )
 import Epiklesis.Command
-    ( hsExit,
-      hsLogDebug,
-      hsNewLink,
-      hsNewPane,
-      hsNewPaneBit,
-      hsNewText,
-      hsNewWindow,
-      hsNewWorld,
-      hsSwitchScreen,
-      hsSwitchWindow,
-      hsToggleFPS )
 
 loadEpiklesis ∷ Env → IO ()
 loadEpiklesis env = do
@@ -36,24 +25,18 @@ loadEpiklesis env = do
   else do
     let ls = envLuaSt env
     _ ← Lua.runWith ls $ do
-      Lua.registerHaskellFunction "logDebug" (hsLogDebug env)
-      Lua.registerHaskellFunction "toggleFPS" (hsToggleFPS env)
-      Lua.registerHaskellFunction "switchScreen" (hsSwitchScreen env)
       Lua.registerHaskellFunction "rawExit" (hsExit env)
+      Lua.registerHaskellFunction "logDebug" (hsLogDebug env)
       Lua.registerHaskellFunction "rawNewWindow" (hsNewWindow env)
-      Lua.registerHaskellFunction "rawNewPane" (hsNewPane env)
-      Lua.registerHaskellFunction "rawNewPaneBit" (hsNewPaneBit env)
       Lua.registerHaskellFunction "rawNewText" (hsNewText env)
-      Lua.registerHaskellFunction "rawNewLink" (hsNewLink env)
-      Lua.registerHaskellFunction "rawNewWorld" (hsNewWorld env)
       Lua.registerHaskellFunction "rawSwitchWindow" (hsSwitchWindow env)
       Lua.openlibs
       _ ← Lua.dofile $ "mod/base/game.lua"
       ret ← Lua.callFunc "initParacletus" modFiles
       return (ret∷Int)
-    let eventQ = envEventQ env
-        loadQ  = envLoadQ  env
-    atomically $ writeQueue eventQ $ EventRecreate
+    --let eventQ = envEventQ env
+    let loadQ  = envLoadQ  env
+    atomically $ writeQueue (envEventQ env) $ EventRecreate
     atomically $ writeQueue loadQ  $ LoadCmdVerts
     epiklesisLoop TStart env modFiles
 

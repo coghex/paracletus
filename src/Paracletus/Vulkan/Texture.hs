@@ -21,7 +21,7 @@ import Anamnesis.Foreign
 import Anamnesis.Util
 import Artos.Except
 import Paracletus.Data
-import Paracletus.Oblatum.Font
+import Paracletus.Oblatum.Font ( FontTex(..), loadFTChar )
 import Paracletus.Vulkan.Buffer
 import Paracletus.Vulkan.Command
 import Paracletus.Vulkan.Foreign

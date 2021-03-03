@@ -5,7 +5,7 @@ module Paracletus where
 import Prelude()
 import UPrelude ( ($) )
 import Anamnesis (Anamnesis(..))
-import Anamnesis.Util (logExcept)
+import Anamnesis.Util (logExcept,logInfo)
 import Artos.Except (ExType(..))
 import Paracletus.Data (GraphicsLayer(..),ParacResult(..))
 import Paracletus.Vulkan (runParacVulkan)
