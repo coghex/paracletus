@@ -14,6 +14,9 @@ import Anamnesis.Data
 import Artos.Data
 import Artos.Queue ( writeQueue )
 import Artos.Var ( atomically )
+import Epiklesis.Data ( Window(..), WinElem(..), LinkAction(..) )
+import Epiklesis.Window ( currentWin, switchWin )
+import Paracletus.Data ( DrawState(..), DSStatus(..) )
 import qualified Paracletus.Oblatum.GLFW as GLFW
       
 -- TODO: un-hardcode the pixels here
@@ -39,7 +42,7 @@ evalMouse win mb mbs mk = do
           loadQ = envLoadQ env
           newIS = oldIS { mouse1 = Just (realToFrac (fst pos'), realToFrac (snd pos')) }
       modify' $ \s → s { stInput = newIS }
-      --liftIO $ atomically $ writeQueue loadQ $ LoadCmdLink pos
+      liftIO $ atomically $ writeQueue loadQ $ LoadCmdLink pos
     else if (mbs ≡ GLFW.MouseButtonState'Released) then do
       oldIS ← gets stInput
       let newIS = oldIS { mouse1 = Nothing }
@@ -58,3 +61,30 @@ evalMouse win mb mbs mk = do
           let newIS = oldIS { mouse3 = Nothing }
           modify' $ \s → s { stInput = newIS }
         else return ()
+
+-- actual link test called from load thread
+linkTest ∷ (Double,Double) → DrawState → DrawState
+linkTest pos ds = case (currentWin (dsWins ds)) of
+  Nothing  → ds
+  Just win → linkTestFunc pos elems ds
+    where elems = winElems win
+linkTestFunc ∷ (Double,Double) → [WinElem] → DrawState → DrawState
+linkTestFunc pos []       ds = linklessMouseTest pos ds
+linkTestFunc pos (el:els) ds = case el of
+  WinElemLink lpos lbox lact → case (testLink pos lpos lbox) of
+    True  → evalLink pos lact ds
+    False → linkTestFunc pos els ds
+  _ → linkTestFunc pos els ds
+testLink ∷ (Double,Double) → (Double,Double) → (Double,Double) → Bool
+testLink (x1,y1) (x2,y2) (w,h)
+  | ((abs(x1-x2)) < w) ∧ ((abs(y1-y2)) < h) = True
+  | otherwise = False
+-- if no link was found, execute screen context command
+linklessMouseTest ∷ (Double,Double) → DrawState → DrawState
+linklessMouseTest pos ds = ds
+-- various link actions defined here
+evalLink ∷ (Double,Double) → LinkAction → DrawState → DrawState
+evalLink _     (LinkExit)      ds = ds { dsStatus = DSSExit }
+evalLink _     (LinkLink name) ds = ds { dsWins = switchWin name $ dsWins ds
+                                       , dsStatus = DSSLoadVerts }
+evalLink _     _               ds = ds

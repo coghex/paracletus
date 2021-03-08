@@ -21,6 +21,7 @@ import Paracletus.Data
     , DrawState(..), DSStatus(..), LoadResult(..) )
 import Paracletus.Draw ( loadTiles )
 import Paracletus.Vulkan.Calc ( calcVertices )
+import Paracletus.Oblatum.Mouse ( linkTest )
 import Control.Concurrent ( threadDelay )
 import Data.Time.Clock ( diffUTCTime, getCurrentTime )
 
@@ -87,6 +88,10 @@ processCommands env ds = do
               let eventQ = envEventQ env
               atomically $ writeQueue eventQ $ EventExit
               return ds'
+            DSSLoadVerts   → do
+              atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
+              processCommands env ds''
+                where ds'' = ds' { dsStatus = DSSNULL }
             DSSRecreate    → do
               atomically $ writeQueue (envEventQ env) $ EventRecreate
               --atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
@@ -124,6 +129,8 @@ processCommand env ds cmd = case cmd of
   LoadCmdSetNDefTex nDefTex → do
     return $ ResDrawState ds'
     where ds' = ds { dsNDefTex = nDefTex }
+  LoadCmdLink pos → return $ ResDrawState ds'
+    where ds' = linkTest pos ds
   LoadCmdVerts → do
     let newVerts = Verts $ calcVertices $ loadTiles ds
         ds'      = ds { dsTiles = loadTiles ds }

@@ -73,6 +73,7 @@ data Dyns = Dyns [DynData] deriving (Show, Eq)
 -- pure functions
 data DSStatus = DSSLogDebug String
               | DSSRecreate
+              | DSSLoadVerts
               | DSSExit
               | DSSNULL deriving (Show, Eq)
 

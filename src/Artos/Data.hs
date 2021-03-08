@@ -30,6 +30,7 @@ data LoadCmd = LoadCmdPrint !PrintArg
              | LoadCmdVerts
              | LoadCmdDyns
              | LoadCmdClear
+             | LoadCmdLink (Double,Double)
              | LoadCmdInitBuff ![Tile] ![Dyns]
              | LoadCmdBuff !Int !Dyns
              | LoadCmdNewWin !Window
