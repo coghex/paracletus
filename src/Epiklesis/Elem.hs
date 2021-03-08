@@ -20,6 +20,7 @@ loadWinElem _ (WinElemText pos True  str) = (calcTextBox posOffset s) ⧺ calcTe
   where s = calcTextBoxSize str
         posOffset = ((fst pos) - 0.5, (snd pos) + 0.5)
 loadWinElem _ (WinElemText pos False str) = calcText (fst pos) pos str
+loadWinElem _ (WinElemLink _ _ _)         = []
 loadWinElem _ (WinElemNULL)               = []
 
 -- figure out what size the textbox should be
@@ -37,47 +38,47 @@ calcTextBox (x,y) (sx,sy) = [middleTile,rightTile,leftTile,topTile,bottomTile,to
                              , tInd   = (0,0)
                              , tSize  = (1,1)
                              , tScale = (0.5,0.5)
-                             , tT     = 6 }
+                             , tT     = 100 }
         topRightTile = GTile { tPos   = (x + (0.5*sx) + 0.5,y)
                              , tInd   = (0,0)
                              , tSize  = (1,1)
                              , tScale = (0.5,0.5)
-                             , tT     = 5 }
+                             , tT     = 99 }
         botLeftTile  = GTile { tPos   = (x,y - (0.5*sy) - 0.5)
                              , tInd   = (0,0)
                              , tSize  = (1,1)
                              , tScale = (0.5,0.5)
-                             , tT     = 9 }
+                             , tT     = 103 }
         botRightTile = GTile { tPos   = (x + (0.5*sx) + 0.5, y - (0.5*sy) - 0.5)
                              , tInd   = (0,0)
                              , tSize  = (1,1)
                              , tScale = (0.5,0.5)
-                             , tT     = 8 }
+                             , tT     = 102 }
         topTile      = GTile { tPos   = (x + (0.25*sx) + 0.25,y)
                              , tInd   = (0,0)
                              , tSize  = (1,1)
                              , tScale = ((0.5*sx),0.5)
-                             , tT     = 4 }
+                             , tT     = 98 }
         leftTile     = GTile { tPos   = (x,y - (0.25*sy) - 0.25)
                              , tInd   = (0,0)
                              , tSize  = (1,1)
                              , tScale = (0.5,(0.5*sy))
-                             , tT     = 10 }
+                             , tT     = 104 }
         rightTile    = GTile { tPos   = (x + (0.5*sx) + 0.5,y - (0.25*sy) - 0.25)
                              , tInd   = (0,0)
                              , tSize  = (1,1)
                              , tScale = (0.5,(0.5*sy))
-                             , tT     = 3 }
+                             , tT     = 97 }
         bottomTile   = GTile { tPos   = (x + (0.25*sx) + 0.25,y - (0.5*sy) - 0.5)
                              , tInd   = (0,0)
                              , tSize  = (1,1)
                              , tScale = ((0.5*sx),0.5)
-                             , tT     = 7 }
+                             , tT     = 101 }
         middleTile   = GTile { tPos   = (x + (0.25*sx) + 0.25,y - (0.25*sy) - 0.25)
                         , tScale = (0.5*sx,0.5*sy)
                              , tInd   = (0,0)
                              , tSize  = (1,1)
-                             , tT     = 2 }
+                             , tT     = 96 }
 
 -- functions to convert winelems to gtiles
 calcText ∷ Double → (Double,Double) → String → [Tile]
@@ -87,7 +88,7 @@ calcText x0 (x,y) (' ':str)  = calcText x0 (x + 0.25,y) str
 calcText x0 (x,y) (ch:str)   = [textTile] ⧺ calcText x0 (x + chX',y) str
   where textTile = GTile (x+(chX'/2.0),y+chY') (chW',chH') (0,0) (1,1) chIndex
         TTFData chIndex chW chH chX chY = indexTTF ch
-        chW' = 0.25*chW
-        chH' = 0.25*chH
-        chX' = 0.25*chX
-        chY' = 0.25*chY
+        chW' = 0.5*chW
+        chH' = 0.5*chH
+        chX' = 0.5*chX
+        chY' = 0.5*chY

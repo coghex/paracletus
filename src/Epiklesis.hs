@@ -11,7 +11,7 @@ import System.FilePath (combine)
 import Anamnesis.Data
 import Artos.Data
 import Artos.Thread ( threadDelay )
-import Artos.Queue
+import Artos.Queue ( readChan, tryReadChan, writeQueue )
 import Artos.Var ( atomically )
 import Epiklesis.Command
 
@@ -29,6 +29,7 @@ loadEpiklesis env = do
       Lua.registerHaskellFunction "logDebug" (hsLogDebug env)
       Lua.registerHaskellFunction "rawNewWindow" (hsNewWindow env)
       Lua.registerHaskellFunction "rawNewText" (hsNewText env)
+      Lua.registerHaskellFunction "rawNewLink" (hsNewLink env)
       Lua.registerHaskellFunction "rawSwitchWindow" (hsSwitchWindow env)
       Lua.openlibs
       _ ← Lua.dofile $ "mod/base/game.lua"

@@ -65,7 +65,7 @@ executable paracletus
                  , Paracletus.Vulkan.Trans
                  , Paracletus.Vulkan.Vertex
     default-language: Haskell2010
-    ghc-options: -O2 -fexcess-precision -threaded -eventlog -rtsopts -feager-blackholing
+    --ghc-options: -O2 -fexcess-precision -threaded -eventlog -rtsopts -feager-blackholing
     build-depends: base
                  , base-unicode-symbols
                  , filepath
@@ -128,7 +128,7 @@ executable paracletus
                         UndecidableInstances
                         ViewPatterns
     if flag (dev)
-        cpp-options: -DDEVELOPMENT
+        cpp-options: -DDEVELOPMENT -fPIC
         ghc-options: -O0 -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -threaded -eventlog -rtsopts -fprof-auto -haddock
     else
         ghc-options: -O2 -optc-O3 -fexcess-precision -threaded -rtsopts -feager-blackholing

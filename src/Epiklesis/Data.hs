@@ -27,5 +27,12 @@ data WinElem
   = WinElemText { textPos ∷ (Double,Double)
                 , textBox ∷ Bool
                 , textStr ∷ String }
+  | WinElemLink { linkPos ∷ (Double,Double)
+                , linkBox ∷ (Double,Double)
+                , linkAct ∷ LinkAction }
   | WinElemNULL
 
+-- possible actions when links are clicked
+data LinkAction = LinkExit
+                | LinkLink String
+                | LinkNULL deriving (Show, Eq)

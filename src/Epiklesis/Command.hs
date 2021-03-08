@@ -14,7 +14,9 @@ import Artos.Queue
 import Artos.Var
 import Epiklesis.Data
     ( Window(..), WinType(..)
-    , WinArgV(..), WinElem(..) )
+    , WinArgV(..), WinElem(..)
+    , LinkAction(..) )
+import Epiklesis.Elem ( calcTextBoxSize )
 
 -- quits everything using glfw in parent thread
 hsExit ∷ Env → Lua.Lua ()
@@ -59,3 +61,15 @@ hsNewText env name x y text box = do
   let loadQ = envLoadQ env
   Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewElem name $ WinElemText (x,y) box text
 
+-- adds a link to the specified window,
+-- allowing mouse clicks to preform actions
+hsNewLink ∷ Env → String → Double → Double → String → String → Lua.Lua ()
+hsNewLink env name x y args func = case (head (splitOn ":" func)) of
+-- exit closes everything using glfw
+  "exit" → do
+    let (w,h) = calcTextBoxSize args
+    Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem name $ WinElemLink (x,y) (w,h) LinkExit
+  "link" → do
+    let (w,h) = calcTextBoxSize args
+    Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem name $ WinElemLink (x,y) (w,h) $ LinkLink $ last $ splitOn ":" func
+  _ → hsLogDebug env $ "no known link function " ⧺ func

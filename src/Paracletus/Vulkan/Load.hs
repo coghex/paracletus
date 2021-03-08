@@ -24,18 +24,26 @@ loadVulkanTextures (GQData pdev dev cmdPool cmdQueue) fps = do
   let tex0Path     = "dat/tex/alpha.png"
       tex1Path     = "dat/tex/texture.jpg"
       fontPath     = "dat/font/asdf.ttf"
+      texBoxPath   = "dat/tex/box"
+  -- tex zero is just 32x32 alpha
   (textureView0, mipLevels0) ← createTextureImageView pdev dev cmdPool cmdQueue tex0Path
   textureSampler0 ← createTextureSampler dev mipLevels0
+  -- tex one is the vulkan tutorial test photo
   (textureView1, mipLevels1) ← createTextureImageView pdev dev cmdPool cmdQueue tex1Path
   textureSampler1 ← createTextureSampler dev mipLevels1
-  modTexViews ← createTextureImageViews pdev dev cmdPool cmdQueue fps
-  texSamplersMod ← createTextureSamplers dev $ snd . unzip $ modTexViews
-  fontTexs ← createFontImageViews pdev dev cmdPool cmdQueue fontPath 16
+  -- box texs are for info boxs
+  boxTexs ← loadNTexs pdev dev cmdPool cmdQueue texBoxPath
+  let (btexs, bsamps) = unzip boxTexs
+  -- font texs are generated from ttf
+  fontTexs ← createFontImageViews pdev dev cmdPool cmdQueue fontPath 30
   let (ftexs, fmipLvls) = unzip fontTexs
   fontSamplers ← createTextureSamplers dev fmipLvls
-  let defaultTexs = ([textureView0, textureView1] ⧺ ftexs)
+  -- mod texs are textures included by the lua files
+  modTexViews ← createTextureImageViews pdev dev cmdPool cmdQueue fps
+  texSamplersMod ← createTextureSamplers dev $ snd . unzip $ modTexViews
+  let defaultTexs = ([textureView0, textureView1] ⧺ ftexs ⧺ btexs)
       texViews = defaultTexs ⧺ (fst (unzip modTexViews))
-      texSamps = [textureSampler0, textureSampler1] ⧺ fontSamplers ⧺ texSamplersMod
+      texSamps = [textureSampler0, textureSampler1] ⧺ fontSamplers ⧺ bsamps ⧺ texSamplersMod
   descriptorTextureInfo ← textureImageInfos texViews texSamps
   depthFormat ← findDepthFormat pdev
   let nimages = length texViews
