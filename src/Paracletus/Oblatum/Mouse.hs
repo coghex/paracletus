@@ -15,7 +15,7 @@ import Artos.Data
 import Artos.Queue ( writeQueue )
 import Artos.Var ( atomically )
 import Epiklesis.Data ( Window(..), WinElem(..), LinkAction(..) )
-import Epiklesis.Window ( currentWin, switchWin )
+import Epiklesis.Window ( currentWin, switchWin, backWin )
 import Paracletus.Data ( DrawState(..), DSStatus(..) )
 import qualified Paracletus.Oblatum.GLFW as GLFW
       
@@ -85,6 +85,8 @@ linklessMouseTest pos ds = ds
 -- various link actions defined here
 evalLink ∷ (Double,Double) → LinkAction → DrawState → DrawState
 evalLink _     (LinkExit)      ds = ds { dsStatus = DSSExit }
+evalLink _     (LinkBack)      ds = ds { dsWins = backWin $ dsWins ds
+                                       , dsStatus = DSSLoadVerts }
 evalLink _     (LinkLink name) ds = ds { dsWins = switchWin name $ dsWins ds
                                        , dsStatus = DSSLoadVerts }
 evalLink _     _               ds = ds

@@ -34,5 +34,6 @@ data WinElem
 
 -- possible actions when links are clicked
 data LinkAction = LinkExit
+                | LinkBack
                 | LinkLink String
                 | LinkNULL deriving (Show, Eq)

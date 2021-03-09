@@ -14,6 +14,7 @@ function initMod ()
     local menu2 = window:new ()
     menu2:initMenu("menu2")
     menu2:newText(-6.0,1.0,"World Parameters")
+    menu2:newLink(-6.0,-4.0,"Back",back)
 
     menu1:switchWindow ()
     return 0

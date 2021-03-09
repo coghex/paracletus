@@ -65,10 +65,15 @@ hsNewText env name x y text box = do
 -- allowing mouse clicks to preform actions
 hsNewLink ∷ Env → String → Double → Double → String → String → Lua.Lua ()
 hsNewLink env name x y args func = case (head (splitOn ":" func)) of
--- exit closes everything using glfw
+  -- exit closes everything using glfw
   "exit" → do
     let (w,h) = calcTextBoxSize args
     Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem name $ WinElemLink (x,y) (w,h) LinkExit
+  -- back returns to the last window
+  "back" → do
+    let (w,h) = calcTextBoxSize args
+    Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem name $ WinElemLink (x,y) (w,h) LinkBack
+  -- link goes to specified window
   "link" → do
     let (w,h) = calcTextBoxSize args
     Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem name $ WinElemLink (x,y) (w,h) $ LinkLink $ last $ splitOn ":" func
