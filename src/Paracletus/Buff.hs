@@ -3,7 +3,9 @@ module Paracletus.Buff where
 -- tiles to manipulate
 import Prelude ()
 import UPrelude
-import Epiklesis.Data ( Window(..), WinElem(..), PaneBit(..) )
+import Epiklesis.Data
+    ( Window(..), WinElem(..)
+    , PaneBit(..), WorldParams(..) )
 import Epiklesis.Window ( currentWin )
 import Paracletus.Data
     ( DrawState(..), Tile(..), DynMap(..)
@@ -22,6 +24,12 @@ makeBufferTiles b n
   | (n ≡ 0)   = []
   | otherwise = makeBufferTiles b (n - 1) ⧺ [tile]
   where tile = DTile (DMBuff b (n - 1)) (0,0) (1,1) (0,0) (1,1) 0
+
+-- sets up buffer for world tiles
+loadWorldBuff ∷ WorldParams → [Tile]
+loadWorldBuff wp = makeBufferTiles 3 size
+  where size = sw*sh
+        (sw,sh) = wpSSize wp
 
 -- loads dyns from drawState
 loadDyns ∷ DrawState → Dyns

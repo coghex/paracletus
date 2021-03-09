@@ -33,6 +33,9 @@ data WinElem
   | WinElemPane { panePos  ∷ (Double,Double)
                 , paneName ∷ String
                 , paneBits ∷ [(Int,PaneBit)] }
+  | WinElemWorld { wParams ∷ WorldParams
+                 , wData   ∷ WorldData
+                 , wDir    ∷ [String] }
   | WinElemNULL
 
 -- possible actions when links are clicked
@@ -49,3 +52,32 @@ data PaneBit = PaneBitText { pbtText ∷ String }
                              , pbsMax  ∷ Int
                              , pbsVal  ∷ Maybe Int }
              | PaneBitNULL deriving (Show, Eq)
+
+-- world parameters help generate world
+data WorldParams = WorldParams { wpSSize ∷ (Int,Int)
+                               , wpZSize ∷ (Int,Int)
+                               , wpSize  ∷ (Int,Int)
+                               , wpRands ∷ [((Int,Int),(Int,Int))]
+                               , wpConts ∷ [(Int,Int)]
+                               } deriving (Show, Eq)
+-- data stored with each world
+data WorldData = WorldData { wdCam    ∷ (Float,Float)
+                           , wdZones  ∷ [Zone]
+                           , wdSelect ∷ Maybe (Int,Int)
+                           } deriving (Show, Eq)
+-- zones are infinite, but slow
+data Zone = Zone { zoneIndex ∷ (Int,Int)
+                 , zoneSegs  ∷ [[Segment]]
+                 } deriving (Show, Eq)
+-- segments are finite, thus faster
+data Segment = SegmentNULL
+             | Segment { segGrid ∷ [[Spot]]
+                       } deriving (Show, Eq)
+-- spots can be of a certain image,
+-- with a certain atlas subtile
+data Spot = Spot { spotCont ∷ Int
+                 , spotTile ∷ Int
+                 , spotEdge ∷ Maybe (Bool,Bool,Bool,Bool)
+                 , spotElev ∷ Double
+                 } deriving (Show, Eq)
+

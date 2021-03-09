@@ -15,7 +15,9 @@ import Artos.Var
 import Epiklesis.Data
     ( Window(..), WinType(..)
     , WinArgV(..), WinElem(..)
-    , LinkAction(..), PaneBit(..) )
+    , LinkAction(..), PaneBit(..)
+    , WorldParams(..), WorldData(..)
+    , Zone(..), Segment(..) )
 import Epiklesis.Elem ( calcTextBoxSize )
 
 -- quits everything using glfw in parent thread
@@ -104,3 +106,17 @@ hsNewPaneBit env name pane bit = case (head (splitOn ":" bit)) of
             vl   = read $ head $ tail $ tail $ tail $ tail $ args
   bitbit → hsLogDebug env $ "no known bit: " ⧺ (show bitbit)
 
+-- adds a background world to a game screen
+hsNewWorld ∷ Env → String → String → Lua.Lua ()
+hsNewWorld env win dp = do
+  rawdp ← Lua.liftIO $ getDirectoryContents dp
+  let dps = (map (combine dp) $ sort $ filter filterOutPathJunk rawdp) ⧺ ["dat/tex/grayscale.png"]
+      filterOutPathJunk ∷ FilePath → Bool
+      filterOutPathJunk "."  = False
+      filterOutPathJunk ".." = False
+      filterOutPathJunk _    = True
+      (zx,zy) = (4,3)
+      wp = WorldParams (12,8) (zx,zy) (10,10) [] []
+      wd = WorldData (1.0,1.0) [Zone (0,0) initSegs] Nothing
+      initSegs = take (zy+2) (repeat (take (zx+2) (repeat SegmentNULL)))
+  Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem win $ WinElemWorld wp wd dps

@@ -27,10 +27,10 @@ createDescriptorPool dev nswapchains nimages = allocResource (liftIO ∘ flip (v
         $  set @"type" VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER
         &* set @"descriptorCount" ((fromIntegral nimages)*(fromIntegral nswapchains))
       , createVk @VkDescriptorPoolSize
-        $  set @"type" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+        $  set @"type" VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
         &* set @"descriptorCount" (fromIntegral nswapchains)
       , createVk @VkDescriptorPoolSize
-        $  set @"type" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+        $  set @"type" VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
         &* set @"descriptorCount" (fromIntegral nswapchains) ]
     &* set @"maxSets" (fromIntegral nswapchains)
   ) $ \ciPtr → runVk $ vkCreateDescriptorPool dev ciPtr VK_NULL pPtr
@@ -58,13 +58,13 @@ createDescriptorSetLayout dev nimages = allocResource
                 &* set @"pImmutableSamplers" VK_NULL
               , createVk @VkDescriptorSetLayoutBinding
                 $  set @"binding" 2
-                &* set @"descriptorType" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+                &* set @"descriptorType" VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
                 &* set @"descriptorCount" 1
                 &* set @"stageFlags" VK_SHADER_STAGE_VERTEX_BIT
                 &* set @"pImmutableSamplers" VK_NULL
               , createVk @VkDescriptorSetLayoutBinding
                 $  set @"binding" 3
-                &* set @"descriptorType" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+                &* set @"descriptorType" VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
                 &* set @"descriptorCount" 1
                 &* set @"stageFlags" VK_SHADER_STAGE_VERTEX_BIT
                 &* set @"pImmutableSamplers" VK_NULL ]
@@ -111,7 +111,7 @@ prepareDescriptorSet dev bufferInfo dynBufferInfo dynTexBufInfo imageInfo descri
             &* set @"dstSet" descriptorSet
             &* set @"dstBinding" 2
             &* set @"dstArrayElement" 0
-            &* set @"descriptorType" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+            &* set @"descriptorType" VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
             &* set @"descriptorCount" 1
             &* setVkRef @"pBufferInfo" dynBufferInfo
             &* set @"pImageInfo" VK_NULL
@@ -122,7 +122,7 @@ prepareDescriptorSet dev bufferInfo dynBufferInfo dynTexBufInfo imageInfo descri
             &* set @"dstSet" descriptorSet
             &* set @"dstBinding" 3
             &* set @"dstArrayElement" 0
-            &* set @"descriptorType" VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+            &* set @"descriptorType" VK_DESCRIPTOR_TYPE_STORAGE_BUFFER
             &* set @"descriptorCount" 1
             &* setVkRef @"pBufferInfo" dynTexBufInfo
             &* set @"pImageInfo" VK_NULL

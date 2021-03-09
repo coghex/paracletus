@@ -23,6 +23,7 @@ loadWinElem _ (WinElemText pos False str) = calcText (fst pos) pos str
 loadWinElem _ (WinElemPane pos _ bits)    = (calcTextBox posOffset s) ⧺ calcPaneTiles pos bits
   where s         = calcPaneBoxSize bits
         posOffset = ((fst pos) - 0.5, (snd pos) + 0.5)
+loadWinElem _ (WinElemWorld wp _ _)       = loadWorldBuff wp
 loadWinElem _ (WinElemLink _ _ _)         = []
 loadWinElem _ (WinElemNULL)               = []
 

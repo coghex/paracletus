@@ -32,6 +32,7 @@ loadEpiklesis env = do
       Lua.registerHaskellFunction "rawNewPaneBit" (hsNewPaneBit env)
       Lua.registerHaskellFunction "rawNewText" (hsNewText env)
       Lua.registerHaskellFunction "rawNewLink" (hsNewLink env)
+      Lua.registerHaskellFunction "rawNewWorld" (hsNewWorld env)
       Lua.registerHaskellFunction "rawSwitchWindow" (hsSwitchWindow env)
       Lua.openlibs
       _ ← Lua.dofile $ "mod/base/game.lua"

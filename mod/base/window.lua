@@ -14,8 +14,15 @@ function window:initMenu (n)
     self.lwName = n
     rawNewWindow (n,"menu")
 end
+function window:initGame (n)
+    self.lwName = n
+    rawNewWindow (n,"game")
+end
 function window:switchWindow ()
     rawSwitchWindow (self.lwName)
+end
+function window:newWorld (dp)
+    rawNewWorld ((self.lwName),dp)
 end
 function window:newText (x,y,args)
     rawNewText (self.lwName,x,y,args,false)

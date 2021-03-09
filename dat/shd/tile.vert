@@ -9,11 +9,11 @@ layout(binding = 0) uniform TransformationObject {
   mat4 proj;
 } trans;
 
-layout (binding = 2) uniform DynTransObject {
+layout (binding = 2) buffer DynTransObject {
   mat4 move[1000];
 } dyn;
 
-layout (binding = 3) uniform DynTexTransObject {
+layout (binding = 3) buffer DynTexTransObject {
   mat4 dynTexI[1000];
 } dynTex;
 

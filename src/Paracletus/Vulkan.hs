@@ -235,7 +235,7 @@ genCommandBuffs dev pdev commandPool queues graphicsPipeline renderPass texData 
                   tiles = [GTile (0,0) (4,4) (0,0) (1,1) 1] ⧺ makeBufferTiles 0 64 ⧺ genFPSTiles
               liftIO . atomically $ do
                 modifyTVar' (envVerts env) $ \_ → (Just $ Verts res)
-                writeQueue (envLoadQ env) $ LoadCmdInitBuff tiles $ initBuff [64]
+                writeQueue (envLoadQ env) $ LoadCmdInitBuff tiles $ initBuff [64,512,512,512]
                 writeQueue (envLoadQ env) $ LoadCmdBuff 0 $ textDyns 64 (-3,-8) "Loading... 0%"
                 writeQueue (envLoadQ env) $ LoadCmdDyns
               return res
