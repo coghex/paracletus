@@ -2,7 +2,7 @@ module Artos.Data where
 -- various data structures for threads
 import Prelude()
 import UPrelude
-import Epiklesis.Data ( Window(..), WinElem(..) )
+import Epiklesis.Data ( Window(..), WinElem(..), PaneBit(..) )
 import qualified Paracletus.Oblatum.GLFW as GLFW
 import Paracletus.Data ( Verts, Dyns, FPS, Tile )
 
@@ -36,6 +36,7 @@ data LoadCmd = LoadCmdPrint !PrintArg
              | LoadCmdNewWin !Window
              | LoadCmdSwitchWin !String
              | LoadCmdNewElem !String !WinElem
+             | LoadCmdNewBit String String PaneBit
              | LoadCmdSetNDefTex !Int
              | LoadCmdNULL
 

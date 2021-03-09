@@ -20,8 +20,41 @@ loadWinElem _ (WinElemText pos True  str) = (calcTextBox posOffset s) ⧺ calcTe
   where s = calcTextBoxSize str
         posOffset = ((fst pos) - 0.5, (snd pos) + 0.5)
 loadWinElem _ (WinElemText pos False str) = calcText (fst pos) pos str
+loadWinElem _ (WinElemPane pos _ bits)    = (calcTextBox posOffset s) ⧺ calcPaneTiles pos bits
+  where s         = calcPaneBoxSize bits
+        posOffset = ((fst pos) - 0.5, (snd pos) + 0.5)
 loadWinElem _ (WinElemLink _ _ _)         = []
 loadWinElem _ (WinElemNULL)               = []
+
+-- finds tiles for a window pane
+calcPaneTiles ∷ (Double,Double) → [(Int,PaneBit)] → [Tile]
+calcPaneTiles _   []                         = []
+calcPaneTiles pos ((i,PaneBitText text):pbs) = (calcText (fst pos) pos' text) ⧺ calcPaneTiles pos pbs
+  where pos' = ((fst pos) + 0.5,(snd pos) + (fromIntegral i))
+calcPaneTiles pos ((_,PaneBitNULL):pbs) = [] ⧺ calcPaneTiles pos pbs
+
+-- figure out what size the pane box should be
+calcPaneBoxSize ∷ [(Int,PaneBit)] → (Double,Double)
+calcPaneBoxSize []  = (24,1)
+calcPaneBoxSize pbs = (24,2.0*fromIntegral(length pbs))
+
+-- add bit to window pane
+loadNewBit ∷ String → [WinElem] → PaneBit → [WinElem]
+loadNewBit _    []       _   = []
+loadNewBit pane (we:wes) bit = case we of
+  WinElemPane pos name bits
+    | name ≡ pane → [WinElemPane pos name bits'] ⧺ loadNewBit pane wes bit
+    | otherwise   → [WinElemPane pos name bits]  ⧺ loadNewBit pane wes bit
+    where bits' = bits ⧺ [((length bits),bit)]
+  we0                       → [we0] ⧺ loadNewBit pane wes bit
+
+-- finds offset of generic bit just added
+findBitPos ∷ String → [WinElem] → (Int,(Double,Double))
+findBitPos _    []       = (0,(0.0,0.0))
+findBitPos pane ((WinElemPane pos name bits):wes)
+  | pane ≡ name = (length bits - 1,((fst pos), (snd pos) - (fromIntegral(length bits))))
+  | otherwise   = findBitPos pane wes
+findBitPos pane (_:wes) = findBitPos pane wes
 
 -- figure out what size the textbox should be
 calcTextBoxSize ∷ String → (Double,Double)

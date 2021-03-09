@@ -24,12 +24,15 @@ data UserWorldParams = UserWorldParams
 
 -- possible elements of a window
 data WinElem
-  = WinElemText { textPos ∷ (Double,Double)
-                , textBox ∷ Bool
-                , textStr ∷ String }
-  | WinElemLink { linkPos ∷ (Double,Double)
-                , linkBox ∷ (Double,Double)
-                , linkAct ∷ LinkAction }
+  = WinElemText { textPos  ∷ (Double,Double)
+                , textBox  ∷ Bool
+                , textStr  ∷ String }
+  | WinElemLink { linkPos  ∷ (Double,Double)
+                , linkBox  ∷ (Double,Double)
+                , linkAct  ∷ LinkAction }
+  | WinElemPane { panePos  ∷ (Double,Double)
+                , paneName ∷ String
+                , paneBits ∷ [(Int,PaneBit)] }
   | WinElemNULL
 
 -- possible actions when links are clicked
@@ -37,3 +40,7 @@ data LinkAction = LinkExit
                 | LinkBack
                 | LinkLink String
                 | LinkNULL deriving (Show, Eq)
+
+-- possible bits in a pane
+data PaneBit = PaneBitText { pbtText ∷ String }
+             | PaneBitNULL deriving (Show, Eq)

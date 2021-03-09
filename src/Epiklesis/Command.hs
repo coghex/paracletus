@@ -15,7 +15,7 @@ import Artos.Var
 import Epiklesis.Data
     ( Window(..), WinType(..)
     , WinArgV(..), WinElem(..)
-    , LinkAction(..) )
+    , LinkAction(..), PaneBit(..) )
 import Epiklesis.Elem ( calcTextBoxSize )
 
 -- quits everything using glfw in parent thread
@@ -78,3 +78,29 @@ hsNewLink env name x y args func = case (head (splitOn ":" func)) of
     let (w,h) = calcTextBoxSize args
     Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem name $ WinElemLink (x,y) (w,h) $ LinkLink $ last $ splitOn ":" func
   _ → hsLogDebug env $ "no known link function " ⧺ func
+
+-- adds a pane window element to the specified
+-- window, panes are submenus, with various bits
+hsNewPane ∷ Env → String → Double → Double → String → Lua.Lua ()
+hsNewPane env name x y pane = do
+  let eventQ = envLoadQ env
+  Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewElem name $ WinElemPane (x,y) pane []
+
+-- adds a pane bit to an existing pane
+hsNewPaneBit ∷ Env → String → String → String → Lua.Lua ()
+hsNewPaneBit env name pane bit = case (head (splitOn ":" bit)) of
+  -- text is just text
+  "text" → do
+    let loadQ = envLoadQ env
+    Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewBit name pane $ PaneBitText $ last $ splitOn ":" bit
+  -- sliders allow for input to the window's argV
+--  "slider" → do
+--    let loadQ = envLoadQ env
+--    Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewBit name pane $ PaneBitSlider text mn mx $ Just vl
+--      where args = splitOn ":" bit
+--            text = head $ tail args
+--            mn   = read $ head $ tail $ tail args
+--            mx   = read $ head $ tail $ tail $ tail args
+--            vl   = read $ head $ tail $ tail $ tail $ tail $ args
+  bitbit → hsLogDebug env $ "no known bit: " ⧺ (show bitbit)
+

@@ -12,6 +12,7 @@ import Artos.Var ( atomically )
 import Artos.Queue
     ( readChan, tryReadChan, tryReadQueue, writeQueue )
 import Epiklesis.Data ( Window(..) )
+import Epiklesis.Elem ( loadNewBit, findBitPos )
 import Epiklesis.Window
     ( switchWin, findWin, replaceWin
     , calcWinModTexs, currentWin )
@@ -163,5 +164,17 @@ processCommand env ds cmd = case cmd of
         let ds'  = ds  { dsWins   = replaceWin win' wins }
             win' = win { winElems = els }
             els  = elem:(winElems win)
+        return $ ResDrawState ds'
+  LoadCmdNewBit name pane bit → do
+    let wins = dsWins ds
+    case (findWin name wins) of
+      Nothing  → return $ ResError $ "no window " ⧺ name ⧺ " yet present"
+      Just win → do
+        let ds'        = ds { dsWins = replaceWin win' wins }
+            win'       = win { winElems = elems }
+            elems      = loadNewBit pane (winElems win) bit
+            box        = (2.0,1.0)
+            pos'       = ((fst pos) + 6.5, (snd pos) + 0.5)
+            (bitL,pos) = findBitPos pane elems
         return $ ResDrawState ds'
   LoadCmdNULL       → return ResNULL
