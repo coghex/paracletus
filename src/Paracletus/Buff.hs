@@ -3,6 +3,8 @@ module Paracletus.Buff where
 -- tiles to manipulate
 import Prelude ()
 import UPrelude
+import Epiklesis.Data ( Window(..), WinElem(..), PaneBit(..) )
+import Epiklesis.Window ( currentWin )
 import Paracletus.Data
     ( DrawState(..), Tile(..), DynMap(..)
     , Dyns(..), DynData(..), FPS(..) )
@@ -30,7 +32,15 @@ loadDynData ds ((DTile (DMBuff b n) _ _ _ _ _):ts) = [buff !! n] ⧺ loadDynData
   where Dyns buff = dsBuff ds !! b
 loadDynData ds ((DTile (DMFPS n) _ _ _ _ _):ts) = [DynData dig (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
   where dig = calcDiglet n $ dsFPS ds
-loadDynData ds ((DTile (DMNULL) _ _ _ _ _):ts) = [DynData 0 (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
+loadDynData ds ((DTile (DMSliderVal n d) _ _ _ _ _):ts) = [DynData dig (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
+  where dig = case (currentWin (dsWins ds)) of
+                Just w  → sliderDiglet (winElems w) n d
+                Nothing → 0
+loadDynData ds ((DTile (DMSlider n) _ _ _ _ _):ts) = [DynData 0 (x,0) (1,1) (0,0)] ⧺ loadDynData ds ts
+  where x   = case (currentWin (dsWins ds)) of
+                Just w  → calcSliderOffset w n
+                Nothing → 0
+loadDynData ds ((DTile (DMNULL)     _ _ _ _ _):ts) = [DynData 0 (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
 
 -- set dyns in buff
 setTileBuff ∷ Int → Dyns → [Dyns] → [Dyns]
@@ -83,4 +93,57 @@ calcDig 1 fps = (fps `div` 10) `mod` 10
 calcDig 2 fps = (fps `div` 100) `mod` 10
 calcDig 3 fps = (fps `div` 1000) `mod` 100
 calcDig _ _   = -17
+
+-- convert slider 
+calcSliderOffset ∷ Window → Int → Float
+calcSliderOffset win n = calcWinSliderOffset (winElems win) n
+calcWinSliderOffset ∷ [WinElem] → Int → Float
+calcWinSliderOffset [] _ = 0.0
+calcWinSliderOffset ((WinElemPane _ _ bits):_) n = calcBitsSliderOffset bits n
+calcWinSliderOffset (_:wes) n = calcWinSliderOffset wes n
+calcBitsSliderOffset ∷ [(Int,PaneBit)] → Int → Float
+calcBitsSliderOffset []       _ = 0.0
+calcBitsSliderOffset ((i,(PaneBitSlider _ mn mx (Just val))):pbs) n = if (n ≡ i) then 6.0*val'/(mx' - mn') else calcBitsSliderOffset pbs n
+  where val' = fromIntegral val
+        mn'  = fromIntegral mn
+        mx'  = fromIntegral mx
+calcBitsSliderOffset (_:pbs) n = calcBitsSliderOffset pbs n
+
+-- calcs dyndata for slider val
+sliderDiglet ∷ [WinElem] → Int → Int → Int
+sliderDiglet []       _ _ = -36
+sliderDiglet ((WinElemPane _ _ bits):_) n d = sliderBitDiglet bits n d
+sliderDiglet (_:wes) n d = sliderDiglet wes n d
+sliderBitDiglet ∷ [(Int,PaneBit)] → Int → Int → Int
+sliderBitDiglet []       _ _ = -36
+sliderBitDiglet ((i,(PaneBitSlider _ _ _ (Just val))):pbs) n d
+  | n ≡ i = calcSliderDig d val
+  | otherwise = sliderBitDiglet pbs n d
+sliderBitDiglet (_:pbs) n d = sliderBitDiglet pbs n d
+calcSliderDig ∷ Int → Int → Int
+calcSliderDig d val
+  | val > 0   ∧ d < 1 = calcDig d val
+  | val > 9   ∧ d < 2 = calcDig d val
+  | val > 99  ∧ d < 3 = calcDig d val
+  | val > 999 ∧ d < 4 = calcDig d val
+  | otherwise         = -36
+
+-- move slider
+moveSlider ∷ Double → Int → Window → Window
+moveSlider x n win = win { winElems = moveWinSlider (winElems win) x n }
+moveWinSlider ∷ [WinElem] → Double → Int → [WinElem]
+moveWinSlider []       _ _ = []
+moveWinSlider ((WinElemPane pos name bits):wes) x n = [WinElemPane pos name bits'] ⧺ moveWinSlider wes x n
+  where bits' = moveBitsSlider (x - (fst pos) - 5.0) n bits
+moveWinSlider (we:wes) x n = [we] ⧺ moveWinSlider wes x n
+
+moveBitsSlider ∷ Double → Int → [(Int,PaneBit)] → [(Int,PaneBit)]
+moveBitsSlider _ _ [] = []
+moveBitsSlider x n ((i,PaneBitSlider text mn mx (Just val)):pbs)
+  | (i ≡ n)   = [(i,PaneBitSlider text mn mx (Just val'))] ⧺ moveBitsSlider x n pbs
+  | otherwise = [(i,PaneBitSlider text mn mx (Just val))]  ⧺ moveBitsSlider x n pbs
+  where val' = min mx $ max mn $ ((round (x*(mx' - mn'))) `div` 3)
+        mn'  = fromIntegral mn
+        mx'  = fromIntegral mx
+moveBitsSlider x n (pb:pbs) = [pb] ⧺ moveBitsSlider x n pbs
 

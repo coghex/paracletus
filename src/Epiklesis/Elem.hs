@@ -4,7 +4,7 @@ import Prelude()
 import UPrelude
 import Data.List.Split ( splitOn )
 import Epiklesis.Data
-import Paracletus.Data ( Tile(..) )
+import Paracletus.Data ( Tile(..), DynMap(..) )
 import Paracletus.Buff
 import Paracletus.Oblatum.Font ( indexTTF, TTFData(..) )
 
@@ -31,12 +31,30 @@ calcPaneTiles ∷ (Double,Double) → [(Int,PaneBit)] → [Tile]
 calcPaneTiles _   []                         = []
 calcPaneTiles pos ((i,PaneBitText text):pbs) = (calcText (fst pos) pos' text) ⧺ calcPaneTiles pos pbs
   where pos' = ((fst pos) + 0.5,(snd pos) + (fromIntegral i))
+calcPaneTiles pos ((i,PaneBitSlider text mn mx (Just vl)):pbs) = (calcText (fst pos) pos' text) ⧺ calcPaneSlider i pos' mn mx vl ⧺ calcPaneTiles pos pbs
+  where pos' = ((fst pos) + 1.0,(snd pos) - (fromIntegral i))
+calcPaneTiles pos ((i,PaneBitSlider text _  _  Nothing):pbs)   = (calcText (fst pos) pos' text) ⧺ calcPaneTiles pos pbs
+  where pos' = ((fst pos) + 1.0,(snd pos) - (fromIntegral i))
 calcPaneTiles pos ((_,PaneBitNULL):pbs) = [] ⧺ calcPaneTiles pos pbs
 
 -- figure out what size the pane box should be
 calcPaneBoxSize ∷ [(Int,PaneBit)] → (Double,Double)
 calcPaneBoxSize []  = (24,1)
 calcPaneBoxSize pbs = (24,2.0*fromIntegral(length pbs))
+
+-- create a slider of arbitrary bounds
+calcPaneSlider ∷ Int → (Double,Double) → Int → Int → Int → [Tile]
+calcPaneSlider n pos mn mx _ = sliderTile ⧺ barTiles ⧺ minTiles ⧺ maxTiles ⧺ valTiles
+  where sliderTile = [DTile (DMSlider n) sliderPos (0.1,0.5) (0,0) (1,1) 93]
+        sliderPos  = ((fst pos) + 4.0, (snd pos))
+        barTiles   = calcText 0 posBar "<-------->"
+        posBar     = ((fst pos) + 4.0, (snd pos))
+        minTiles   = calcText 0 posMin $ show mn
+        posMin     = ((fst pos) + 3.0, (snd pos))
+        maxTiles   = calcText 0 posMax $ show mx
+        posMax     = ((fst pos) + 7.5, (snd pos))
+        valTiles   = calcDText n 3 0 posVal "0000"
+        posVal     = ((fst pos) + 9.5, (snd pos))
 
 -- add bit to window pane
 loadNewBit ∷ String → [WinElem] → PaneBit → [WinElem]
@@ -120,6 +138,17 @@ calcText x0 (_,y) ('\n':str) = calcText x0 (x0,(y - 1)) str
 calcText x0 (x,y) (' ':str)  = calcText x0 (x + 0.25,y) str
 calcText x0 (x,y) (ch:str)   = [textTile] ⧺ calcText x0 (x + chX',y) str
   where textTile = GTile (x+(chX'/2.0),y+chY') (chW',chH') (0,0) (1,1) chIndex
+        TTFData chIndex chW chH chX chY = indexTTF ch
+        chW' = 0.5*chW
+        chH' = 0.5*chH
+        chX' = 0.5*chX
+        chY' = 0.5*chY
+calcDText ∷ Int → Int → Double → (Double,Double) → String → [Tile]
+calcDText _ _   _  _     []         = []
+calcDText n len x0 (_,y) ('\n':str) = calcDText n len x0 (x0,(y - 1)) str
+calcDText n len x0 (x,y) (' ':str)  = calcDText n len x0 (x + 0.25,y) str
+calcDText n len x0 (x,y) (ch:str)   = [textTile] ⧺ calcDText n (len - 1) x0 (x + chX',y) str
+  where textTile = DTile (DMSliderVal n len) (x+(chX'/2.0),y+chY') (chW',chH') (0,0) (1,1) chIndex
         TTFData chIndex chW chH chX chY = indexTTF ch
         chW' = 0.5*chW
         chH' = 0.5*chH

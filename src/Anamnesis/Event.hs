@@ -19,7 +19,9 @@ import Artos.Queue ( tryReadQueue, writeQueue )
 import Artos.Var ( atomically, modifyTVar', modifyTVar )
 import Paracletus.Buff ( textDyns, clearDDs )
 import Paracletus.Oblatum.Event ( evalKey )
-import Paracletus.Oblatum.Mouse ( evalMouse, evalScroll )
+import Paracletus.Oblatum.Mouse
+    ( evalMouse, evalScroll
+    , addLink, toggleLink )
 
 -- reads event channel, then
 -- executes events in order
@@ -66,6 +68,16 @@ processEvent event = case event of
       _           → do
           liftIO . atomically $ modifyTVar' (envVerts env) $ \_ → Just verts
           modify $ \s → s { stReload = RSReload }
+  (EventNewInput link) → do
+    st ← get
+    let oldIS = stInput st
+        newIS = addLink link oldIS
+    modify $ \s → s { stInput = newIS }
+  (EventInput link) → do
+    st ← get
+    let oldIS = stInput st
+        newIS = toggleLink link oldIS
+    modify $ \s → s { stInput = newIS }
   (EventRecreate) → do
     env ← ask
     st  ← get

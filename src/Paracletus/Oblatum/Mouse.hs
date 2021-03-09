@@ -10,12 +10,14 @@ import Anamnesis
 import Anamnesis.Data
     ( Env(envLoadQ),
       State(stWindow, stInput),
-      InputState(..) )
+      InputState(..), InputElem(..) )
+import Anamnesis.Util ( logDebug )
 import Artos.Data
 import Artos.Queue ( writeQueue )
 import Artos.Var ( atomically )
 import Epiklesis.Data ( Window(..), WinElem(..), LinkAction(..) )
-import Epiklesis.Window ( currentWin, switchWin, backWin )
+import Epiklesis.Window ( currentWin, switchWin, backWin, replaceWin )
+import Paracletus.Buff ( moveSlider )
 import Paracletus.Data ( DrawState(..), DSStatus(..) )
 import qualified Paracletus.Oblatum.GLFW as GLFW
       
@@ -45,7 +47,8 @@ evalMouse win mb mbs mk = do
       liftIO $ atomically $ writeQueue loadQ $ LoadCmdLink pos
     else if (mbs ≡ GLFW.MouseButtonState'Released) then do
       oldIS ← gets stInput
-      let newIS = oldIS { mouse1 = Nothing }
+      let newIS = oldIS { mouse1 = Nothing
+                        , isElems = falseInputElems (isElems oldIS) }
       modify' $ \s → s { stInput = newIS }
     else return ()
   when ((mb ≡ GLFW.mousebutt3) ∨ ((mb ≡ GLFW.mousebutt1) ∧ (GLFW.modifierKeysControl mk))) $ do
@@ -87,6 +90,62 @@ evalLink ∷ (Double,Double) → LinkAction → DrawState → DrawState
 evalLink _     (LinkExit)      ds = ds { dsStatus = DSSExit }
 evalLink _     (LinkBack)      ds = ds { dsWins = backWin $ dsWins ds
                                        , dsStatus = DSSLoadVerts }
+evalLink (x,_) (LinkSlider n)  ds = case (currentWin (dsWins ds)) of
+  Nothing → ds
+  Just w  → ds { dsWins   = replaceWin win (dsWins ds)
+               , dsStatus = DSSLoadInput (LinkSlider n) }
+    where win = moveSlider x n w
 evalLink _     (LinkLink name) ds = ds { dsWins = switchWin name $ dsWins ds
                                        , dsStatus = DSSLoadVerts }
 evalLink _     _               ds = ds
+
+-- adds a slider to the input state
+addLink ∷ LinkAction → InputState → InputState
+addLink (LinkSlider n) is = is { isElems = (isElems is) ⧺ [IESlider False n] }
+addLink _ is              = is
+
+-- evaluates mouse click on link
+toggleLink ∷ LinkAction → InputState → InputState
+toggleLink link is = is { isElems = toggleLinkAction link (isElems is) }
+toggleLinkAction ∷ LinkAction → [InputElem] → [InputElem]
+toggleLinkAction _    []       = []
+toggleLinkAction link (ie:ies) = [ie'] ⧺ toggleLinkAction link ies
+  where ie' = case ie of
+                IESlider _ _ → toggleAction link ie
+                _            → ie
+
+toggleAction ∷ LinkAction → InputElem → InputElem
+toggleAction (LinkSlider n) (IESlider b m)
+  | n ≡ m     = IESlider (not b) m
+  | otherwise = IESlider b       m
+toggleAction _ ie = ie
+
+-- evaluates constant mouse click
+moveSliderWithMouse ∷ InputState → Anamnesis ε σ ()
+moveSliderWithMouse is = do
+  env ← ask
+  st ← get
+  case (stWindow st) of
+    Nothing → return ()
+    Just w  → do
+      pos ← liftIO $ GLFW.getCursorPos w
+      let (x,_) = convertPixels pos
+      let loadQ = envLoadQ env
+      liftIO $ atomically $ writeQueue loadQ $ LoadCmdInput $ LCISlider x $ sliderPressed is
+
+sliderPressed ∷ InputState → Int
+sliderPressed is = sliderPressedElem (isElems is)
+sliderPressedElem ∷ [InputElem] → Int
+sliderPressedElem [] = (-1)
+sliderPressedElem ((IESlider True n):_) = n
+sliderPressedElem (_:ies) = sliderPressedElem ies
+
+-- reset input elems on mouse unclick
+falseInputElems ∷ [InputElem] → [InputElem]
+falseInputElems []       = []
+falseInputElems (ie:ies) = [ie'] ⧺ falseInputElems ies
+  where ie' = case ie of
+                IESlider _ a → IESlider False a
+                IESelect b a → IESelect b a
+                IENULL       → IENULL
+

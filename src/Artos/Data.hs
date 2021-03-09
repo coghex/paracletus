@@ -2,7 +2,7 @@ module Artos.Data where
 -- various data structures for threads
 import Prelude()
 import UPrelude
-import Epiklesis.Data ( Window(..), WinElem(..), PaneBit(..) )
+import Epiklesis.Data ( Window(..), WinElem(..), PaneBit(..), LinkAction(..) )
 import qualified Paracletus.Oblatum.GLFW as GLFW
 import Paracletus.Data ( Verts, Dyns, FPS, Tile )
 
@@ -20,6 +20,8 @@ data Event = EventError !GLFW.Error !String
            | EventVerts !Verts
            | EventDyns !Dyns
            | EventModTexs ![String]
+           | EventNewInput !LinkAction
+           | EventInput !LinkAction
            | EventRecreate
            | EventReload
 
@@ -36,10 +38,15 @@ data LoadCmd = LoadCmdPrint !PrintArg
              | LoadCmdNewWin !Window
              | LoadCmdSwitchWin !String
              | LoadCmdNewElem !String !WinElem
-             | LoadCmdNewBit String String PaneBit
+             | LoadCmdNewBit !String !String !PaneBit
+             | LoadCmdInput !LCInput
              | LoadCmdSetNDefTex !Int
              | LoadCmdNULL
 
 -- possible print commands
 data PrintArg = PrintCam
               | PrintNULL deriving (Show, Eq)
+
+-- possible load commands from input
+data LCInput = LCISlider Double Int
+             | LCINULL

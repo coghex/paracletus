@@ -47,9 +47,14 @@ data Settings = Settings { sKeyLayout ∷ GLFW.KeyLayout }
 data InputState = InputState { mouse1   ∷ Maybe (Float,Float)
                              , mouse2   ∷ Maybe (Float,Float)
                              , mouse3   ∷ Maybe (Float,Float)
+                             , isElems  ∷ [InputElem]
                              , inpCap   ∷ Bool
                              , keySt    ∷ ISKeys
                              } deriving (Show, Eq)
+
+-- input state related to various winelems
+data InputElem = IESlider Bool Int | IESelect Bool Int | IENULL deriving (Show, Eq)
+
 -- certain keys state
 data ISKeys = ISKeys { keyUp    ∷ Bool
                      , keyLeft  ∷ Bool

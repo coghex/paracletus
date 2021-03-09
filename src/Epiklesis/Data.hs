@@ -39,8 +39,13 @@ data WinElem
 data LinkAction = LinkExit
                 | LinkBack
                 | LinkLink String
+                | LinkSlider Int
                 | LinkNULL deriving (Show, Eq)
 
 -- possible bits in a pane
 data PaneBit = PaneBitText { pbtText ∷ String }
+             | PaneBitSlider { pbsText ∷ String
+                             , pbsMin  ∷ Int
+                             , pbsMax  ∷ Int
+                             , pbsVal  ∷ Maybe Int }
              | PaneBitNULL deriving (Show, Eq)

@@ -10,7 +10,7 @@ import Graphics.Vulkan hiding ( Window(..) )
 import Graphics.Vulkan.Core_1_0
 import Graphics.Vulkan.Ext.VK_KHR_surface
 import Artos.Var ( TVar )
-import Epiklesis.Data ( Window(..) )
+import Epiklesis.Data ( Window(..), LinkAction(..) )
 import Paracletus.Vulkan.Vertex ( Vertex )
 import Paracletus.Vulkan.Data ( GQData )
 import qualified Paracletus.Oblatum.GLFW as GLFW
@@ -40,6 +40,8 @@ data FPS = FPS Double Int Bool deriving (Show, Eq)
 -- mapping of buffer to tiles
 data DynMap = DMBuff Int Int
             | DMFPS Int
+            | DMSlider Int
+            | DMSliderVal Int Int
             | DMNULL deriving (Show, Eq)
 
 -- gtiles represent abstact tiles
@@ -74,6 +76,7 @@ data Dyns = Dyns [DynData] deriving (Show, Eq)
 data DSStatus = DSSLogDebug String
               | DSSRecreate
               | DSSLoadVerts
+              | DSSLoadInput LinkAction
               | DSSExit
               | DSSNULL deriving (Show, Eq)
 

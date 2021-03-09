@@ -94,13 +94,13 @@ hsNewPaneBit env name pane bit = case (head (splitOn ":" bit)) of
     let loadQ = envLoadQ env
     Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewBit name pane $ PaneBitText $ last $ splitOn ":" bit
   -- sliders allow for input to the window's argV
---  "slider" → do
---    let loadQ = envLoadQ env
---    Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewBit name pane $ PaneBitSlider text mn mx $ Just vl
---      where args = splitOn ":" bit
---            text = head $ tail args
---            mn   = read $ head $ tail $ tail args
---            mx   = read $ head $ tail $ tail $ tail args
---            vl   = read $ head $ tail $ tail $ tail $ tail $ args
+  "slider" → do
+    let loadQ = envLoadQ env
+    Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewBit name pane $ PaneBitSlider text mn mx $ Just vl
+      where args = splitOn ":" bit
+            text = head $ tail args
+            mn   = read $ head $ tail $ tail args
+            mx   = read $ head $ tail $ tail $ tail args
+            vl   = read $ head $ tail $ tail $ tail $ tail $ args
   bitbit → hsLogDebug env $ "no known bit: " ⧺ (show bitbit)
 

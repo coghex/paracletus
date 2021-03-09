@@ -11,12 +11,14 @@ import Artos.Data
 import Artos.Var ( atomically )
 import Artos.Queue
     ( readChan, tryReadChan, tryReadQueue, writeQueue )
-import Epiklesis.Data ( Window(..) )
+import Epiklesis.Data
+    ( Window(..), WinElem(..)
+    , PaneBit(..), LinkAction(..) )
 import Epiklesis.Elem ( loadNewBit, findBitPos )
 import Epiklesis.Window
     ( switchWin, findWin, replaceWin
     , calcWinModTexs, currentWin )
-import Paracletus.Buff ( loadDyns, setTileBuff, clearBuff )
+import Paracletus.Buff ( loadDyns, setTileBuff, clearBuff, moveSlider )
 import Paracletus.Data
     ( GraphicsLayer(..), Verts(..), FPS(..)
     , DrawState(..), DSStatus(..), LoadResult(..) )
@@ -89,6 +91,11 @@ processCommands env ds = do
               let eventQ = envEventQ env
               atomically $ writeQueue eventQ $ EventExit
               return ds'
+            DSSLoadInput link → do
+              atomically $ writeQueue (envEventQ env) $ EventInput link
+              atomically $ writeQueue (envLoadQ  env) $ LoadCmdDyns
+              processCommands env ds''
+                where ds'' = ds' { dsStatus = DSSNULL }
             DSSLoadVerts   → do
               atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
               processCommands env ds''
@@ -176,5 +183,20 @@ processCommand env ds cmd = case cmd of
             box        = (2.0,1.0)
             pos'       = ((fst pos) + 6.5, (snd pos) + 0.5)
             (bitL,pos) = findBitPos pane elems
+        case bit of
+          PaneBitSlider _ _ _ _ → do
+            atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem name $ WinElemLink pos' box $ LinkSlider $ bitL
+            atomically $ writeQueue (envEventQ env) $ EventNewInput $ LinkSlider $ bitL
+          _ → return ()
         return $ ResDrawState ds'
+  LoadCmdInput inp → case inp of
+    LCISlider x n → case (currentWin (dsWins ds)) of
+      Nothing → return $ ResError "no window"
+      Just w  → do
+        let dyns = loadDyns ds'
+            ds'  = ds { dsWins = replaceWin win (dsWins ds) }
+            win  = moveSlider x n w
+        atomically $ writeQueue (envEventQ env) $ EventDyns dyns
+        return $ ResDrawState ds'
+    LCINULL → return $ ResError $ "null load input command"
   LoadCmdNULL       → return ResNULL

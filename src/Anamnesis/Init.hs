@@ -80,6 +80,7 @@ initInputState ∷ InputState
 initInputState = InputState { mouse1   = Nothing
                             , mouse2   = Nothing
                             , mouse3   = Nothing
+                            , isElems  = []
                             , inpCap   = False
                             , keySt    = initKS }
     where initKS = ISKeys   { keyUp    = False
