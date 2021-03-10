@@ -55,12 +55,13 @@ genShBuff buff b sh open
         strdyns  = genStrDDs (fst pos) pos str b0
         Dyns b0  = (buff !! b)
         tbdyns   = calcTextBoxDyns (-16.0,9.0) (48,24)
-        pos      = (-15.0, 9.0 - 2.0*y)
+        --pos      = (-15.0, 9.0 - 2.0*y)
+        pos      = (-15.0, 7.0)
         y        = fromIntegral $ length $ splitOn "\n" $ shOutStr sh
         str      = genShellStr sh
-        cursdyns = [DynData 93 (-14.5 + xcurs,7.0+(2*(1 - ycurs))) (0.05,0.5) (0,0)]
+        cursdyns = [DynData 93 (-14.5 + xcurs,7.0+(1 - ycurs)) (0.05,0.5) (0,0)]
         xcurs    = findCursPos $ take n $ shInpStr sh
-        ycurs    = fromIntegral $ length $ splitOn "\n" $ shOutStr sh
+        ycurs    = fromIntegral $ min 9 $ length $ splitOn "\n" $ shOutStr sh
         n        = shCursor sh
 
 -- creates dynamic textbox

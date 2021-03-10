@@ -15,7 +15,8 @@ import Epiklesis.Data
     ( Window(..), WinElem(..)
     , PaneBit(..), LinkAction(..) )
 import Epiklesis.Elem ( loadNewBit, findBitPos )
-import Epiklesis.Shell ( commandShell, findShell )
+import Epiklesis.Shell
+    ( findShell, commandShell, evalShell, replaceShell )
 import Epiklesis.Window
     ( switchWin, findWin, replaceWin
     , calcWinModTexs, currentWin
@@ -217,9 +218,18 @@ processCommand env ds cmd = case cmd of
       Nothing → return $ ResError $ "no current window"
       Just w  → case (findShell (winElems w)) of
         Nothing       → return $ ResError $ "no shell in window"
-        Just (sh,_,_) → return $ ResDrawState ds'
-          where ds' = ds { dsWins = replaceWin w' (dsWins ds)
+        Just (sh,_,_) → case (shellCmd) of
+          ShellCmdExec → do
+            newSh ← evalShell (envLuaSt env) sh
+            let ds' = ds { dsWins   = replaceWin w' (dsWins ds)
                          , dsStatus = DSSLoadDyns }
-                w'  = w { winElems = commandShell shellCmd (winElems w) }
+
+                w'  = w { winElems = replaceShell newSh (winElems w) }
+            return $ ResDrawState ds'
+          shellCmd0    → do
+            let ds' = ds { dsWins   = replaceWin w' (dsWins ds)
+                         , dsStatus = DSSLoadDyns }
+                w'  = w { winElems = commandShell shellCmd0 (winElems w) }
+            return $ ResDrawState ds'
     LCINULL → return $ ResError $ "null load input command"
   LoadCmdNULL       → return ResNULL

@@ -3,7 +3,9 @@ module Epiklesis.Shell where
 -- lua commands is defined
 import Prelude()
 import UPrelude
+import qualified Data.ByteString.Char8 as BL
 import Data.List.Split (splitOn)
+import qualified Foreign.Lua as Lua
 import Artos.Data ( ShellCmd(..), ShellCard(..) )
 import Paracletus.Data ( DrawState(..), DSStatus(..) )
 import Epiklesis.Data ( Window(..), WinElem(..), Shell(..) )
@@ -12,7 +14,7 @@ import Paracletus.Oblatum.Font ( TTFData(..), indexTTF )
 
 -- sends command to the first shell
 commandShell ∷ ShellCmd → [WinElem] → [WinElem]
-commandShell _     [] = []
+commandShell _     []       = []
 commandShell shCmd (we:wes) = [we'] ⧺ commandShell shCmd wes
   where we' = case we of
           WinElemShell sh bl op → commandShellF shCmd sh bl op
@@ -25,7 +27,35 @@ commandShellF ShellCmdDelete          sh bl op = WinElemShell sh' bl    op
   where sh' = delShell sh
 commandShellF (ShellCmdDirection dir) sh bl op = WinElemShell sh' bl    op
   where sh' = directionShell dir sh
+commandShellF ShellCmdExec            sh bl op = WinElemShell sh  bl    op
 commandShellF ShellCmdNULL            sh bl op = WinElemShell sh  bl    op
+
+evalShell ∷ Lua.State → Shell → IO Shell
+evalShell ls sh = do
+  (ret,outbuff) ← execShell ls (shInpStr sh)
+  let retstring = if (length (shOutStr sh) ≡ 0)
+        then case (outbuff) of
+          "nil" → (shOutStr sh) ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ "\n"
+          _     → (shOutStr sh) ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ " > " ⧺ outbuff ⧺ "\n"
+        else case (outbuff) of
+          "nil" → (init (shOutStr sh)) ⧺ " " ⧺ (shRet sh) ⧺ "\n" ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ "\n"
+          _     → (init (shOutStr sh)) ⧺ " " ⧺ (shRet sh) ⧺ "\n" ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ " > " ⧺ outbuff ⧺ "\n"
+      sh' = sh { shInpStr = ""
+               , shOutStr = retstring
+               , shTabbed = Nothing
+               , shHistI  = -1
+               , shRet    = ""
+               , shHist   = ([shInpStr sh] ⧺ (shHist sh))
+               , shCursor = 0 }
+  return sh'
+
+execShell ∷ Lua.State → String → IO (Lua.Status,String)
+execShell ls str = do
+  luaerror ← Lua.runWith ls $ Lua.loadstring $ BL.pack str
+  _   ← Lua.runWith ls $ Lua.pcall 0 1 Nothing
+  ret ← Lua.runWith ls $ Lua.tostring' $ Lua.nthFromBottom (-1)
+  Lua.runWith ls $ Lua.pop $ Lua.nthFromBottom (-1)
+  return $ (luaerror,(BL.unpack ret))
 
 -- sends directional key to shell
 directionShell ∷ ShellCard → Shell → Shell
@@ -72,6 +102,14 @@ findShell ∷ [WinElem] → Maybe (Shell,Bool,Bool)
 findShell []                            = Nothing
 findShell ((WinElemShell sh bl op):wes) = Just (sh,bl,op)
 findShell (_:wes)                       = findShell wes
+
+-- replaces first shell with new shell
+replaceShell ∷ Shell → [WinElem] → [WinElem]
+replaceShell _  []       = []
+replaceShell sh (we:wes) = [we'] ⧺ replaceShell sh wes
+  where we' = case we of
+          WinElemShell _ bl op → WinElemShell sh bl op
+          we0                  → we0
 
 -- generates string for the shell
 genShellStr ∷ Shell → String
