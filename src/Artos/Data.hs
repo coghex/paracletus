@@ -63,7 +63,6 @@ data ShellCmd = ShellCmdToggle
               | ShellCmdControl ShellControl
               | ShellCmdExec
               | ShellCmdTab
-              | ShellCmdCursor
               | ShellCmdNULL
 
 -- possible shell direction keus

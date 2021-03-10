@@ -4,9 +4,10 @@ module Epiklesis.Shell where
 import Prelude()
 import UPrelude
 import qualified Data.ByteString.Char8 as BL
+import Data.List (isPrefixOf)
 import Data.List.Split (splitOn)
 import qualified Foreign.Lua as Lua
-import Artos.Data ( ShellCmd(..), ShellCard(..) )
+import Artos.Data ( ShellCmd(..), ShellCard(..), ShellControl(..) )
 import Paracletus.Data ( DrawState(..), DSStatus(..) )
 import Epiklesis.Data ( Window(..), WinElem(..), Shell(..) )
 import Epiklesis.Window ( replaceWin, currentWin )
@@ -27,9 +28,53 @@ commandShellF ShellCmdDelete          sh bl op = WinElemShell sh' bl    op
   where sh' = delShell sh
 commandShellF (ShellCmdDirection dir) sh bl op = WinElemShell sh' bl    op
   where sh' = directionShell dir sh
+commandShellF ShellCmdTab             sh bl op = WinElemShell sh' bl    op
+  where sh' = tabShell sh
+commandShellF (ShellCmdControl key)   sh bl op = WinElemShell sh' bl    op
+  where sh' = controlSh key sh
 commandShellF ShellCmdExec            sh bl op = WinElemShell sh  bl    op
 commandShellF ShellCmdNULL            sh bl op = WinElemShell sh  bl    op
 
+-- proccesing of shell control keys
+controlSh ∷ ShellControl → Shell → Shell
+controlSh ShCtlC sh = sh'
+  where sh' = sh { shTabbed = Nothing
+                 , shCursor = 0
+                 , shInpStr = ""
+                 , shCache  = ""
+                 , shHistI  = -1
+                 , shOutStr = retstring }
+        retstring = (shOutStr sh) ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n"
+controlSh ShCtlA sh = sh { shCursor = 0 }
+controlSh ShCtlE sh = sh { shCursor = length (shInpStr sh) }
+controlSh key    sh = sh
+
+-- tabs through shell commands
+tabShell ∷ Shell → Shell
+tabShell sh
+  | shTabbed sh ≡ Nothing =
+      sh { shCache  = shInpStr sh
+         , shInpStr = newStr0
+         , shTabbed = Just 0
+         , shCursor = length newStr0 }
+  | otherwise             =
+      sh { shTabbed = Just incSh
+         , shInpStr = newStr1
+         , shCursor = length newStr1 }
+    where incSh   = incShTabbed $ shTabbed sh
+          newStr0 = tabCommand 0     (shInpStr sh) cmds
+          newStr1 = tabCommand incSh (shCache sh) cmds
+          cmds    = ["newWindow", "newText", "newMenu", "newMenuBit", "newLink", "newWorld", "switchWindow", "switchScreen", "setBackground", "luaModule", "newDynObj", "resizeWindow", "toggleFPS"]
+incShTabbed ∷ Maybe Int → Int
+incShTabbed Nothing  = 0
+incShTabbed (Just n) = (n + 1)
+tabCommand ∷ Int → String → [String] → String
+tabCommand n inpStr cmds
+  | matchedStrings ≡ [] = inpStr
+  | otherwise           = matchedStrings !! (n `mod` (length matchedStrings))
+  where matchedStrings = filter (isPrefixOf inpStr) cmds
+
+-- evaluates lua commands in IO
 evalShell ∷ Lua.State → Shell → IO Shell
 evalShell ls sh = do
   (ret,outbuff) ← execShell ls (shInpStr sh)

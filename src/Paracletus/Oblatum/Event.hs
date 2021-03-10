@@ -40,10 +40,16 @@ evalKey window k ks mk = do
       else if (GLFW.keyCheck False keyLayout k "DEL") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell ShellCmdDelete
       else if (GLFW.keyCheck False keyLayout k "SPC") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdString " "
       else if (GLFW.keyCheck False keyLayout k "RET") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdExec
+      else if (GLFW.keyCheck False keyLayout k "TAB") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdTab
       else if (GLFW.keyCheck False keyLayout k "UPA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdDirection ShellUp
       else if (GLFW.keyCheck False keyLayout k "DNA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdDirection ShellDown
       else if (GLFW.keyCheck False keyLayout k "RTA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdDirection ShellRight
       else if (GLFW.keyCheck False keyLayout k "LFA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdDirection ShellLeft
+      else if (GLFW.modifierKeysControl mk) then
+        if (GLFW.keyCheck False keyLayout k "C") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdControl ShCtlC
+        else if (GLFW.keyCheck False keyLayout k "A") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdControl ShCtlA
+        else if (GLFW.keyCheck False keyLayout k "E") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdControl ShCtlE
+        else return ()
       else do
         ch ← liftIO $ GLFW.calcInpKey k mk
         liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdString ch
