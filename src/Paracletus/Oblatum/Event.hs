@@ -13,7 +13,7 @@ import Anamnesis.Data
       ISKeys(keyRight, keyDown, keyLeft, keyUp),
       InputState(..) )
 import Anamnesis.Util ( logDebug, logInfo )
-import Artos.Data ( LoadCmd(..), Event(..) )
+import Artos.Data
 import Artos.Queue ( writeQueue )
 import Artos.Var ( atomically )
 import qualified Paracletus.Oblatum.GLFW as GLFW
@@ -27,6 +27,10 @@ evalKey window k ks mk = do
   -- glfw is parent thread, so this
   -- will close everything
   when (GLFW.keyCheck False keyLayout k "ESC") $ liftIO $ GLFW.setWindowShouldClose window True
+  when (GLFW.keyCheck cap keyLayout k "SH") $ if (ks ≡ GLFW.KeyState'Pressed) then do
+      liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell
+      --liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdPrint $ PrintBuff
+    else return ()
   when (ks ≡ GLFW.KeyState'Pressed) $ do
     when (GLFW.keyCheck False keyLayout k "L") $ liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
 

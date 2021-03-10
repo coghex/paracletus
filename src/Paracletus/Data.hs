@@ -76,7 +76,9 @@ data Dyns = Dyns [DynData] deriving (Show, Eq)
 data DSStatus = DSSLogDebug String
               | DSSRecreate
               | DSSLoadVerts
+              | DSSLoadDyns
               | DSSLoadInput LinkAction
+              | DSSLoadCap Bool
               | DSSExit
               | DSSNULL deriving (Show, Eq)
 

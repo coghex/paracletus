@@ -4,6 +4,7 @@ import Prelude()
 import UPrelude
 import Data.List.Split ( splitOn )
 import Epiklesis.Data
+--import Epiklesis.Shell ( loadShell )
 import Paracletus.Data ( Tile(..), DynMap(..) )
 import Paracletus.Buff
 import Paracletus.Oblatum.Font ( indexTTF, TTFData(..) )
@@ -24,6 +25,7 @@ loadWinElem _ (WinElemPane pos _ bits)    = (calcTextBox posOffset s) ⧺ calcPa
   where s         = calcPaneBoxSize bits
         posOffset = ((fst pos) - 0.5, (snd pos) + 0.5)
 loadWinElem _ (WinElemWorld wp _ _)       = loadWorldBuff wp
+loadWinElem _ (WinElemShell sh bl open)   = loadShell
 loadWinElem _ (WinElemLink _ _ _)         = []
 loadWinElem _ (WinElemNULL)               = []
 

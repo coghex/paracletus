@@ -33,6 +33,9 @@ data WinElem
   | WinElemPane { panePos  ∷ (Double,Double)
                 , paneName ∷ String
                 , paneBits ∷ [(Int,PaneBit)] }
+  | WinElemShell { shData  ∷ Shell
+                 , shBlink ∷ Bool
+                 , shOpen  ∷ Bool }
   | WinElemWorld { wParams ∷ WorldParams
                  , wData   ∷ WorldData
                  , wDir    ∷ [String] }
@@ -52,6 +55,17 @@ data PaneBit = PaneBitText { pbtText ∷ String }
                              , pbsMax  ∷ Int
                              , pbsVal  ∷ Maybe Int }
              | PaneBitNULL deriving (Show, Eq)
+
+-- lua shell executes commands in global state
+data Shell = Shell { shPrompt ∷ String
+                   , shTabbed ∷ Maybe Int
+                   , shCursor ∷ Int
+                   , shInpStr ∷ String
+                   , shCache  ∷ String
+                   , shOutStr ∷ String
+                   , shRet    ∷ String
+                   , shHistI  ∷ Int
+                   , shHist   ∷ [String] } deriving (Show, Eq)
 
 -- world parameters help generate world
 data WorldParams = WorldParams { wpSSize ∷ (Int,Int)

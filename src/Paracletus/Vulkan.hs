@@ -237,7 +237,7 @@ genCommandBuffs dev pdev commandPool queues graphicsPipeline renderPass texData 
                 modifyTVar' (envVerts env) $ \_ → (Just $ Verts res)
                 writeQueue (envLoadQ env) $ LoadCmdInitBuff tiles $ initBuff [64,512,512,512]
                 writeQueue (envLoadQ env) $ LoadCmdBuff 0 $ textDyns 64 (-3,-8) "Loading... 0%"
-                writeQueue (envLoadQ env) $ LoadCmdDyns
+                writeQueue (envLoadQ env) $ LoadCmdVerts
               return res
             Just (Verts vs) → return vs
     vertexBufferNew ← createVertexBuffer pdev dev commandPool (graphicsQueue queues) verts0

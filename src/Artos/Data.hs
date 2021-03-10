@@ -22,6 +22,7 @@ data Event = EventError !GLFW.Error !String
            | EventModTexs ![String]
            | EventNewInput !LinkAction
            | EventInput !LinkAction
+           | EventCap !Bool
            | EventRecreate
            | EventReload
 
@@ -45,8 +46,11 @@ data LoadCmd = LoadCmdPrint !PrintArg
 
 -- possible print commands
 data PrintArg = PrintCam
+              | PrintBuff
+              | PrintWinElems
               | PrintNULL deriving (Show, Eq)
 
 -- possible load commands from input
 data LCInput = LCISlider Double Int
+             | LCIShell
              | LCINULL

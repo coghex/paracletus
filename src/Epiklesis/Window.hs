@@ -46,3 +46,20 @@ currentWin ∷ [Window] → Maybe Window
 currentWin wins
   | (length wins) ≤ 0 = Nothing
   | otherwise         = Just $ head wins
+
+-- prints list of current wins elems
+printWinElems ∷ Maybe Window → String
+printWinElems Nothing  = "no current window"
+printWinElems (Just w) = "WinElems: " ⧺ (printElems $ winElems w)
+printElems ∷ [WinElem] → String
+printElems []       = ""
+printElems (we:wes) = printElem we ⧺ printElems wes
+printElem ∷ WinElem → String
+printElem (WinElemText _ _ _)  = "WinElemText, "
+printElem (WinElemLink _ _ _)  = "WinElemLink, "
+printElem (WinElemPane _ _ _)  = "WinElemPane, "
+printElem (WinElemShell _ _ _) = "WinElemShell, "
+printElem (WinElemWorld _ _ _) = "WinElemWorld, "
+printElem (WinElemNULL)        = "WinElemNULL, "
+printElem we                   = "unknown WinElem, "
+

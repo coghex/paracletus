@@ -3,9 +3,11 @@ module Paracletus.Buff where
 -- tiles to manipulate
 import Prelude ()
 import UPrelude
+import Data.List.Split (splitOn)
 import Epiklesis.Data
-    ( Window(..), WinElem(..)
+    ( Window(..), WinElem(..), Shell(..)
     , PaneBit(..), WorldParams(..) )
+import Epiklesis.Shell ( findShell, genShellStr )
 import Epiklesis.Window ( currentWin )
 import Paracletus.Data
     ( DrawState(..), Tile(..), DynMap(..)
@@ -30,6 +32,66 @@ loadWorldBuff ∷ WorldParams → [Tile]
 loadWorldBuff wp = makeBufferTiles 3 size
   where size = sw*sh
         (sw,sh) = wpSSize wp
+
+loadShell ∷ [Tile]
+loadShell = makeBufferTiles 2 256
+
+-- generates buffs from draw state
+genDynBuffs ∷ DrawState → [Dyns]
+genDynBuffs ds = dyns1
+  where dyns0 = dsBuff ds
+        dyns1 = case (currentWin (dsWins ds)) of
+          Nothing → dyns0
+          Just w  → case (findShell (winElems w)) of
+            Nothing          → dyns0
+            Just (sh,_,open) → genShBuff dyns0 2 sh open
+
+-- dyns required for shell
+genShBuff ∷ [Dyns] → Int → Shell → Bool → [Dyns]
+genShBuff buff b sh open
+  | open      = setTileBuff b dyns buff
+  | otherwise = clearBuff buff b
+  where dyns    = Dyns $ tbdyns ⧺ strdyns
+        strdyns = genStrDDs (fst pos) pos str b0
+        Dyns b0 = (buff !! b)
+        tbdyns  = calcTextBoxDyns (-16.0,9.0) (48,24)
+        pos     = (-15.0, 9.0 - 2.0*y)
+        y       = fromIntegral $ length $ splitOn "\n" $ shOutStr sh
+        str     = genShellStr sh
+
+-- creates dynamic textbox
+calcTextBoxDyns ∷ (Double,Double) → (Double,Double) → [DynData]
+calcTextBoxDyns (x,y) (sx,sy) = [middleTile,bottomTile,rightTile,leftTile,topTile,topLeftTile,topRightTile,botLeftTile,botRightTile]
+  where middleTile   = DynData 96  (x' + (0.25*sx') + 0.25, y' - (0.25*sy') - 0.25) (0.25*sx', 0.25*sy') (0,0)
+        bottomTile   = DynData 101 (x' + (0.25*sx') + 0.25, y' - (0.5*sy') - 0.5) (0.25*sx', 0.25) (0,0)
+        rightTile    = DynData 97  (x' + (0.5*sx') + 0.5, y' - (0.25*sy') - 0.25) (0.25, 0.25*sy') (0,0)
+        leftTile     = DynData 104 (x', y' - (0.25*sy') - 0.25) (0.25, 0.25*sy') (0,0)
+        topTile      = DynData 98  (x' + (0.25*sx') + 0.25, y') (0.25*sx', 0.25) (0,0)
+        topLeftTile  = DynData 100 (x',y') (0.25,0.25) (0,0)
+        topRightTile = DynData 99  (x' + (0.5*sx') + 0.5,y') (0.25,0.25) (0,0)
+        botLeftTile  = DynData 103 (x',y' - (0.5*sy') - 0.5) (0.25,0.25) (0,0)
+        botRightTile = DynData 102 (x' + (0.5*sx') + 0.5,y' - (0.5*sy') - 0.5) (0.25,0.25) (0,0)
+        x'           = realToFrac x
+        y'           = realToFrac y
+        sx'          = realToFrac sx
+        sy'          = realToFrac sy
+
+-- dyns required for text
+genStrDyns ∷ (Double,Double) → String → Dyns → Dyns
+genStrDyns pos str (Dyns dyns) = Dyns $ genStrDDs (fst pos) pos str dyns
+genStrDDs ∷ Double → (Double,Double) → String → [DynData] → [DynData]
+genStrDDs _  _     _          []      = []
+genStrDDs x0 pos   []         (_:dds) = [dd'] ⧺ genStrDDs x0 pos [] dds
+  where dd' = DynData 0 (0,0) (1,1) (0,0)
+genStrDDs x0 (x,y) ('\n':str) dds     = genStrDDs x0 (x0,y - 1) str dds
+genStrDDs x0 pos   (ch:str)   (_:dds) = [dd'] ⧺ genStrDDs x0 pos' str dds
+  where (dd',x') = genStrDD pos ch
+        pos'     = (x', (snd pos))
+-- dyns required for a char
+genStrDD ∷ (Double,Double) → Char → (DynData,Double)
+genStrDD (x,_) ' ' = (DynData 0 (0,0) (1,1) (0,0), x + 0.5)
+genStrDD (x,y) ch  = (DynData chIndex (realToFrac(x + chX + 0.5*(1.0 - chX)), realToFrac(y + chY)) (realToFrac(0.5*chW), realToFrac(0.5*chH)) (0,0), x + chX)
+  where TTFData chIndex chW chH chX chY = indexTTF ch
 
 -- loads dyns from drawState
 loadDyns ∷ DrawState → Dyns
@@ -70,21 +132,6 @@ strDyns _    _     []       = []
 strDyns size (x,y) (ch:str) = res ⧺ replicate (size - length res) (DynData 0 (0,0) (1,1) (0,0))
   where res  = genStrDDs x (x,y) str dyns
         dyns = replicate (length str) $ DynData 0 (0,0) (1,1) (0,0)
-
-genStrDDs ∷ Double → (Double,Double) → String → [DynData] → [DynData]
-genStrDDs _  _   _        []       = []
-genStrDDs x0 pos []       (_ :dds) = [dd'] ⧺ genStrDDs x0 pos [] dds
-  where dd' = DynData 0 (0,0) (1,1) (0,0)
-genStrDDs x0 (x,y) ('\n':str) dds  = genStrDDs x0 (x0,y - 1) str dds
-genStrDDs x0 pos (ch:str) (_ :dds) = [dd'] ⧺ genStrDDs x0 pos' str dds
-  where (dd',x') = genStrDD pos ch
-        pos'     = (x',(snd pos))
-
--- convert char to dyndata
-genStrDD ∷ (Double,Double) → Char → (DynData,Double)
-genStrDD (x,_) ' ' = (DynData 0 (0,0) (1,1) (0,0),x + 0.5)
-genStrDD (x,y) ch  = (DynData chIndex (realToFrac(x + chX + 0.5*(1.0 - chX)),realToFrac(y + chY)) (realToFrac(0.5*chW),realToFrac(0.5*chH)) (0,0), x + chX)
-  where TTFData chIndex chW chH chX chY = indexTTF ch
 
 -- convert fps to single didget
 calcDiglet ∷ Int → FPS → Int
@@ -155,3 +202,13 @@ moveBitsSlider x n ((i,PaneBitSlider text mn mx (Just val)):pbs)
         mx'  = fromIntegral mx
 moveBitsSlider x n (pb:pbs) = [pb] ⧺ moveBitsSlider x n pbs
 
+-- prints tthe values that are not 0
+printBuff ∷ [Dyns] → String
+printBuff []     = ""
+printBuff (d:ds) = (printDyn d) ⧺ (printBuff ds)
+printDyn ∷ Dyns → String
+printDyn (Dyns [])     = ""
+printDyn (Dyns (d:ds)) = (printDD d) ⧺ (printDyn $ Dyns ds)
+printDD ∷ DynData → String
+printDD (DynData 0 _ _ _) = ""
+printDD dd                = (show dd) ⧺ "\n"

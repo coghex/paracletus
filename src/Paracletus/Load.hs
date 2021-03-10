@@ -15,10 +15,14 @@ import Epiklesis.Data
     ( Window(..), WinElem(..)
     , PaneBit(..), LinkAction(..) )
 import Epiklesis.Elem ( loadNewBit, findBitPos )
+import Epiklesis.Shell ( toggleShell )
 import Epiklesis.Window
     ( switchWin, findWin, replaceWin
-    , calcWinModTexs, currentWin )
-import Paracletus.Buff ( loadDyns, setTileBuff, clearBuff, moveSlider )
+    , calcWinModTexs, currentWin
+    , printWinElems )
+import Paracletus.Buff
+    ( loadDyns, setTileBuff, genDynBuffs
+    , clearBuff, moveSlider, printBuff )
 import Paracletus.Data
     ( GraphicsLayer(..), Verts(..), FPS(..)
     , DrawState(..), DSStatus(..), LoadResult(..) )
@@ -96,13 +100,21 @@ processCommands env ds = do
               atomically $ writeQueue (envLoadQ  env) $ LoadCmdDyns
               processCommands env ds''
                 where ds'' = ds' { dsStatus = DSSNULL }
+            DSSLoadDyns    → do
+              atomically $ writeQueue (envLoadQ  env) $ LoadCmdDyns
+              processCommands env ds''
+                where ds'' = ds' { dsStatus = DSSNULL }
             DSSLoadVerts   → do
               atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
               processCommands env ds''
                 where ds'' = ds' { dsStatus = DSSNULL }
+            DSSLoadCap cap → do
+              atomically $ writeQueue (envEventQ env) $ EventCap True
+              atomically $ writeQueue (envLoadQ  env) $ LoadCmdDyns
+              processCommands env ds''
+                where ds'' = ds' { dsStatus = DSSNULL }
             DSSRecreate    → do
               atomically $ writeQueue (envEventQ env) $ EventRecreate
-              --atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
               processCommands env ds''
                 where ds'' = ds' { dsStatus = DSSNULL }
             DSSLogDebug str → do
@@ -125,10 +137,12 @@ processCommand ∷ Env → DrawState → LoadCmd → IO LoadResult
 processCommand env ds cmd = case cmd of
   LoadCmdPrint  arg → do
     let ret = case arg of
-                PrintCam  → "no cam defined"
-                PrintNULL → "no arg " ⧺ (show arg) ⧺ " known"
-    --atomically $ writeQueue (envEventQ env) $ EventLogDebug $ show ret
-    return $ ResError ret
+                PrintCam      → "no cam defined"
+                PrintBuff     → printBuff $ dsBuff ds
+                PrintWinElems → printWinElems $ currentWin $ dsWins ds
+                PrintNULL     → "no arg " ⧺ (show arg) ⧺ " known"
+    atomically $ writeQueue (envEventQ env) $ EventLogDebug $ show ret
+    return $ ResSuccess
   LoadCmdSetFPS fps → do
     let ds'    = ds { dsFPS = fps }
         dyns   = loadDyns ds'
@@ -144,14 +158,15 @@ processCommand env ds cmd = case cmd of
         ds'      = ds { dsTiles = loadTiles ds }
         dyns     = loadDyns ds'
     atomically $ writeQueue (envEventQ env) $ EventVerts newVerts
-    atomically $ writeQueue (envEventQ env) $ EventDyns dyns
+    atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
     return $ ResDrawState ds'
   LoadCmdInitBuff tiles dyns → return $ ResDrawState $ ds { dsTiles = tiles
                                                           , dsBuff  = dyns }
   LoadCmdDyns → do
-    let newDyns = loadDyns ds
+    let newDyns = loadDyns ds'
+        ds'     = ds { dsBuff = genDynBuffs ds }
     atomically $ writeQueue (envEventQ env) $ EventDyns newDyns
-    return $ ResSuccess
+    return $ ResDrawState ds'
   LoadCmdBuff n dyns → return $ ResDrawState $ ds { dsBuff = setTileBuff n dyns (dsBuff ds) }
   LoadCmdClear → do
     let ds' = ds { dsBuff = clearBuff (dsBuff ds) 0 }
@@ -198,5 +213,9 @@ processCommand env ds cmd = case cmd of
             win  = moveSlider x n w
         atomically $ writeQueue (envEventQ env) $ EventDyns dyns
         return $ ResDrawState ds'
+    LCIShell → do
+      let ds' = toggleShell ds
+      atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
+      return $ ResDrawState ds'
     LCINULL → return $ ResError $ "null load input command"
   LoadCmdNULL       → return ResNULL

@@ -9,9 +9,8 @@ import qualified Paracletus.Oblatum.GLFW as GLFW
 import Anamnesis
     ( MonadIO(liftIO), MonadReader(ask), MonadState(get), Anamnesis )
 import Anamnesis.Data
-    ( Env(..),
-      ReloadState(..),
-      State(..) )
+    ( Env(..), ReloadState(..),
+      State(..), InputState(..) )
 import Anamnesis.Util ( logDebug, logExcept, logInfo, logWarn )
 import Artos.Data
 import Artos.Except ( ExType(ExParacletus) )
@@ -77,6 +76,11 @@ processEvent event = case event of
     st ← get
     let oldIS = stInput st
         newIS = toggleLink link oldIS
+    modify $ \s → s { stInput = newIS }
+  (EventCap cap) → do
+    st ← get
+    let oldIS = stInput st
+        newIS = oldIS { inpCap = cap }
     modify $ \s → s { stInput = newIS }
   (EventRecreate) → do
     env ← ask

@@ -17,7 +17,7 @@ import Epiklesis.Data
     , WinArgV(..), WinElem(..)
     , LinkAction(..), PaneBit(..)
     , WorldParams(..), WorldData(..)
-    , Zone(..), Segment(..) )
+    , Zone(..), Segment(..), Shell(..) )
 import Epiklesis.Elem ( calcTextBoxSize )
 
 -- quits everything using glfw in parent thread
@@ -41,14 +41,18 @@ hsNewWindow ∷ Env → String → String → Lua.Lua ()
 hsNewWindow env name "menu" = do
   let loadQ = envLoadQ env
   Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewWin win
-  where win = Window name WinTypeMenu WinArgNULL []
+  where win = Window name WinTypeMenu WinArgNULL [shell]
+        shell  = WinElemShell shData False False
+        shData = Shell "$> " Nothing 1 "" "" "" "" (-1) []
 -- game windows contain logic to preform
 -- camera movement, screen switching,
 -- and an animation thread
 hsNewWindow env name "game" = do
   let eventQ = envLoadQ env
   Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewWin win
-  where win = Window name WinTypeGame WinArgNULL []
+  where win    = Window name WinTypeGame WinArgNULL [shell]
+        shell  = WinElemShell shData False False
+        shData = Shell "$> " Nothing 1 "" "" "" "" (-1) []
 hsNewWindow env _    wintype = hsLogDebug env $ "window type " ⧺ wintype ⧺ " not known"
 
 -- switches between windows
