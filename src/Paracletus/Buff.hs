@@ -7,7 +7,7 @@ import Data.List.Split (splitOn)
 import Epiklesis.Data
     ( Window(..), WinElem(..), Shell(..)
     , PaneBit(..), WorldParams(..) )
-import Epiklesis.Shell ( findShell, genShellStr )
+import Epiklesis.Shell ( findShell, genShellStr, findCursPos )
 import Epiklesis.Window ( currentWin )
 import Paracletus.Data
     ( DrawState(..), Tile(..), DynMap(..)
@@ -51,13 +51,17 @@ genShBuff ∷ [Dyns] → Int → Shell → Bool → [Dyns]
 genShBuff buff b sh open
   | open      = setTileBuff b dyns buff
   | otherwise = clearBuff buff b
-  where dyns    = Dyns $ tbdyns ⧺ strdyns
-        strdyns = genStrDDs (fst pos) pos str b0
-        Dyns b0 = (buff !! b)
-        tbdyns  = calcTextBoxDyns (-16.0,9.0) (48,24)
-        pos     = (-15.0, 9.0 - 2.0*y)
-        y       = fromIntegral $ length $ splitOn "\n" $ shOutStr sh
-        str     = genShellStr sh
+  where dyns     = Dyns $ tbdyns ⧺ cursdyns ⧺ strdyns
+        strdyns  = genStrDDs (fst pos) pos str b0
+        Dyns b0  = (buff !! b)
+        tbdyns   = calcTextBoxDyns (-16.0,9.0) (48,24)
+        pos      = (-15.0, 9.0 - 2.0*y)
+        y        = fromIntegral $ length $ splitOn "\n" $ shOutStr sh
+        str      = genShellStr sh
+        cursdyns = [DynData 93 (-14.5 + xcurs,7.0+(2*(1 - ycurs))) (0.05,0.5) (0,0)]
+        xcurs    = findCursPos $ take n $ shInpStr sh
+        ycurs    = fromIntegral $ length $ splitOn "\n" $ shOutStr sh
+        n        = shCursor sh
 
 -- creates dynamic textbox
 calcTextBoxDyns ∷ (Double,Double) → (Double,Double) → [DynData]

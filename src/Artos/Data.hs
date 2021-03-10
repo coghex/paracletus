@@ -59,4 +59,15 @@ data LCInput = LCISlider Double Int
 data ShellCmd = ShellCmdToggle
               | ShellCmdDelete
               | ShellCmdString String
+              | ShellCmdDirection ShellCard
+              | ShellCmdControl ShellControl
+              | ShellCmdExec
+              | ShellCmdTab
+              | ShellCmdCursor
               | ShellCmdNULL
+
+-- possible shell direction keus
+data ShellCard = ShellUp | ShellDown | ShellLeft | ShellRight deriving (Show, Eq)
+
+-- possible shell control keys
+data ShellControl = ShCtlC | ShCtlA | ShCtlE | ShCtlR | ShCtlG | ShCtlO | ShCtlL | ShCtlU | ShCtlW | ShCtlNULL deriving (Show, Eq)

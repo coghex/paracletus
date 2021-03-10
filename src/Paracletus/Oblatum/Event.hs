@@ -38,6 +38,11 @@ evalKey window k ks mk = do
         liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell ShellCmdToggle
         liftIO $ atomically $ writeQueue (envEventQ env) $ EventCap False
       else if (GLFW.keyCheck False keyLayout k "DEL") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell ShellCmdDelete
+      else if (GLFW.keyCheck False keyLayout k "SPC") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdString " "
+      else if (GLFW.keyCheck False keyLayout k "UPA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdDirection ShellUp
+      else if (GLFW.keyCheck False keyLayout k "DNA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdDirection ShellDown
+      else if (GLFW.keyCheck False keyLayout k "RTA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdDirection ShellRight
+      else if (GLFW.keyCheck False keyLayout k "LFA") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdDirection ShellLeft
       else do
         ch ← liftIO $ GLFW.calcInpKey k mk
         liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdString ch
