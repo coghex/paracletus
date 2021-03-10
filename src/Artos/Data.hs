@@ -52,5 +52,11 @@ data PrintArg = PrintCam
 
 -- possible load commands from input
 data LCInput = LCISlider Double Int
-             | LCIShell
+             | LCIShell ShellCmd
              | LCINULL
+
+-- possible shell commands
+data ShellCmd = ShellCmdToggle
+              | ShellCmdDelete
+              | ShellCmdString String
+              | ShellCmdNULL

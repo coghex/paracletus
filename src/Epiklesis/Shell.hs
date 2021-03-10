@@ -4,25 +4,40 @@ module Epiklesis.Shell where
 import Prelude()
 import UPrelude
 import Data.List.Split (splitOn)
+import Artos.Data ( ShellCmd(..) )
 import Paracletus.Data ( DrawState(..), DSStatus(..) )
 import Epiklesis.Data ( Window(..), WinElem(..), Shell(..) )
 import Epiklesis.Window ( replaceWin, currentWin )
 
--- sets all shell elements to their opposite open status
-toggleShell ∷ DrawState → DrawState
-toggleShell ds = case (currentWin (dsWins ds)) of
-  Nothing → ds
-  Just w  → ds { dsWins   = replaceWin win (dsWins ds)
-               , dsStatus = DSSLoadDyns }
-    where win = toggleShellElem w
-toggleShellElem ∷ Window → Window
-toggleShellElem w = w { winElems = toggleShElem (winElems w) }
-toggleShElem ∷ [WinElem] → [WinElem]
-toggleShElem []       = []
-toggleShElem (we:wes) = [we'] ⧺ toggleShElem wes
+-- sends command to the first shell
+commandShell ∷ ShellCmd → [WinElem] → [WinElem]
+commandShell _     [] = []
+commandShell shCmd (we:wes) = [we'] ⧺ commandShell shCmd wes
   where we' = case we of
-          WinElemShell sh bl op → WinElemShell sh bl $ not op
+          WinElemShell sh bl op → commandShellF shCmd sh bl op
           we0                   → we0
+commandShellF ∷ ShellCmd → Shell → Bool → Bool → WinElem
+commandShellF ShellCmdToggle       sh bl op = WinElemShell sh  bl    $ not op
+commandShellF (ShellCmdString str) sh bl op = WinElemShell sh' False op
+  where sh' = stringShell str sh
+commandShellF ShellCmdDelete       sh bl op = WinElemShell sh' bl    op
+  where sh' = delShell sh
+commandShellF ShellCmdNULL         sh bl op = WinElemShell sh  bl    op
+
+-- sends string to shell
+stringShell ∷ String → Shell → Shell
+stringShell str sh = sh { shTabbed = Nothing
+                        , shInpStr = newStr
+                        , shCursor = (shCursor sh) + (length str) }
+  where newStr = (take (shCursor sh) (shInpStr sh)) ⧺ str ⧺ (drop (shCursor sh) (shInpStr sh))
+
+-- deletes character in shell
+delShell ∷ Shell → Shell
+delShell sh = sh { shInpStr = newStr
+                 , shCursor = max 0 ((shCursor sh) - 1) }
+  where newStr = initS (take (shCursor sh) (shInpStr sh)) ⧺ (drop (shCursor sh) (shInpStr sh))
+        initS ""  = ""
+        initS str = init str
 
 -- returns data of first shell found
 findShell ∷ [WinElem] → Maybe (Shell,Bool,Bool)
@@ -37,8 +52,9 @@ genShellStr sh
   | otherwise    = retstring
   where prompt    = shPrompt sh
         strsout   = shOutStr sh
+        strsin    = shInpStr sh
         height    = length $ filter (≡ '\n') retstring
-        retstring = strsout ⧺ prompt
+        retstring = strsout ⧺ prompt ⧺ strsin
         shortret  = flattenWith '\n' $ drop (height - 8) (splitOn "\n" retstring)
         flattenWith ∷ Char → [String] → String
         flattenWith _  []         = ""

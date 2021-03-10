@@ -15,7 +15,7 @@ import Epiklesis.Data
     ( Window(..), WinElem(..)
     , PaneBit(..), LinkAction(..) )
 import Epiklesis.Elem ( loadNewBit, findBitPos )
-import Epiklesis.Shell ( toggleShell )
+import Epiklesis.Shell ( commandShell, findShell )
 import Epiklesis.Window
     ( switchWin, findWin, replaceWin
     , calcWinModTexs, currentWin
@@ -213,9 +213,13 @@ processCommand env ds cmd = case cmd of
             win  = moveSlider x n w
         atomically $ writeQueue (envEventQ env) $ EventDyns dyns
         return $ ResDrawState ds'
-    LCIShell → do
-      let ds' = toggleShell ds
-      atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
-      return $ ResDrawState ds'
+    LCIShell shellCmd → case (currentWin (dsWins ds)) of
+      Nothing → return $ ResError $ "no current window"
+      Just w  → case (findShell (winElems w)) of
+        Nothing       → return $ ResError $ "no shell in window"
+        Just (sh,_,_) → return $ ResDrawState ds'
+          where ds' = ds { dsWins = replaceWin w' (dsWins ds)
+                         , dsStatus = DSSLoadDyns }
+                w'  = w { winElems = commandShell shellCmd (winElems w) }
     LCINULL → return $ ResError $ "null load input command"
   LoadCmdNULL       → return ResNULL

@@ -28,11 +28,20 @@ evalKey window k ks mk = do
   -- will close everything
   when (GLFW.keyCheck False keyLayout k "ESC") $ liftIO $ GLFW.setWindowShouldClose window True
   when (GLFW.keyCheck cap keyLayout k "SH") $ if (ks ≡ GLFW.KeyState'Pressed) then do
-      liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell
-      --liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdPrint $ PrintBuff
+      liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell ShellCmdToggle
+      liftIO $ atomically $ writeQueue (envEventQ env) $ EventCap True
     else return ()
-  when (ks ≡ GLFW.KeyState'Pressed) $ do
-    when (GLFW.keyCheck False keyLayout k "L") $ liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdVerts
+  when cap $ do
+    if (ks ≡ GLFW.KeyState'Pressed) then do
+      if (GLFW.keyCheck False keyLayout k "SH")
+      then do
+        liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell ShellCmdToggle
+        liftIO $ atomically $ writeQueue (envEventQ env) $ EventCap False
+      else if (GLFW.keyCheck False keyLayout k "DEL") then liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell ShellCmdDelete
+      else do
+        ch ← liftIO $ GLFW.calcInpKey k mk
+        liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdString ch
+    else return ()
 
 -- mouse bools move cam acceleration each frame
 moveCamWithKeys ∷ Anamnesis ε σ ()
