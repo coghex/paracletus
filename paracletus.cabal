@@ -1,6 +1,6 @@
 cabal-version: >=1.10
 name: paracletus
-version: 0.0.1.0
+version: 0.0.2.0
 license: BSD3
 license-file: LICENSE
 maintainer: vincecoghlan@gmail.com
@@ -129,7 +129,7 @@ executable paracletus
                         UndecidableInstances
                         ViewPatterns
     if flag (dev)
-        cpp-options: -DDEVELOPMENT -fPIC
+        cpp-options: -DDEVELOPMENT
         ghc-options: -O0 -Wall -Wcompat -Wincomplete-record-updates -Wincomplete-uni-patterns -threaded -eventlog -rtsopts -fprof-auto -haddock
     else
         ghc-options: -O2 -optc-O3 -fexcess-precision -threaded -rtsopts -feager-blackholing

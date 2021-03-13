@@ -117,8 +117,6 @@ runParacVulkan = do
         _ → do
           let vulkLoopData = VulkanLoopData {..}
           vulkLoop vulkLoopData
-      let vulkLoopData = VulkanLoopData {..}
-      vulkLoop vulkLoopData
  
 vulkLoop ∷ VulkanLoopData → Anamnesis ε σ (LoopControl)
 vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulkanSurface texData msaaSamples shaderVert shaderFrag imgIndexPtr windowSizeChanged frameIndexRef renderFinishedSems imageAvailableSems inFlightFences) = do
