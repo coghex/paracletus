@@ -20,31 +20,22 @@ initBuff []     = []
 initBuff (n:ns) = dyns : initBuff ns
   where dyns    = Dyns $ take n $ repeat $ DynData 0 (0,0) (1,1) (0,0)
 
--- b is the buffer index, n is the size
-makeBufferTiles ∷ Int → Int → [Tile]
-makeBufferTiles b n
+-- b is the buffer index, n is the buffer
+-- size, atl is the atlas size
+makeBufferTiles ∷ Int → Int → (Int,Int) → [Tile]
+makeBufferTiles b n atl
   | (n ≡ 0)   = []
-  | otherwise = makeBufferTiles b (n - 1) ⧺ [tile]
-  where tile = DTile (DMBuff b (n - 1)) (0,0) (1,1) (0,0) (1,1) 0
+  | otherwise = makeBufferTiles b (n - 1) atl ⧺ [tile]
+  where tile = DTile (DMBuff b (n - 1)) (0,0) (1,1) (0,0) atl 0
 
 -- sets up buffer for world tiles
 loadWorldBuff ∷ WorldParams → [Tile]
-loadWorldBuff wp = makeBufferTiles 3 size
+loadWorldBuff wp = makeBufferTiles 3 size (3,24)
   where size = sw*sh
         (sw,sh) = wpSSize wp
 
 loadShell ∷ [Tile]
-loadShell = makeBufferTiles 2 256
-
--- generates buffs from draw state
-genDynBuffs ∷ DrawState → [Dyns]
-genDynBuffs ds = dyns1
-  where dyns0 = dsBuff ds
-        dyns1 = case (currentWin (dsWins ds)) of
-          Nothing → dyns0
-          Just w  → case (findShell (winElems w)) of
-            Nothing          → dyns0
-            Just (sh,_,open) → genShBuff dyns0 2 sh open
+loadShell = makeBufferTiles 2 256 (1,1)
 
 -- dyns required for shell
 genShBuff ∷ [Dyns] → Int → Shell → Bool → [Dyns]

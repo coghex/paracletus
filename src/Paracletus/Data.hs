@@ -79,6 +79,7 @@ data DSStatus = DSSLogDebug String
               | DSSLoadDyns
               | DSSLoadInput LinkAction
               | DSSLoadCap Bool
+              | DSSSwitchWin String
               | DSSExit
               | DSSNULL deriving (Show, Eq)
 

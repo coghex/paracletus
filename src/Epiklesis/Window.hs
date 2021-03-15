@@ -38,7 +38,7 @@ calcWinModTexs ∷ Window → [String]
 calcWinModTexs win = calcWinElemModTexs $ winElems win
 calcWinElemModTexs ∷ [WinElem] → [String]
 calcWinElemModTexs [] = []
---calcWinElemModTexs ((WinElemWorld _ _ dps):wes) = dps ⧺ calcWinElemModTexs wes
+calcWinElemModTexs ((WinElemWorld _ _ dps):wes) = dps ⧺ calcWinElemModTexs wes
 calcWinElemModTexs (_:wes) = calcWinElemModTexs wes
 
 -- returns maybe the head window

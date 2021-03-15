@@ -20,6 +20,7 @@ data Event = EventError !GLFW.Error !String
            | EventVerts !Verts
            | EventDyns !Dyns
            | EventModTexs ![String]
+           | EventLoad !Int
            | EventNewInput !LinkAction
            | EventInput !LinkAction
            | EventCap !Bool
@@ -38,6 +39,7 @@ data LoadCmd = LoadCmdPrint !PrintArg
              | LoadCmdBuff !Int !Dyns
              | LoadCmdNewWin !Window
              | LoadCmdSwitchWin !String
+             | LoadCmdLoadWin
              | LoadCmdNewElem !String !WinElem
              | LoadCmdNewBit !String !String !PaneBit
              | LoadCmdInput !LCInput

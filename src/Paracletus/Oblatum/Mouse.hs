@@ -96,7 +96,7 @@ evalLink (x,_) (LinkSlider n)  ds = case (currentWin (dsWins ds)) of
                , dsStatus = DSSLoadInput (LinkSlider n) }
     where win = moveSlider x n w
 evalLink _     (LinkLink name) ds = ds { dsWins = switchWin name $ dsWins ds
-                                       , dsStatus = DSSLoadVerts }
+                                       , dsStatus = DSSSwitchWin name }
 evalLink _     _               ds = ds
 
 -- adds a slider to the input state

@@ -105,7 +105,6 @@ runParacVulkan = do
         RSRecreate → do
           let modTexs = stModTexs newSt
           --logDebug $ "creating swapchain.."
-          logDebug $ show $ length modTexs
           env ← ask
           newTexData ← loadVulkanTextures gqdata modTexs
           liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdSetNDefTex $ stNDefTex newSt
@@ -213,6 +212,7 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
                           _      → True
       return $ if needRecreation ∨ sizeChanged ∨ stateReload then AbortLoop else ContinueLoop
     stateRec ← gets stReload
+    --logDebug $ show stateRec
     let stateRecreate = case (stateRec) of
                           RSRecreate → True
                           _          → False
@@ -230,15 +230,16 @@ genCommandBuffs dev pdev commandPool queues graphicsPipeline renderPass texData 
     (verts0, inds0) ← case (verts) of
             Nothing         → do
               let res   = calcVertices tiles
-                  tiles = [GTile (0,0) (4,4) (0,0) (1,1) 1] ⧺ makeBufferTiles 0 64 ⧺ genFPSTiles
+                  tiles = [GTile (0,0) (4,4) (0,0) (1,1) 1] ⧺ makeBufferTiles 0 64 (1,1) ⧺ genFPSTiles
+              fps ← gets stFPS
+              modify $ \s → s { stDyns = textDyns 64 (-3,-8) "Loading... 0%" }
               liftIO . atomically $ do
                 modifyTVar' (envVerts env) $ \_ → (Just $ Verts res)
                 writeQueue (envLoadQ env) $ LoadCmdInitBuff tiles $ initBuff [64,64,256,256]
-                writeQueue (envLoadQ env) $ LoadCmdBuff 0 $ textDyns 64 (-3,-8) "Loading... 0%"
+                --writeQueue (envLoadQ env) $ LoadCmdBuff 0 $ textDyns 64 (-3,-8) "Loading... 0%"
                 writeQueue (envLoadQ env) $ LoadCmdVerts
               return res
             Just (Verts vs) → return vs
     vertexBufferNew ← createVertexBuffer pdev dev commandPool (graphicsQueue queues) verts0
     indexBufferNew ← createIndexBuffer pdev dev commandPool (graphicsQueue queues) inds0
-    newCmdBP ← createCommandBuffers dev graphicsPipeline commandPool renderPass (pipelineLayout texData) swapInfo vertexBufferNew (dfLen inds0, indexBufferNew) framebuffers descriptorSets
-    return newCmdBP
+    createCommandBuffers dev graphicsPipeline commandPool renderPass (pipelineLayout texData) swapInfo vertexBufferNew (dfLen inds0, indexBufferNew) framebuffers descriptorSets

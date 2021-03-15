@@ -21,11 +21,12 @@ import Epiklesis.Window
     ( switchWin, findWin, replaceWin
     , calcWinModTexs, currentWin
     , printWinElems )
+import Epiklesis.World ( findWorld, genWorldBuff )
 import Paracletus.Buff
-    ( loadDyns, setTileBuff, genDynBuffs
-    , clearBuff, moveSlider, printBuff )
+    ( loadDyns, setTileBuff, genShBuff
+    , clearBuff, moveSlider, printBuff, textDyns )
 import Paracletus.Data
-    ( GraphicsLayer(..), Verts(..), FPS(..)
+    ( GraphicsLayer(..), Verts(..), FPS(..), Dyns(..)
     , DrawState(..), DSStatus(..), LoadResult(..) )
 import Paracletus.Draw ( loadTiles )
 import Paracletus.Vulkan.Calc ( calcVertices )
@@ -114,6 +115,10 @@ processCommands env ds = do
               atomically $ writeQueue (envLoadQ  env) $ LoadCmdDyns
               processCommands env ds''
                 where ds'' = ds' { dsStatus = DSSNULL }
+            DSSSwitchWin name → do
+              atomically $ writeQueue (envLoadQ  env) $ LoadCmdSwitchWin name
+              processCommands env ds''
+                where ds'' = ds' { dsStatus = DSSNULL }
             DSSRecreate    → do
               atomically $ writeQueue (envEventQ env) $ EventRecreate
               processCommands env ds''
@@ -158,11 +163,12 @@ processCommand env ds cmd = case cmd of
     let newVerts = Verts $ calcVertices $ loadTiles ds
         ds'      = ds { dsTiles = loadTiles ds }
         dyns     = loadDyns ds'
+    atomically $ writeQueue (envLoadQ  env) $ LoadCmdDyns
     atomically $ writeQueue (envEventQ env) $ EventVerts newVerts
-    atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
     return $ ResDrawState ds'
-  LoadCmdInitBuff tiles dyns → return $ ResDrawState $ ds { dsTiles = tiles
-                                                          , dsBuff  = dyns }
+  LoadCmdInitBuff tiles dyns → do
+    return $ ResDrawState $ ds { dsTiles = tiles
+                               , dsBuff  = dyns }
   LoadCmdDyns → do
     let newDyns = loadDyns ds'
         ds'     = ds { dsBuff = genDynBuffs ds }
@@ -177,8 +183,12 @@ processCommand env ds cmd = case cmd of
     where ds' = ds { dsWins = win:(dsWins ds) }
   LoadCmdSwitchWin win → do
     let ds' = ds { dsWins = switchWin win (dsWins ds) }
-    atomically $ writeQueue (envEventQ env) $ EventModTexs $ calcWinModTexs $ head $ dsWins ds'
+    atomically $ writeQueue (envEventQ env) $ EventLoad 0
     return $ ResDrawState ds'
+  LoadCmdLoadWin → do
+    atomically $ writeQueue (envEventQ env) $ EventModTexs $ calcWinModTexs $ head $ dsWins ds
+    atomically $ writeQueue (envLoadQ  env) $ LoadCmdVerts
+    return $ ResSuccess
   LoadCmdNewElem win elem → do
     let wins = dsWins ds
     case (findWin win wins) of
@@ -233,3 +243,19 @@ processCommand env ds cmd = case cmd of
             return $ ResDrawState ds'
     LCINULL → return $ ResError $ "null load input command"
   LoadCmdNULL       → return ResNULL
+
+-- generates buffs from draw state
+genDynBuffs ∷ DrawState → [Dyns]
+genDynBuffs ds = dyns2
+  where dyns0 = dsBuff ds
+        dyns1 = case (currentWin (dsWins ds)) of
+          Nothing → dyns0
+          Just w  → case (findShell (winElems w)) of
+            Nothing          → dyns0
+            Just (sh,_,open) → genShBuff dyns0 2 sh open
+        dyns2 = case  (currentWin (dsWins ds)) of
+         Nothing → dyns1
+         Just w  → case (findWorld (winElems w)) of
+           Nothing → dyns1
+           Just (wp,wd) → genWorldBuff dyns1 3 (dsNDefTex ds) wp wd
+

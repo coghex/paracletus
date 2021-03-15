@@ -44,6 +44,7 @@ loadVulkanTextures (GQData pdev dev cmdPool cmdQueue) fps = do
   let defaultTexs = ([textureView0, textureView1] ⧺ ftexs ⧺ btexs)
       texViews = defaultTexs ⧺ (fst (unzip modTexViews))
       texSamps = [textureSampler0, textureSampler1] ⧺ fontSamplers ⧺ bsamps ⧺ texSamplersMod
+  modify $ \s → s { stNDefTex = length defaultTexs }
   descriptorTextureInfo ← textureImageInfos texViews texSamps
   depthFormat ← findDepthFormat pdev
   let nimages = length texViews
