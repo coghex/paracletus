@@ -36,8 +36,15 @@ commandShellF (ShellCmdControl key)   _   sh bl op = WinElemShell sh' bl    op
   where sh' = controlSh key sh
 commandShellF (ShellCmdEcho str)      dsp sh bl op = WinElemShell sh' bl    op
   where sh' = echoShell str dsp sh
+commandShellF ShellCmdClear           _   sh bl op = WinElemShell sh' bl    op
+  where sh' = clearShell sh
 commandShellF ShellCmdExec            _   sh bl op = WinElemShell sh  bl    op
 commandShellF ShellCmdNULL            _   sh bl op = WinElemShell sh  bl    op
+
+clearShell ∷ Shell → Shell
+clearShell sh = sh { shInpStr = ""
+                   , shOutStr = "" 
+                   , shRet    = "" }
 
 -- returns draw state values from within the shell
 echoShell ∷ String → DrawStateP → Shell → Shell

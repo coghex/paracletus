@@ -12,11 +12,4 @@ function sliderBit (text,mn,mx,vl)
     return ("slider:"..text..":"..(tostring(mn))..":"..(tostring(mx))..":"..(tostring(vl)))
 end
 
-function exit ()
-    return "exit"
-end
-function back ()
-    return "back"
-end
-
 return base
