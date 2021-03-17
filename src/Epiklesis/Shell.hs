@@ -7,33 +7,42 @@ import qualified Data.ByteString.Char8 as BL
 import Data.List (isPrefixOf)
 import Data.List.Split (splitOn)
 import qualified Foreign.Lua as Lua
+import Anamnesis.Data ( Env(..) )
 import Artos.Data ( ShellCmd(..), ShellCard(..), ShellControl(..) )
-import Paracletus.Data ( DrawState(..), DSStatus(..) )
+import Paracletus.Data ( DrawState(..), DrawStateP(..), DSStatus(..) )
 import Epiklesis.Data ( Window(..), WinElem(..), Shell(..) )
+import Epiklesis.ShCmd ( loadShCmds )
 import Epiklesis.Window ( replaceWin, currentWin )
 import Paracletus.Oblatum.Font ( TTFData(..), indexTTF )
 
 -- sends command to the first shell
-commandShell ∷ ShellCmd → [WinElem] → [WinElem]
-commandShell _     []       = []
-commandShell shCmd (we:wes) = [we'] ⧺ commandShell shCmd wes
+commandShell ∷ ShellCmd → DrawStateP → [WinElem] → [WinElem]
+commandShell _     dsp []       = []
+commandShell shCmd dsp (we:wes) = [we'] ⧺ commandShell shCmd dsp wes
   where we' = case we of
-          WinElemShell sh bl op → commandShellF shCmd sh bl op
+          WinElemShell sh bl op → commandShellF shCmd dsp sh bl op
           we0                   → we0
-commandShellF ∷ ShellCmd → Shell → Bool → Bool → WinElem
-commandShellF ShellCmdToggle          sh bl op = WinElemShell sh  bl    $ not op
-commandShellF (ShellCmdString str)    sh bl op = WinElemShell sh' False op
+commandShellF ∷ ShellCmd → DrawStateP → Shell → Bool → Bool → WinElem
+commandShellF ShellCmdToggle          _   sh bl op = WinElemShell sh  bl    $ not op
+commandShellF (ShellCmdString str)    _   sh bl op = WinElemShell sh' False op
   where sh' = stringShell str sh
-commandShellF ShellCmdDelete          sh bl op = WinElemShell sh' bl    op
+commandShellF ShellCmdDelete          _   sh bl op = WinElemShell sh' bl    op
   where sh' = delShell sh
-commandShellF (ShellCmdDirection dir) sh bl op = WinElemShell sh' bl    op
+commandShellF (ShellCmdDirection dir) _   sh bl op = WinElemShell sh' bl    op
   where sh' = directionShell dir sh
-commandShellF ShellCmdTab             sh bl op = WinElemShell sh' bl    op
+commandShellF ShellCmdTab             _   sh bl op = WinElemShell sh' bl    op
   where sh' = tabShell sh
-commandShellF (ShellCmdControl key)   sh bl op = WinElemShell sh' bl    op
+commandShellF (ShellCmdControl key)   _   sh bl op = WinElemShell sh' bl    op
   where sh' = controlSh key sh
-commandShellF ShellCmdExec            sh bl op = WinElemShell sh  bl    op
-commandShellF ShellCmdNULL            sh bl op = WinElemShell sh  bl    op
+commandShellF (ShellCmdEcho str)      dsp sh bl op = WinElemShell sh' bl    op
+  where sh' = echoShell str dsp sh
+commandShellF ShellCmdExec            _   sh bl op = WinElemShell sh  bl    op
+commandShellF ShellCmdNULL            _   sh bl op = WinElemShell sh  bl    op
+
+-- returns draw state values from within the shell
+echoShell ∷ String → DrawStateP → Shell → Shell
+echoShell "fps" dsp sh = sh { shRet = show $ dspFPS dsp }
+echoShell str   dsp sh = sh { shRet = "unknown variable " ⧺ str }
 
 -- proccesing of shell control keys
 controlSh ∷ ShellControl → Shell → Shell
@@ -64,7 +73,7 @@ tabShell sh
     where incSh   = incShTabbed $ shTabbed sh
           newStr0 = tabCommand 0     (shInpStr sh) cmds
           newStr1 = tabCommand incSh (shCache sh) cmds
-          cmds    = ["newWindow", "newText", "newMenu", "newMenuBit", "newLink", "newWorld", "switchWindow", "switchScreen", "setBackground", "luaModule", "newDynObj", "resizeWindow", "toggleFPS"]
+          cmds    = ["newWindow", "newText", "newMenu", "newMenuBit", "newLink", "newWorld", "switchWindow", "switchScreen", "setBackground", "luaModule", "newDynObj", "resizeWindow", "toggleFPS", "echo", "recreate", "reload"]
 incShTabbed ∷ Maybe Int → Int
 incShTabbed Nothing  = 0
 incShTabbed (Just n) = (n + 1)
@@ -75,21 +84,24 @@ tabCommand n inpStr cmds
   where matchedStrings = filter (isPrefixOf inpStr) cmds
 
 -- evaluates lua commands in IO
-evalShell ∷ Lua.State → Shell → IO Shell
-evalShell ls sh = do
+evalShell ∷ Env → Shell → IO Shell
+evalShell env sh = do
+  let ls = envLuaSt env
+  if shLoaded sh then return () else loadShCmds env
   (ret,outbuff) ← execShell ls (shInpStr sh)
   let retstring = if (length (shOutStr sh) ≡ 0)
         then case (outbuff) of
           "nil" → (shOutStr sh) ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ "\n"
           _     → (shOutStr sh) ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ " > " ⧺ outbuff ⧺ "\n"
         else case (outbuff) of
-          "nil" → (init (shOutStr sh)) ⧺ " " ⧺ (shRet sh) ⧺ "\n" ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ "\n"
-          _     → (init (shOutStr sh)) ⧺ " " ⧺ (shRet sh) ⧺ "\n" ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ " > " ⧺ outbuff ⧺ "\n"
+          "nil" → (init (shOutStr sh)) ⧺ "> " ⧺ (shRet sh) ⧺ "\n" ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ "\n"
+          _     → (init (shOutStr sh)) ⧺ "> " ⧺ (shRet sh) ⧺ "\n" ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ " > " ⧺ outbuff ⧺ "\n"
       sh' = sh { shInpStr = ""
                , shOutStr = retstring
                , shTabbed = Nothing
-               , shHistI  = -1
                , shRet    = ""
+               , shLoaded = True
+               , shHistI  = -1
                , shHist   = ([shInpStr sh] ⧺ (shHist sh))
                , shCursor = 0 }
   return sh'
@@ -162,7 +174,7 @@ genShellStr sh
   | (height > 8) = shortret
   | otherwise    = retstring
   where prompt    = shPrompt sh
-        strsout   = shOutStr sh
+        strsout   = genShellOut (shOutStr sh) (shRet sh)
         strsin    = shInpStr sh
         height    = length $ filter (≡ '\n') retstring
         retstring = strsout ⧺ prompt ⧺ strsin
@@ -170,6 +182,10 @@ genShellStr sh
         flattenWith ∷ Char → [String] → String
         flattenWith _  []         = ""
         flattenWith ch (str:strs) = str ⧺ [ch] ⧺ flattenWith ch strs
+
+genShellOut ∷ String → String → String
+genShellOut out ""  = out
+genShellOut out ret = (init out) ⧺ "> " ⧺ ret ⧺ "\n"
 
 -- finds x position for shell cursor
 findCursPos ∷ String → Float

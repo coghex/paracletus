@@ -34,6 +34,14 @@ data DrawState = DrawState { dsStatus    ∷ DSStatus
                            , dsWins      ∷ [Window]
                            }
 
+-- a shortened draw state to pass around values
+-- without having to move around the whole thing
+data DrawStateP = DrawStateP { dspStatus    ∷ DSStatus
+                             , dspBuffSizes ∷ [Int]
+                             , dspFPS       ∷ FPS
+                             , dspNDefTex   ∷ Int
+                             }
+
 -- fps defined as actual and desired,
 -- and whether or not to display
 data FPS = FPS Double Int Bool deriving (Show, Eq)

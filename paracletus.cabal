@@ -32,6 +32,7 @@ executable paracletus
                  , Epiklesis.Data
                  , Epiklesis.Elem
                  , Epiklesis.Settings
+                 , Epiklesis.ShCmd
                  , Epiklesis.Shell
                  , Epiklesis.Window
                  , Epiklesis.World

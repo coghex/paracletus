@@ -43,7 +43,7 @@ hsNewWindow env name "menu" = do
   Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewWin win
   where win = Window name WinTypeMenu WinArgNULL [64,64,256] [shell]
         shell  = WinElemShell shData False False
-        shData = Shell "$> " Nothing 1 "" "" "" "" (-1) []
+        shData = Shell "$> " Nothing 1 "" "" "" "" False (-1) []
 -- game windows contain logic to preform
 -- camera movement, screen switching,
 -- and an animation thread
@@ -52,7 +52,7 @@ hsNewWindow env name "game" = do
   Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewWin win
   where win    = Window name WinTypeGame WinArgNULL [64,64,256,256] [shell]
         shell  = WinElemShell shData False False
-        shData = Shell "$> " Nothing 1 "" "" "" "" (-1) []
+        shData = Shell "$> " Nothing 1 "" "" "" "" False (-1) []
 hsNewWindow env _    wintype = hsLogDebug env $ "window type " ⧺ wintype ⧺ " not known"
 
 -- switches between windows

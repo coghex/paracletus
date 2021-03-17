@@ -27,7 +27,7 @@ import Paracletus.Buff
     , clearBuff, moveSlider, printBuff, textDyns )
 import Paracletus.Data
     ( GraphicsLayer(..), Verts(..), FPS(..), Dyns(..)
-    , DrawState(..), DSStatus(..), LoadResult(..) )
+    , DrawState(..), DrawStateP(..), DSStatus(..), LoadResult(..) )
 import Paracletus.Draw ( loadTiles )
 import Paracletus.Vulkan.Calc ( calcVertices )
 import Paracletus.Oblatum.Mouse ( linkTest )
@@ -235,7 +235,7 @@ processCommand env ds cmd = case cmd of
         Nothing       → return $ ResError $ "no shell in window"
         Just (sh,_,_) → case (shellCmd) of
           ShellCmdExec → do
-            newSh ← evalShell (envLuaSt env) sh
+            newSh ← evalShell env sh
             let ds' = ds { dsWins   = replaceWin w' (dsWins ds)
                          , dsStatus = DSSLoadDyns }
 
@@ -244,7 +244,11 @@ processCommand env ds cmd = case cmd of
           shellCmd0    → do
             let ds' = ds { dsWins   = replaceWin w' (dsWins ds)
                          , dsStatus = DSSLoadDyns }
-                w'  = w { winElems = commandShell shellCmd0 (winElems w) }
+                dsp = DrawStateP { dspStatus    = dsStatus ds'
+                                 , dspBuffSizes = dsBuffSizes ds'
+                                 , dspFPS       = dsFPS ds'
+                                 , dspNDefTex   = dsNDefTex ds' }
+                w'  = w { winElems = commandShell shellCmd0 dsp (winElems w) }
             return $ ResDrawState ds'
     LCINULL → return $ ResError $ "null load input command"
   LoadCmdNULL       → return ResNULL

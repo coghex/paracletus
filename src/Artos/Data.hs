@@ -65,6 +65,7 @@ data ShellCmd = ShellCmdToggle
               | ShellCmdControl ShellControl
               | ShellCmdExec
               | ShellCmdTab
+              | ShellCmdEcho String
               | ShellCmdNULL
 
 -- possible shell direction keus

@@ -65,6 +65,7 @@ data Shell = Shell { shPrompt ∷ String
                    , shCache  ∷ String
                    , shOutStr ∷ String
                    , shRet    ∷ String
+                   , shLoaded ∷ Bool
                    , shHistI  ∷ Int
                    , shHist   ∷ [String] } deriving (Show, Eq)
 
