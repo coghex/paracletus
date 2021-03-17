@@ -41,8 +41,16 @@ commandShellF ShellCmdNULL            _   sh bl op = WinElemShell sh  bl    op
 
 -- returns draw state values from within the shell
 echoShell ∷ String → DrawStateP → Shell → Shell
-echoShell "fps" dsp sh = sh { shRet = show $ dspFPS dsp }
-echoShell str   dsp sh = sh { shRet = "unknown variable " ⧺ str }
+echoShell "history" _   sh = sh { shRet = filterEscapes $ show $ tail $ shHist sh }
+echoShell "fps"     dsp sh = sh { shRet = show $ dspFPS dsp }
+echoShell str       _   sh = sh { shRet = "unknown variable " ⧺ str }
+
+filterEscapes ∷ String → String
+filterEscapes ""       = ""
+filterEscapes (ch:str) = ch' ⧺ filterEscapes str
+  where ch' = case (ch) of
+                '\\' → []
+                ch0  → [ch0]
 
 -- proccesing of shell control keys
 controlSh ∷ ShellControl → Shell → Shell
@@ -58,7 +66,7 @@ controlSh ShCtlA sh = sh { shCursor = 0 }
 controlSh ShCtlE sh = sh { shCursor = length (shInpStr sh) }
 controlSh key    sh = sh
 
--- tabs through shell commands
+-- tabs through shell commands and history
 tabShell ∷ Shell → Shell
 tabShell sh
   | shTabbed sh ≡ Nothing =
@@ -73,7 +81,7 @@ tabShell sh
     where incSh   = incShTabbed $ shTabbed sh
           newStr0 = tabCommand 0     (shInpStr sh) cmds
           newStr1 = tabCommand incSh (shCache sh) cmds
-          cmds    = ["newWindow", "newText", "newMenu", "newMenuBit", "newLink", "newWorld", "switchWindow", "switchScreen", "setBackground", "luaModule", "newDynObj", "resizeWindow", "toggleFPS", "echo", "recreate", "reload"]
+          cmds    = ["newWindow", "newText", "newMenu", "newMenuBit", "newLink", "newWorld", "switchWindow", "switchScreen", "setBackground", "luaModule", "newDynObj", "resizeWindow", "toggleFPS", "echo", "recreate", "reload"] ⧺ shHist sh
 incShTabbed ∷ Maybe Int → Int
 incShTabbed Nothing  = 0
 incShTabbed (Just n) = (n + 1)

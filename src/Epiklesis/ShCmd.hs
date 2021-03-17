@@ -13,7 +13,11 @@ loadShCmds env = do
   let ls = envLuaSt env
   _ ← Lua.runWith ls $ do
     Lua.registerHaskellFunction "echo" (hsEcho env)
+    Lua.registerHaskellFunction "history" (hsHistory env)
   return ()
 
 hsEcho ∷ Env → String → Lua.Lua ()
 hsEcho env str = Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdEcho str
+
+hsHistory ∷ Env → Lua.Lua ()
+hsHistory env = Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdEcho "history"
