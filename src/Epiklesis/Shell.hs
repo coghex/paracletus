@@ -127,7 +127,10 @@ evalShell env sh = do
 
 execShell ∷ Lua.State → String → IO (Lua.Status,String)
 execShell ls str = do
-  luaerror ← Lua.runWith ls $ Lua.loadstring $ BL.pack str
+  let str' = case last str of
+               ')' → str
+               _   → str ⧺ "()"
+  luaerror ← Lua.runWith ls $ Lua.loadstring $ BL.pack str'
   _   ← Lua.runWith ls $ Lua.pcall 0 1 Nothing
   ret ← Lua.runWith ls $ Lua.tostring' $ Lua.nthFromBottom (-1)
   Lua.runWith ls $ Lua.pop $ Lua.nthFromBottom (-1)
