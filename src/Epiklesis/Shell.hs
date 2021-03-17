@@ -88,7 +88,7 @@ tabShell sh
     where incSh   = incShTabbed $ shTabbed sh
           newStr0 = tabCommand 0     (shInpStr sh) cmds
           newStr1 = tabCommand incSh (shCache sh) cmds
-          cmds    = ["newWindow", "newText", "newMenu", "newMenuBit", "newLink", "newWorld", "switchWindow", "switchScreen", "setBackground", "luaModule", "newDynObj", "resizeWindow", "toggleFPS", "echo", "recreate", "reload"] ⧺ shHist sh
+          cmds    = ["newWindow", "newText", "newMenu", "newMenuBit", "newLink", "newWorld", "switchWindow", "switchScreen", "setBackground", "luaModule", "newDynObj", "resizeWindow", "toggleFPS", "echo", "history", "clear", "recreate", "reload"] ⧺ shHist sh
 incShTabbed ∷ Maybe Int → Int
 incShTabbed Nothing  = 0
 incShTabbed (Just n) = (n + 1)

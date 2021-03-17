@@ -22,16 +22,18 @@ import Epiklesis.Elem ( calcTextBoxSize )
 
 -- quits everything using glfw in parent thread
 hsExit ∷ Env → Lua.Lua ()
-hsExit env = do
-  let eventQ = envEventQ env
-  Lua.liftIO $ atomically $ writeQueue eventQ $ EventExit
+hsExit env = Lua.liftIO $ atomically $ writeQueue (envEventQ env) $ EventExit
 
 -- TODO: log debug needs to pass through
 --       the callstack over the queue
 hsLogDebug ∷ Env → String → Lua.Lua ()
-hsLogDebug env str = do
-  let eventQ = envEventQ env
-  Lua.liftIO $ atomically $ writeQueue eventQ $ EventLogDebug str
+hsLogDebug env str = Lua.liftIO $ atomically $ writeQueue (envEventQ env) $ EventLogDebug str
+
+hsRecreate ∷ Env → Lua.Lua ()
+hsRecreate env = Lua.liftIO $ atomically $ writeQueue (envEventQ env) $ EventRecreate
+
+hsReload ∷ Env → Lua.Lua ()
+hsReload env = Lua.liftIO $ atomically $ writeQueue (envEventQ env) $ EventReload
 
 -- adds a window to the lua draw state
 hsNewWindow ∷ Env → String → String → Lua.Lua ()
