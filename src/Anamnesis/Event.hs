@@ -59,12 +59,10 @@ processEvent event = case event of
   (EventModTexs modTexs) → modify $ \s → s { stModTexs = modTexs }
   (EventLoad perc) → do
     env ← ask
-    if (perc ≡ 0) then do
-      liftIO . atomically $ modifyTVar' (envVerts env) $ const Nothing
-      liftIO . atomically $ writeQueue (envLoadQ env) LoadCmdLoadWin
-      modify $ \s → s { stReload = RSReload
-                      , stDyns   = textDyns 64 (-3,-8) ("Loading... 50%")}
-    else modify $ \s → s { stDyns = textDyns 64 (-3,-8) ("Loading... " ⧺ (show perc) ⧺ "%") }
+    liftIO . atomically $ modifyTVar' (envVerts env) $ const Nothing
+    liftIO . atomically $ writeQueue (envLoadQ env) LoadCmdLoadWin
+    modify $ \s → s { stReload = RSReload
+                    , stDyns = textDyns 64 (-3,-8) ("Loading... " ⧺ (show perc) ⧺ "%") }
   (EventDyns dyns) → modify $ \s → s { stDyns = dyns }
   (EventVerts verts) → do
     stRel ← gets stReload

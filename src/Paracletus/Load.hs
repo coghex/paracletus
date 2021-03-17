@@ -23,7 +23,7 @@ import Epiklesis.Window
     , printWinElems )
 import Epiklesis.World ( findWorld, genWorldBuff )
 import Paracletus.Buff
-    ( loadDyns, setTileBuff, genShBuff
+    ( loadDyns, setTileBuff, genShBuff, initBuff
     , clearBuff, moveSlider, printBuff, textDyns )
 import Paracletus.Data
     ( GraphicsLayer(..), Verts(..), FPS(..), Dyns(..)
@@ -49,7 +49,7 @@ loadParacletus env _        = atomically $ writeQueue ec $ EventLogDebug "dont k
 loadParacVulkan ∷ Env → IO ()
 loadParacVulkan env = do
   runLoadLoop env initDS TStop
-  where initDS = DrawState DSSNULL [] [] (FPS 60.0 60 True) 0 []
+  where initDS = DrawState DSSNULL [] [] [64] (FPS 60.0 60 True) 0 []
 
 -- load loop runs with a delay so that
 -- it can sleep (ghc threads run like that)
@@ -166,9 +166,11 @@ processCommand env ds cmd = case cmd of
     atomically $ writeQueue (envLoadQ  env) $ LoadCmdDyns
     atomically $ writeQueue (envEventQ env) $ EventVerts newVerts
     return $ ResDrawState ds'
-  LoadCmdInitBuff tiles dyns → do
+  LoadCmdInitBuff tiles → do
     return $ ResDrawState $ ds { dsTiles = tiles
-                               , dsBuff  = dyns }
+                               , dsBuff  = initBuff $ case (currentWin (dsWins ds)) of
+                                             Nothing → [64,64,256]
+                                             Just w  → winBuffs w }
   LoadCmdDyns → do
     let newDyns = loadDyns ds'
         ds'     = ds { dsBuff = genDynBuffs ds }
@@ -182,8 +184,11 @@ processCommand env ds cmd = case cmd of
   LoadCmdNewWin win → return $ ResDrawState ds'
     where ds' = ds { dsWins = win:(dsWins ds) }
   LoadCmdSwitchWin win → do
-    let ds' = ds { dsWins = switchWin win (dsWins ds) }
-    atomically $ writeQueue (envEventQ env) $ EventLoad 0
+    let ds' = ds { dsWins      = switchWin win (dsWins ds)
+                 , dsBuffSizes = case (findWin win (dsWins ds)) of
+                                   Nothing → [64,64,256]
+                                   Just w  → winBuffs w }
+    atomically $ writeQueue (envEventQ env) $ EventLoad 50
     return $ ResDrawState ds'
   LoadCmdLoadWin → do
     atomically $ writeQueue (envEventQ env) $ EventModTexs $ calcWinModTexs $ head $ dsWins ds

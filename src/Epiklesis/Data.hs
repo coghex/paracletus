@@ -5,6 +5,7 @@ module Epiklesis.Data where
 data Window = Window { winTitle  ∷ String
                      , winType   ∷ WinType
                      , winArgV   ∷ WinArgV
+                     , winBuffs  ∷ [Int]
                      , winElems  ∷ [WinElem] }
 
 -- types define some behavior

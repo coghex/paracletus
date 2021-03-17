@@ -25,12 +25,13 @@ data Verts = Verts (DataFrame Vertex '[XN 0], DataFrame Word32 '[XN 3])
 
 -- draw state is kept in a seperate thread
 -- and calculated into verticies
-data DrawState = DrawState { dsStatus  ∷ DSStatus
-                           , dsTiles   ∷ [Tile]
-                           , dsBuff    ∷ [Dyns]
-                           , dsFPS     ∷ FPS
-                           , dsNDefTex ∷ Int
-                           , dsWins    ∷ [Window]
+data DrawState = DrawState { dsStatus    ∷ DSStatus
+                           , dsTiles     ∷ [Tile]
+                           , dsBuff      ∷ [Dyns]
+                           , dsBuffSizes ∷ [Int]
+                           , dsFPS       ∷ FPS
+                           , dsNDefTex   ∷ Int
+                           , dsWins      ∷ [Window]
                            }
 
 -- fps defined as actual and desired,

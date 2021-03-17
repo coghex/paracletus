@@ -41,7 +41,7 @@ hsNewWindow ∷ Env → String → String → Lua.Lua ()
 hsNewWindow env name "menu" = do
   let loadQ = envLoadQ env
   Lua.liftIO $ atomically $ writeQueue loadQ $ LoadCmdNewWin win
-  where win = Window name WinTypeMenu WinArgNULL [shell]
+  where win = Window name WinTypeMenu WinArgNULL [64,64,256] [shell]
         shell  = WinElemShell shData False False
         shData = Shell "$> " Nothing 1 "" "" "" "" (-1) []
 -- game windows contain logic to preform
@@ -50,7 +50,7 @@ hsNewWindow env name "menu" = do
 hsNewWindow env name "game" = do
   let eventQ = envLoadQ env
   Lua.liftIO $ atomically $ writeQueue eventQ $ LoadCmdNewWin win
-  where win    = Window name WinTypeGame WinArgNULL [shell]
+  where win    = Window name WinTypeGame WinArgNULL [64,64,256,256] [shell]
         shell  = WinElemShell shData False False
         shData = Shell "$> " Nothing 1 "" "" "" "" (-1) []
 hsNewWindow env _    wintype = hsLogDebug env $ "window type " ⧺ wintype ⧺ " not known"
