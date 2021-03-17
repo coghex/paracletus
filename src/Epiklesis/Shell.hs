@@ -102,8 +102,12 @@ evalShell env sh = do
           "nil" → (shOutStr sh) ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ "\n"
           _     → (shOutStr sh) ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ " > " ⧺ outbuff ⧺ "\n"
         else case (outbuff) of
-          "nil" → (init (shOutStr sh)) ⧺ "> " ⧺ (shRet sh) ⧺ "\n" ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ "\n"
-          _     → (init (shOutStr sh)) ⧺ "> " ⧺ (shRet sh) ⧺ "\n" ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ " > " ⧺ outbuff ⧺ "\n"
+          "nil" → case (shRet sh) of
+                    "" → (init (shOutStr sh)) ⧺ "\n" ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ "\n"
+                    _  → (init (shOutStr sh)) ⧺ "> " ⧺ (shRet sh) ⧺ "\n" ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ "\n"
+          _     → case (shRet sh) of
+                    "" → (init (shOutStr sh)) ⧺ "\n" ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ " > " ⧺ outbuff ⧺ "\n"
+                    _  → (init (shOutStr sh)) ⧺ "> " ⧺ (shRet sh) ⧺ "\n" ⧺ (shPrompt sh) ⧺ (shInpStr sh) ⧺ "\n" ⧺ (show ret) ⧺ " > " ⧺ outbuff ⧺ "\n"
       sh' = sh { shInpStr = ""
                , shOutStr = retstring
                , shTabbed = Nothing
