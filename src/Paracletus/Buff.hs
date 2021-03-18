@@ -30,7 +30,7 @@ makeBufferTiles b n atl
 
 -- sets up buffer for world tiles
 loadWorldBuff ∷ WorldParams → [Tile]
-loadWorldBuff wp = makeBufferTiles 3 size (3,24)
+loadWorldBuff wp = makeBufferTiles 3 256 (3,20)
   where size = sw*sh
         (sw,sh) = wpSSize wp
 
@@ -208,3 +208,11 @@ printDyn (Dyns (d:ds)) = (printDD d) ⧺ (printDyn $ Dyns ds)
 printDD ∷ DynData → String
 printDD (DynData 0 _ _ _) = ""
 printDD dd                = (show dd) ⧺ "\n"
+
+-- prints memory layout
+printMem ∷ DrawState → String
+printMem ds = "Buff: " ⧺ show (dsBuffSizes ds) ⧺ printBs (dsBuff ds)
+printBs ∷ [Dyns] → String
+printBs []            = []
+printBs [Dyns d]      = show (length d)
+printBs ((Dyns d):ds) = (show (length d)) ⧺ ", " ⧺ printBs ds

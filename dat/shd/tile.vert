@@ -42,6 +42,6 @@ void main() {
     int inTex = int(inTexCoord.z);
     mat4 dynTC = dynTex.dynTexI[dynI];
     int texI = int(floor(dynTC[3][2]));
-    fragTexCoord = (inMove.y > 0.0) ? (vec2 (inTexCoord.x + ((dynTC[3][0])/3.0), inTexCoord.y + ((dynTC[3][1])/24.0))) : inTexCoord.xy;
+    fragTexCoord = (inMove.y > 0.0) ? (vec2 (inTexCoord.x + ((dynTC[3][0])/3.0), inTexCoord.y + ((dynTC[3][1])/20.0))) : inTexCoord.xy;
     fragTexIndex = (inMove.x > 0.0) ? inTex + texI : inTex;
 }

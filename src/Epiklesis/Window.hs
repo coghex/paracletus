@@ -4,7 +4,8 @@ module Epiklesis.Window where
 import Prelude()
 import UPrelude
 import Epiklesis.Data
-    ( WinElem(..), Window(..) )
+    ( WinElem(..), Window(..)
+    , WorldParams(..), WorldData(..))
 
 -- replaces specific window in windows
 replaceWin ∷ Window → [Window] → [Window]
@@ -46,6 +47,20 @@ currentWin ∷ [Window] → Maybe Window
 currentWin wins
   | (length wins) ≤ 0 = Nothing
   | otherwise         = Just $ head wins
+
+-- finds world data from a window
+findWorldData ∷ Window → Maybe (WorldParams,WorldData)
+findWorldData win = findWorldDataElems (winElems win)
+findWorldDataElems ∷ [WinElem] → Maybe (WorldParams,WorldData)
+findWorldDataElems [] = Nothing
+findWorldDataElems ((WinElemWorld wp wd _):_) = Just (wp,wd)
+findWorldDataElems (_:wes) = findWorldDataElems wes
+
+-- replaces the first world data in a set of elements
+replaceWorldElem ∷ (WorldData) → [WinElem] → [WinElem]
+replaceWorldElem _   [] = []
+replaceWorldElem wd0 ((WinElemWorld wp _  dp):wes) = [WinElemWorld wp wd0 dp] ⧺ replaceWorldElem wd0 wes
+replaceWorldElem wd0 (we:wes) = [we] ⧺ replaceWorldElem wd0 wes
 
 -- prints list of current wins elems
 printWinElems ∷ Maybe Window → String

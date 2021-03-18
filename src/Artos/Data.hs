@@ -12,6 +12,7 @@ data TState = TStart | TStop | TPause | TNULL deriving (Show, Eq)
 -- events processed by the main thread
 data Event = EventError !GLFW.Error !String
            | EventLogDebug !String
+           | EventLogInfo !String
            | EventPrint !PrintArg
            | EventExit
            | EventKey !GLFW.Window !GLFW.Key !Int !GLFW.KeyState !GLFW.ModifierKeys
@@ -50,6 +51,8 @@ data LoadCmd = LoadCmdPrint !PrintArg
 data PrintArg = PrintCam
               | PrintBuff
               | PrintWinElems
+              | PrintWorld
+              | PrintMem
               | PrintNULL deriving (Show, Eq)
 
 -- possible load commands from input

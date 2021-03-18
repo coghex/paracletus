@@ -2,6 +2,7 @@
 require "mod/base/window"
 require "mod/base/base"
 require "mod/base/pane"
+require "mod/base/game"
 
 -- this runs once at the beginning
 function initMod ()

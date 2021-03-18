@@ -16,3 +16,10 @@ function runParacletus (files)
     end
     return 0
 end
+
+game = game or {}
+
+function game.print(str)
+    rawPrint(str)
+end
+

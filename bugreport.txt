@@ -1,0 +1,1784 @@
+uname -a
+Linux jari 5.4.0-66-generic #74-Ubuntu SMP Wed Jan 27 22:54:38 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+
+
+NVIM v0.4.3
+Build type: Release
+LuaJIT 2.1.0-beta3
+Compilation: /usr/bin/cc -g -O2 -fdebug-prefix-map=/build/neovim-gOb7vg/neovim-0.4.3=. -fstack-protector-strong -Wformat -Werror=format-security -Wdate-time -D_FORTIFY_SOURCE=1 -DDISABLE_LOG -Wdate-time -D_FORTIFY_SOURCE=1 -O2 -DNDEBUG -DMIN_LOG_LEVEL=3 -Wall -Wextra -pedantic -Wno-unused-parameter -Wstrict-prototypes -std=gnu99 -Wshadow -Wconversion -Wmissing-prototypes -Wimplicit-fallthrough -Wvla -fstack-protector-strong -fdiagnostics-color=always -DINCLUDE_GENERATED_DECLARATIONS -D_GNU_SOURCE -DNVIM_MSGPACK_HAS_FLOAT32 -DNVIM_UNIBI_HAS_VAR_FROM -I/build/neovim-gOb7vg/neovim-0.4.3/build/config -I/build/neovim-gOb7vg/neovim-0.4.3/src -I/usr/include -I/usr/include/lua5.1 -I/build/neovim-gOb7vg/neovim-0.4.3/build/src/nvim/auto -I/build/neovim-gOb7vg/neovim-0.4.3/build/include
+Compiled by team+vim@tracker.debian.org
+
+Features: +acl +iconv +tui
+See ":help feature-compile"
+
+   system vimrc file: "$VIM/sysinit.vim"
+  fall-back for $VIM: "/usr/share/nvim"
+
+Run :checkhealth for more info
+--- Directories and Files ---
+$VIM = "/usr/share/nvim"
+directory "/usr/share/nvim" exists
+$VIMRUNTIME = "/usr/share/nvim/runtime"
+directory "/usr/share/nvim/runtime" exists
+"/usr/share/nvim/runtime/doc/help.txt" is readable
+"/usr/share/nvim/runtime/doc/tags" is readable
+"/usr/share/nvim/runtime/menu.vim" is readable
+"/usr/share/nvim/runtime/filetype.vim" is readable
+"/usr/share/nvim/runtime/syntax/synload.vim" is readable
+--- Scripts sourced ---
+  1: ~/.config/nvim/init.vim
+  2: ~/.local/share/nvim/site/autoload/plug.vim
+  3: ~/.config/nvim/filetype.vim
+  4: /usr/share/nvim/runtime/filetype.vim
+  5: ~/.local/share/nvim/plugged/haskell-vim/ftdetect/haskell.vim
+  6: /usr/share/nvim/runtime/ftplugin.vim
+  7: /usr/share/nvim/runtime/indent.vim
+  8: /usr/share/nvim/runtime/syntax/syntax.vim
+  9: /usr/share/nvim/runtime/syntax/synload.vim
+ 10: /usr/share/nvim/runtime/syntax/syncolor.vim
+ 11: ~/.vimrc
+ 12: /usr/share/nvim/runtime/syntax/nosyntax.vim
+ 13: ~/.vimdgrc
+ 14: ~/.local/share/nvim/plugged/coc.nvim/plugin/coc.vim
+ 15: ~/.local/share/nvim/plugged/coc.nvim/autoload/coc/rpc.vim
+ 16: ~/.local/share/nvim/plugged/coc.nvim/autoload/coc/util.vim
+ 17: ~/.local/share/nvim/plugged/coc.nvim/autoload/coc/client.vim
+ 18: ~/.local/share/nvim/plugged/vim-man/plugin/man.vim
+ 19: ~/.local/share/nvim/plugged/golden_size/plugin/golden_size.vim
+ 20: ~/.local/share/nvim/plugged/tmux-complete.vim/plugin/tmuxcomplete.vim
+ 21: /usr/share/nvim/runtime/plugin/gzip.vim
+ 22: /usr/share/nvim/runtime/plugin/health.vim
+ 23: /usr/share/nvim/runtime/plugin/man.vim
+ 24: /usr/share/nvim/runtime/plugin/matchit.vim
+ 25: /usr/share/nvim/runtime/pack/dist/opt/matchit/plugin/matchit.vim
+ 26: /usr/share/nvim/runtime/plugin/matchparen.vim
+ 27: /usr/share/nvim/runtime/plugin/netrwPlugin.vim
+ 28: /usr/share/nvim/runtime/plugin/rplugin.vim
+ 29: ~/.local/share/nvim/rplugin.vim
+ 30: /usr/share/nvim/runtime/autoload/remote/host.vim
+ 31: /usr/share/nvim/runtime/autoload/remote/define.vim
+ 32: /usr/share/nvim/runtime/plugin/shada.vim
+ 33: /usr/share/nvim/runtime/plugin/spellfile.vim
+ 34: /usr/share/nvim/runtime/plugin/tarPlugin.vim
+ 35: /usr/share/nvim/runtime/plugin/tohtml.vim
+ 36: /usr/share/nvim/runtime/plugin/tutor.vim
+ 37: /usr/share/nvim/runtime/plugin/zipPlugin.vim
+ 38: /usr/share/nvim/runtime/ftplugin/haskell.vim
+ 39: ~/.local/share/nvim/plugged/haskell-vim/after/ftplugin/haskell.vim
+ 40: ~/.local/share/nvim/plugged/haskell-vim/indent/haskell.vim
+ 41: ~/.local/share/nvim/plugged/haskell-vim/syntax/haskell.vim
+ 42: /usr/share/nvim/runtime/syntax/haskell.vim
+ 43: /usr/share/nvim/runtime/autoload/provider/clipboard.vim
+ 44: ~/.local/share/nvim/plugged/coc.nvim/autoload/coc/float.vim
+ 45: ~/.local/share/nvim/plugged/coc.nvim/autoload/coc.vim
+ 46: ~/.local/share/nvim/plugged/tmux-complete.vim/autoload/coc/source/tmuxcomplete.vim
+ 47: /tmp/nvim98qbSO/coc.nvim-96102/coc-96102.vim
+ 48: ~/.local/share/nvim/plugged/coc.nvim/autoload/coc/highlight.vim
+ 49: ~/.local/share/nvim/plugged/tmux-complete.vim/autoload/tmuxcomplete/async.vim
+ 50: ~/.local/share/nvim/plugged/tmux-complete.vim/autoload/tmuxcomplete.vim
+ 51: ~/.local/share/nvim/plugged/coc.nvim/autoload/coc/prompt.vim
+ 52: ~/.local/share/nvim/plugged/coc.nvim/autoload/coc/helper.vim
+ 53: ~/.local/share/nvim/plugged/coc.nvim/autoload/coc/compat.vim
+ 54: ~/.config/nvim/coc-settings.json
+ 55: /usr/share/nvim/runtime/ftoff.vim
+ 56: ~/.local/share/nvim/plugged/haskell-vim/LICENSE
+ 57: ~/.local/share/nvim/plugged/haskell-vim/README.md
+ 58: ~/.local/share/nvim/plugged/coc.nvim/LICENSE.md
+ 59: ~/.local/share/nvim/plugged/coc.nvim/Readme.md
+ 60: ~/.local/share/nvim/plugged/coc.nvim/history.md
+ 61: ~/.local/share/nvim/plugged/coc.nvim/package.json
+ 62: ~/.local/share/nvim/plugged/vim-man/CHANGELOG.md
+ 63: /usr/share/nvim/runtime/scripts.vim
+ 64: ~/.local/share/nvim/plugged/vim-man/README.md
+ 65: /usr/share/nvim/runtime/autoload/tar.vim
+ 66: /usr/share/nvim/runtime/autoload/netrw.vim
+ 67: ~/.local/share/nvim/plugged/vim-man/improvements.md
+ 68: ~/.local/share/nvim/plugged/golden_size/LICENSE
+ 69: ~/.local/share/nvim/plugged/golden_size/README.md
+ 70: ~/.local/share/nvim/plugged/golden_size/demo.gif
+ 71: ~/.local/share/nvim/plugged/golden_size/golden_size_spec.lua
+ 72: ~/.local/share/nvim/plugged/tmux-complete.vim/MIT-LICENSE
+ 73: ~/.local/share/nvim/plugged/tmux-complete.vim/README.md
+ 74: /usr/share/nvim/runtime/bugreport.vim
+ 75: /usr/share/nvim/runtime/ftplugin/text.vim
+ 76: /usr/share/nvim/runtime/delmenu.vim
+ 77: /usr/share/nvim/runtime/ftplugof.vim
+ 78: /usr/share/nvim/runtime/indoff.vim
+ 79: /usr/share/nvim/runtime/macmap.vim
+ 80: /usr/share/nvim/runtime/autoload/paste.vim
+ 81: /usr/share/nvim/runtime/makemenu.vim
+ 82: /usr/share/nvim/runtime/menu.vim
+ 83: /usr/share/nvim/runtime/mswin.vim
+ 84: /usr/share/nvim/runtime/optwin.vim
+ 85: /usr/share/nvim/runtime/syntax/vim.vim
+ 86: /usr/share/nvim/runtime/syntax/vim/generated.vim
+ 87: /usr/share/nvim/runtime/rgb.txt
+ 88: /usr/share/nvim/runtime/synmenu.vim
+--- Options ---
+  aleph=224           filetype=vim      nomore                spellsuggest=best
+noarabic              fillchars=          mouse=            nosplitbelow
+  arabicshape         fixendofline        mousemodel=popup  nosplitright
+noallowrevins         foldclose=          mousetime=500       startofline
+  ambiwidth=single    foldcolumn=0        nrformats=bin,hex   suffixesadd=
+noautochdir           foldenable          number            noswapfile
+  autoindent          foldexpr=0          numberwidth=4       switchbuf=
+  autoread            foldignore=#        omnifunc=           synmaxcol=3000
+noautowrite           foldlevel=10        operatorfunc=       syntax=vim
+noautowriteall        foldlevelstart=10 nopaste               tabline=
+  background=dark     foldmethod=indent   pastetoggle=        tabpagemax=50
+nobackup              foldminlines=1      patchexpr=          tabstop=15
+  backupcopy=auto     foldnestmax=10      patchmode=          tagbsearch
+  backupext=~         formatexpr=       nopreserveindent      tagcase=followic
+  backupskip=/tmp/*   formatprg=          previewheight=12    taglength=0
+  belloff=all       nofsync             nopreviewwindow       tagrelative
+nobinary            nogdefault            printdevice=        tags=./tags;,tags
+nobomb                guifont=            printencoding=      tagstack
+nobreakindent         guifontset=         printfont=courier notermbidi
+  breakindentopt=     guifontwide=        printmbcharset=   notermguicolors
+  bufhidden=delete    helpheight=20       printmbfont=      noterse
+  buflisted           helplang=en         printoptions=       textwidth=0
+  buftype=nofile      hidden              prompt              thesaurus=
+  cdpath=,,           history=10000       pumheight=0       notildeop
+  cedit=^F          nohkmap               pumblend=0          timeout
+  channel=0         nohkmapp              pyxversion=0        timeoutlen=1000
+  charconvert=        hlsearch            quoteescape=\     notitle
+nocindent           noicon              noreadonly            titlelen=85
+  cinoptions=         iconstring=         redrawdebug=        titleold=
+  cmdheight=2       noignorecase          redrawtime=2000     titlestring=
+  cmdwinheight=7      iminsert=0          regexpengine=0      ttimeout
+  colorcolumn=        imsearch=-1       norelativenumber      ttimeoutlen=50
+  columns=84          inccommand=         remap               ttyfast
+nocompatible          includeexpr=        report=2          noundofile
+  concealcursor=      incsearch         norevins              undolevels=1000
+  conceallevel=0      indentexpr=       norightleft           undoreload=10000
+noconfirm           noinfercase           ruler               updatecount=200
+nocopyindent        noinsertmode          rulerformat=        updatetime=300
+  cscopepathcomp=0    isprint=@,161-255   scroll=14           verbose=0
+  cscopeprg=cscope    joinspaces          scrollback=-1       verbosefile=
+  cscopequickfix=     keymap=           noscrollbind          virtualedit=
+nocscoperelative      keywordprg=:Man     scrolljump=1      novisualbell
+nocscopetag           langmap=            scrolloff=0         warn
+  cscopetagorder=0    langmenu=         nosecure              wildchar=<Tab>
+  cscopeverbose       langnoremap         shadafile=          wildcharm=0
+nocursorbind        nolangremap           shellcmdflag=-c     wildignore=
+nocursorcolumn        laststatus=2        shellquote=       nowildignorecase
+  cursorline        nolazyredraw          shelltemp           wildmenu
+  debug=            nolinebreak           shellxquote=        wildmode=full
+nodelcombine          lines=46            shellxescape=       winaltkeys=menu
+  dictionary=         linespace=0       noshiftround          winblend=0
+nodiff              nolisp                shiftwidth=4        winhighlight=
+  diffexpr=         nolist                showbreak=          window=45
+nodigraph             loadplugins         showcmd             winheight=1
+  eadirection=both    magic             noshowfulltag       nowinfixheight
+noedcompatible        makeef=             showmatch         nowinfixwidth
+  emoji               makeencoding=       showmode            winminheight=1
+  encoding=utf-8      makeprg=make        showtabline=1       winminwidth=1
+  endofline           matchtime=5         sidescroll=1        winwidth=20
+  equalalways         maxcombine=6        sidescrolloff=0     wrap
+  equalprg=           maxfuncdepth=100    signcolumn=yes      wrapmargin=0
+noerrorbells          maxmapdepth=1000  nosmartcase           wrapscan
+  eventignore=        menuitems=25      nosmartindent         write
+  expandtab           modeline            smarttab          nowriteany
+noexrc              nomodelineexpr        softtabstop=0     nowritebackup
+  fileencoding=       modelines=5       nospell               writedelay=0
+  fileformat=unix     modifiable          spellfile=
+nofileignorecase    nomodified            spelllang=en
+  backspace=indent,eol,start
+  backupdir=.,~/.local/share/nvim/backup
+  breakat= ^I!@*-+;:,./?
+  casemap=internal,keepascii
+  cinkeys=0{,0},0),0],:,0#,!^F,o,O,e
+  cinwords=if,else,while,do,for,switch
+  clipboard=unnamedplus
+  comments=s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-
+  commentstring=/*%s*/
+  complete=.,w,b,u,t
+  completefunc=tmuxcomplete#complete
+  completeopt=menu,preview
+  cpoptions=aABceFs_
+  define=^\s*#\s*define
+  diffopt=internal,filler
+  directory=~/.local/share/nvim/swap//
+  display=lastline,msgsep
+  errorfile=errors.err
+  errorformat=%*[^"]"%f"%*\D%l: %m,"%f"%*\D%l: %m,%-G%f:%l: (Each undeclared identifier is reported only once,%-G%f:%l: for each function it appears in.),%-GIn file included from %f:%l:%c:,%-GIn file included from %f:%l:%c\,,%-GIn file included from %f:%l:%c,%-GIn file included from %f:%l,%-G%*[ ]from %f:%l:%c,%-G%*[ ]from %f:%l:,%-G%*[ ]from %f:%l\,,%-G%*[ ]from %f:%l,%f:%l:%c:%m,%f(%l):%m,%f:%l:%m,"%f"\, line %l%*\D%c%*[^ ] %m,%D%*\a[%*\d]: Entering directory %*[`']%f',%X%*\a[%*\d]: Leaving directory %*[`']%f',%D%*\a: Entering directory %*[`']%f',%X%*\a: Leaving directory %*[`']%f',%DMaking %*\a in %f,%f|%l| %m
+  fileencodings=ucs-bom,utf-8,default,latin1
+  fileformats=unix,dos
+  foldmarker={{{,}}}
+  foldopen=block,hor,mark,percent,quickfix,search,tag,undo
+  foldtext=foldtext()
+  formatoptions=tcqj
+  formatlistpat=^\s*\d\+[\]:.)}\t ]\s*
+  grepformat=%f:%l:%m,%f:%l%m,%f  %l%m
+  grepprg=grep -n $* /dev/null
+  guicursor=n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20
+  helpfile=/usr/share/nvim/runtime/doc/help.txt
+  highlight=8:SpecialKey,~:EndOfBuffer,z:TermCursor,Z:TermCursorNC,@:NonText,d:Directory,e:ErrorMsg,i:IncSearch,l:Search,m:MoreMsg,M:ModeMsg,n:LineNr,N:CursorLineNr,r:Question,s:StatusLine,S:StatusLineNC,c:VertSplit,t:Title,v:Visual,V:VisualNOS,w:WarningMsg,W:WildMenu,f:Folded,F:FoldColumn,A:DiffAdd,C:DiffChange,D:DiffDelete,T:DiffText,>:SignColumn,-:Conceal,B:SpellBad,P:SpellCap,R:SpellRare,L:SpellLocal,+:Pmenu,=:PmenuSel,x:PmenuSbar,X:PmenuThumb,*:TabLine,#:TabLineSel,_:TabLineFill,!:CursorColumn,.:CursorLine,o:ColorColumn,q:QuickFixLine,0:Whitespace,I:NormalNC
+  include=^\s*#\s*include
+  indentkeys=0{,0},0),0],:,0#,!^F,o,O,e
+  isfname=@,48-57,/,.,-,_,+,,,#,$,%,~,=
+  isident=@,48-57,_,192-255
+  iskeyword=@,48-57,_,192-255
+  keymodel=startsel,stopsel
+  lispwords=defun,define,defmacro,set!,lambda,if,case,let,flet,let*,letrec,do,do*,define-syntax,let-syntax,letrec-syntax,destructuring-bind,defpackage,defparameter,defstruct,deftype,defvar,do-all-symbols,do-external-symbols,do-symbols,dolist,dotimes,ecase,etypecase,eval-when,labels,macrolet,multiple-value-bind,multiple-value-call,multiple-value-prog1,multiple-value-setq,prog1,progv,typecase,unless,unwind-protect,when,with-input-from-string,with-open-file,with-open-stream,with-output-to-string,with-package-iterator,define-condition,handler-bind,handler-case,restart-bind,restart-case,with-simple-restart,store-value,use-value,muffle-warning,abort,continue,with-slots,with-slots*,with-accessors,with-accessors*,defclass,defmethod,print-unreadable-object
+  listchars=tab:> ,trail:-,nbsp:+
+  matchpairs=(:),{:},[:]
+  maxmempattern=1000
+  mkspellmem=460000,2000,500
+  packpath=~/.config/nvim,/etc/xdg/nvim,~/.local/share/nvim/site,/usr/local/share/nvim/site,/usr/share/nvim/site,/usr/share/nvim/runtime,/usr/share/nvim/site/after,/usr/local/share/nvim/site/after,~/.local/share/nvim/site/after,/etc/xdg/nvim/after,~/.config/nvim/after
+  paragraphs=IPLPPPQPP TPHPLIPpLpItpplpipbp
+  path=.,/usr/include,,
+  printexpr=system(['lpr'] + (empty(&printdevice)?[]:['-P', &printdevice]) + [v:fname_in]). delete(v:fname_in)+ v:shell_error
+  printheader=%<%f%h%m%=Page %N
+  rightleftcmd=search
+  runtimepath=~/.config/nvim,~/.local/share/nvim/plugged/haskell-vim,~/.local/share/nvim/plugged/coc.nvim,~/.local/share/nvim/plugged/vim-man,~/.local/share/nvim/plugged/golden_size,~/.local/share/nvim/plugged/tmux-complete.vim,/etc/xdg/nvim,~/.local/share/nvim/site,/usr/local/share/nvim/site,/usr/share/nvim/site,/usr/share/nvim/runtime,/usr/share/nvim/runtime/pack/dist/opt/matchit,/usr/share/nvim/site/after,/usr/local/share/nvim/site/after,~/.local/share/nvim/site/after,/etc/xdg/nvim/after,~/.local/share/nvim/plugged/haskell-vim/after,~/.config/nvim/after
+  scrollopt=ver,jump
+  sections=SHNHH HUnhsh
+  selection=exclusive
+  selectmode=mouse,key
+  sessionoptions=blank,buffers,curdir,folds,help,tabpages,winsize
+  shada=!,'100,<50,s10,h
+  shell=/usr/bin/fish
+  shellpipe=2>&1| tee
+  shellredir=>%s 2>&1
+  shortmess=filnxtToOFc
+  spellcapcheck=[.?!]\_[\])'"^I ]\+
+  statusline=%{coc#status()}%{get(b:,'coc_current_function','')}%{coc#status()}%{get(b:,'coc_current_function','')}%{coc#status()}%{get(b:,'coc_current_function','')}%{coc#status()}%{get(b:,'coc_current_function','')}
+  suffixes=.bak,~,.o,.h,.info,.swp,.obj
+  undodir=~/.local/share/nvim/undo
+  viewdir=~/.local/share/nvim/view
+  viewoptions=folds,options,cursor,curdir
+  whichwrap=b,s,<,>,[,]
+  wildoptions=pum,tagfile
+--- Autocommands ---
+buffer_list  BufAdd
+    *         call <SID>BMAdd()
+buffer_list  BufDelete
+    *         call <SID>BMRemove()
+coc_nvim  BufEnter
+    *         call s:Autocmd('BufEnter', +expand('<abuf>'))
+FileExplorer  BufEnter
+    *         sil call s:LocalBrowse(expand("<amatch>"))
+coc_dynamic_autocmd  BufEnter
+    *.vim     call coc#rpc#notify('doAutocmd', [1])
+buffer_list  BufFilePost
+    *         call <SID>BMAdd()
+buffer_list  BufFilePre
+    *         call <SID>BMRemove()
+coc_nvim  BufHidden
+    *         call s:Autocmd('BufHidden', +expand('<abuf>'))
+optwin  BufHidden
+    option-window
+              call <SID>unload() | delfun <SID>unload
+FileExplorer  BufLeave
+    *         if &ft != "netrw"|let w:netrw_prvfile= expand("%:p")|endif
+coc_nvim  BufNewFile
+    *         call s:Autocmd('BufCreate', +expand('<abuf>'))
+nvim_terminal  BufReadCmd
+    term://*  :if !exists('b:term_title')|call termopen( matchstr(expand("<amatch>"), '\c\mterm://\%(.\{-}//\%(\d\+:\)\?\)\?\zs.*'), {'cwd': get(matchlist(expand("<amatch>"), '\c\mterm://\(.\{-}\)//'), 1, '')})|endif
+coc_nvim  BufReadCmd
+    list://*  call coc#list#setup(expand('<amatch>'))
+man  BufReadCmd
+    man://*   call man#read_page(matchstr(expand('<amatch>'), 'man://\zs.*'))
+Network  BufReadCmd
+    file://*  call netrw#FileUrlEdit(expand("<amatch>"))
+    ftp://*   exe "sil doau BufReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(2,expand("<amatch>"))|exe "sil doau BufReadPost ".fnameescape(expand("<amatch>"))
+    rcp://*   exe "sil doau BufReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(2,expand("<amatch>"))|exe "sil doau BufReadPost ".fnameescape(expand("<amatch>"))
+    scp://*   exe "sil doau BufReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(2,expand("<amatch>"))|exe "sil doau BufReadPost ".fnameescape(expand("<amatch>"))
+    http://*  exe "sil doau BufReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(2,expand("<amatch>"))|exe "sil doau BufReadPost ".fnameescape(expand("<amatch>"))
+    https://* exe "sil doau BufReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(2,expand("<amatch>"))|exe "sil doau BufReadPost ".fnameescape(expand("<amatch>"))
+    dav://*   exe "sil doau BufReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(2,expand("<amatch>"))|exe "sil doau BufReadPost ".fnameescape(expand("<amatch>"))
+    davs://*  exe "sil doau BufReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(2,expand("<amatch>"))|exe "sil doau BufReadPost ".fnameescape(expand("<amatch>"))
+    rsync://* exe "sil doau BufReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(2,expand("<amatch>"))|exe "sil doau BufReadPost ".fnameescape(expand("<amatch>"))
+    sftp://*  exe "sil doau BufReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(2,expand("<amatch>"))|exe "sil doau BufReadPost ".fnameescape(expand("<amatch>"))
+ShaDaCommands  BufReadCmd
+    *.shada   :if !empty(v:cmdarg)|throw '++opt not supported'|endif |call setline('.', shada#get_strings(readfile(expand('<afile>'),'b'))) |setlocal filetype=shada
+    *.shada.tmp.[a-z]
+              :if !empty(v:cmdarg)|throw '++opt not supported'|endif |call setline('.', shada#get_strings(readfile(expand('<afile>'),'b'))) |setlocal filetype=shada
+tar  BufReadCmd
+    tarfile::*
+              call tar#Read(expand("<amatch>"), 1)
+    tarfile::*/*
+              call tar#Read(expand("<amatch>"), 1)
+    *.tar.gz  call tar#Browse(expand("<amatch>"))
+    *.tar     call tar#Browse(expand("<amatch>"))
+    *.lrp     call tar#Browse(expand("<amatch>"))
+    *.tar.bz2 call tar#Browse(expand("<amatch>"))
+    *.tar.Z   call tar#Browse(expand("<amatch>"))
+    *.tgz     call tar#Browse(expand("<amatch>"))
+    *.tbz     call tar#Browse(expand("<amatch>"))
+    *.tar.lzma
+              call tar#Browse(expand("<amatch>"))
+    *.tar.xz  call tar#Browse(expand("<amatch>"))
+    *.txz     call tar#Browse(expand("<amatch>"))
+zip  BufReadCmd
+    zipfile:* call zip#Read(expand("<amatch>"), 1)
+    zipfile:*/*
+              call zip#Read(expand("<amatch>"), 1)
+    *.apk     call zip#Browse(expand("<amatch>"))
+    *.celzip  call zip#Browse(expand("<amatch>"))
+    *.crtx    call zip#Browse(expand("<amatch>"))
+    *.docm    call zip#Browse(expand("<amatch>"))
+    *.docx    call zip#Browse(expand("<amatch>"))
+    *.dotm    call zip#Browse(expand("<amatch>"))
+    *.dotx    call zip#Browse(expand("<amatch>"))
+    *.ear     call zip#Browse(expand("<amatch>"))
+    *.epub    call zip#Browse(expand("<amatch>"))
+    *.gcsx    call zip#Browse(expand("<amatch>"))
+    *.glox    call zip#Browse(expand("<amatch>"))
+    *.gqsx    call zip#Browse(expand("<amatch>"))
+    *.ja      call zip#Browse(expand("<amatch>"))
+    *.jar     call zip#Browse(expand("<amatch>"))
+    *.kmz     call zip#Browse(expand("<amatch>"))
+    *.oxt     call zip#Browse(expand("<amatch>"))
+    *.potm    call zip#Browse(expand("<amatch>"))
+    *.potx    call zip#Browse(expand("<amatch>"))
+    *.ppam    call zip#Browse(expand("<amatch>"))
+    *.ppsm    call zip#Browse(expand("<amatch>"))
+    *.ppsx    call zip#Browse(expand("<amatch>"))
+    *.pptm    call zip#Browse(expand("<amatch>"))
+    *.pptx    call zip#Browse(expand("<amatch>"))
+    *.sldx    call zip#Browse(expand("<amatch>"))
+    *.thmx    call zip#Browse(expand("<amatch>"))
+    *.vdw     call zip#Browse(expand("<amatch>"))
+    *.war     call zip#Browse(expand("<amatch>"))
+    *.wsz     call zip#Browse(expand("<amatch>"))
+    *.xap     call zip#Browse(expand("<amatch>"))
+    *.xlam    call zip#Browse(expand("<amatch>"))
+              call zip#Browse(expand("<amatch>"))
+    *.xlsb    call zip#Browse(expand("<amatch>"))
+    *.xlsm    call zip#Browse(expand("<amatch>"))
+    *.xlsx    call zip#Browse(expand("<amatch>"))
+    *.xltm    call zip#Browse(expand("<amatch>"))
+    *.xltx    call zip#Browse(expand("<amatch>"))
+    *.xpi     call zip#Browse(expand("<amatch>"))
+    *.zip     call zip#Browse(expand("<amatch>"))
+coc_dynamic_autocmd  BufReadCmd
+    output://*
+              call coc#rpc#request('CocAutocmd', ['BufReadCmd','output', expand('<amatch>')])
+    coc://*   call coc#rpc#request('CocAutocmd', ['BufReadCmd','coc', expand('<amatch>')])
+coc_nvim  BufReadPost
+    *         call s:Autocmd('BufCreate', +expand('<abuf>'))
+gzip  BufReadPost
+    *.gz      call gzip#read("gzip -dn")
+    *.bz2     call gzip#read("bzip2 -d")
+    *.Z       call gzip#read("uncompress")
+    *.lzma    call gzip#read("lzma -d")
+    *.xz      call gzip#read("xz -d")
+    *.lz      call gzip#read("lzip -d")
+    *.zst     call gzip#read("zstd -d --rm")
+gzip  BufReadPre
+    *.gz      setlocal bin
+    *.bz2     setlocal bin
+    *.Z       setlocal bin
+    *.lzma    setlocal bin
+    *.xz      setlocal bin
+    *.lz      setlocal bin
+    *.zst     setlocal bin
+coc_nvim  BufUnload
+    *         call s:Autocmd('BufUnload', +expand('<abuf>'))
+optwin  BufUnload
+    option-window
+              call <SID>unload() | delfun <SID>unload
+coc_nvim  BufWinEnter
+    *         call s:Autocmd('BufWinEnter', +expand('<abuf>'), win_getid())
+coc_nvim  BufWinLeave
+    *         call s:Autocmd('BufWinLeave', +expand('<abuf>'), bufwinid(+expand('<abuf>')))
+coc_nvim  BufWriteCmd
+    __coc_refactor__*
+              :call coc#rpc#notify('saveRefactor', [+expand('<abuf>')])
+Network  BufWriteCmd
+    ftp://*   exe "sil doau BufWritePre ".fnameescape(expand("<amatch>"))|exe 'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau BufWritePost ".fnameescape(expand("<amatch>"))
+    rcp://*   exe "sil doau BufWritePre ".fnameescape(expand("<amatch>"))|exe 'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau BufWritePost ".fnameescape(expand("<amatch>"))
+    scp://*   exe "sil doau BufWritePre ".fnameescape(expand("<amatch>"))|exe 'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau BufWritePost ".fnameescape(expand("<amatch>"))
+    http://*  exe "sil doau BufWritePre ".fnameescape(expand("<amatch>"))|exe 'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau BufWritePost ".fnameescape(expand("<amatch>"))
+    file://*  exe "sil doau BufWritePre ".fnameescape(expand("<amatch>"))|exe 'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau BufWritePost ".fnameescape(expand("<amatch>"))
+    dav://*   exe "sil doau BufWritePre ".fnameescape(expand("<amatch>"))|exe 'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau BufWritePost ".fnameescape(expand("<amatch>"))
+    davs://*  exe "sil doau BufWritePre ".fnameescape(expand("<amatch>"))|exe 'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau BufWritePost ".fnameescape(expand("<amatch>"))
+    rsync://* exe "sil doau BufWritePre ".fnameescape(expand("<amatch>"))|exe 'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau BufWritePost ".fnameescape(expand("<amatch>"))
+    sftp://*  exe "sil doau BufWritePre ".fnameescape(expand("<amatch>"))|exe 'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau BufWritePost ".fnameescape(expand("<amatch>"))
+ShaDaCommands  BufWriteCmd
+    *.shada   :if !empty(v:cmdarg)|throw '++opt not supported'|endif |if writefile(shada#get_binstrings(getline(1, '$')),expand('<afile>'), 'b') == 0 |  let &l:modified = (expand('<afile>') is# bufname(+expand('<abuf>'))? 0: stridx(&cpoptions, '+') != -1) |endif
+    *.shada.tmp.[a-z]
+              :if !empty(v:cmdarg)|throw '++opt not supported'|endif |if writefile(shada#get_binstrings(getline(1, '$')),expand('<afile>'), 'b') == 0 |  let &l:modified = (expand('<afile>') is# bufname(+expand('<abuf>'))? 0: stridx(&cpoptions, '+') != -1) |endif
+tar  BufWriteCmd
+    tarfile::*
+              call tar#Write(expand("<amatch>"))
+    tarfile::*/*
+              call tar#Write(expand("<amatch>"))
+zip  BufWriteCmd
+    zipfile:* call zip#Write(expand("<amatch>"))
+    zipfile:*/*
+              call zip#Write(expand("<amatch>"))
+coc_nvim  BufWritePost
+    *         call s:Autocmd('BufWritePost', +expand('<abuf>'))
+gzip  BufWritePost
+    *.gz      call gzip#write("gzip")
+    *.bz2     call gzip#write("bzip2")
+    *.Z       call gzip#write("compress -f")
+    *.lzma    call gzip#write("lzma -z")
+    *.xz      call gzip#write("xz -z")
+    *.lz      call gzip#write("lzip")
+    *.zst     call gzip#write("zstd --rm")
+coc_nvim  BufWritePre
+    *         call s:SyncAutocmd('BufWritePre', +expand('<abuf>'))
+CmdUndefined
+    CheckHealth
+              checkhealth
+coc_nvim  ColorScheme
+    *         call s:Hi()
+coc_nvim  CompleteChanged
+    *         call s:Autocmd('MenuPopupChanged', get(v:, 'event', {}), win_screenpos(winnr())[0] + winline() - 2)
+coc_nvim  CompleteDone
+    *         call s:Autocmd('CompleteDone', get(v:, 'completed_item', {}))
+coc_nvim  CursorHold
+    *         call coc#float#check_related()
+              call s:Autocmd('CursorHold', +expand('<abuf>'))
+CursorHold
+    *         silent call CocActionAsync('highlight')
+              silent call CocActionAsync('highlight')
+              silent call CocActionAsync('highlight')
+              silent call CocActionAsync('highlight')
+SetupLazyloadMenus  CursorHold
+    *         call <SID>SetupLazyloadMenus() | au! SetupLazyloadMenus
+coc_nvim  CursorHoldI
+    *         call s:Autocmd('CursorHoldI', +expand('<abuf>'))
+SetupLazyloadMenus  CursorHoldI
+    *         call <SID>SetupLazyloadMenus() | au! SetupLazyloadMenus
+coc_nvim  CursorMoved
+    *         call coc#float#nvim_refresh_scrollbar(win_getid())
+              call s:Autocmd('CursorMoved', +expand('<abuf>'), [line('.'), col('.')])
+matchparen  CursorMoved
+    *         call s:Highlight_Matching_Pair()
+coc_nvim  CursorMovedI
+    *         call s:Autocmd('CursorMovedI', +expand('<abuf>'), [line('.'), col('.')])
+matchparen  CursorMovedI
+    *         call s:Highlight_Matching_Pair()
+coc_nvim  DirChanged
+    *         call s:Autocmd('DirChanged', get(v:event, 'cwd', ''))
+ShaDaCommands  FileAppendCmd
+    *.shada   :if !empty(v:cmdarg)|throw '++opt not supported'|endif |call writefile(shada#get_binstrings(getline(min([line("'["), line("']")]),max([line("'["), line("']")]))),expand('<afile>'),'ab')
+    *.shada.tmp.[a-z]
+              :if !empty(v:cmdarg)|throw '++opt not supported'|endif |call writefile(shada#get_binstrings(getline(min([line("'["), line("']")]),max([line("'["), line("']")]))),expand('<afile>'),'ab')
+gzip  FileAppendPost
+    *.gz      call gzip#write("gzip")
+    *.bz2     call gzip#write("bzip2")
+    *.Z       call gzip#write("compress -f")
+    *.lzma    call gzip#write("lzma -z")
+    *.xz      call gzip#write("xz -z")
+    *.lz      call gzip#write("lzip")
+    *.zst     call gzip#write("zstd --rm")
+gzip  FileAppendPre
+    *.gz      call gzip#appre("gzip -dn")
+    *.bz2     call gzip#appre("bzip2 -d")
+    *.Z       call gzip#appre("uncompress")
+    *.lzma    call gzip#appre("lzma -d")
+    *.xz      call gzip#appre("xz -d")
+    *.lz      call gzip#appre("lzip -d")
+    *.zst     call gzip#appre("zstd -d --rm")
+coc_nvim  FileReadCmd
+    list://*  call coc#list#setup(expand('<amatch>'))
+Network  FileReadCmd
+    ftp://*   exe "sil doau FileReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(1,expand("<amatch>"))|exe "sil doau FileReadPost ".fnameescape(expand("<amatch>"))
+    rcp://*   exe "sil doau FileReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(1,expand("<amatch>"))|exe "sil doau FileReadPost ".fnameescape(expand("<amatch>"))
+    scp://*   exe "sil doau FileReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(1,expand("<amatch>"))|exe "sil doau FileReadPost ".fnameescape(expand("<amatch>"))
+    http://*  exe "sil doau FileReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(1,expand("<amatch>"))|exe "sil doau FileReadPost ".fnameescape(expand("<amatch>"))
+    file://*  exe "sil doau FileReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(1,expand("<amatch>"))|exe "sil doau FileReadPost ".fnameescape(expand("<amatch>"))
+    https://* exe "sil doau FileReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(1,expand("<amatch>"))|exe "sil doau FileReadPost ".fnameescape(expand("<amatch>"))
+    dav://*   exe "sil doau FileReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(1,expand("<amatch>"))|exe "sil doau FileReadPost ".fnameescape(expand("<amatch>"))
+    davs://*  exe "sil doau FileReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(1,expand("<amatch>"))|exe "sil doau FileReadPost ".fnameescape(expand("<amatch>"))
+    rsync://* exe "sil doau FileReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(1,expand("<amatch>"))|exe "sil doau FileReadPost ".fnameescape(expand("<amatch>"))
+    sftp://*  exe "sil doau FileReadPre ".fnameescape(expand("<amatch>"))|call netrw#Nread(1,expand("<amatch>"))|exe "sil doau FileReadPost ".fnameescape(expand("<amatch>"))
+ShaDaCommands  FileReadCmd
+    *.shada   :if !empty(v:cmdarg)|throw '++opt not supported'|endif |call append("'[", shada#get_strings(readfile(expand('<afile>'), 'b')))
+    *.shada.tmp.[a-z]
+              :if !empty(v:cmdarg)|throw '++opt not supported'|endif |call append("'[", shada#get_strings(readfile(expand('<afile>'), 'b')))
+tar  FileReadCmd
+    tarfile::*
+              call tar#Read(expand("<amatch>"), 0)
+    tarfile::*/*
+              call tar#Read(expand("<amatch>"), 0)
+zip  FileReadCmd
+    zipfile:* call zip#Read(expand("<amatch>"), 0)
+    zipfile:*/*
+              call zip#Read(expand("<amatch>"), 0)
+coc_dynamic_autocmd  FileReadCmd
+    output://*
+              call coc#rpc#request('CocAutocmd', ['BufReadCmd','output', expand('<amatch>')])
+    coc://*   call coc#rpc#request('CocAutocmd', ['BufReadCmd','coc', expand('<amatch>')])
+gzip  FileReadPost
+    *.gz      call gzip#read("gzip -dn")
+    *.bz2     call gzip#read("bzip2 -d")
+    *.Z       call gzip#read("uncompress")
+    *.lzma    call gzip#read("lzma -d")
+    *.xz      call gzip#read("xz -d")
+    *.lz      call gzip#read("lzip -d")
+    *.zst     call gzip#read("zstd -d --rm")
+gzip  FileReadPre
+    *.gz      setlocal bin
+    *.bz2     setlocal bin
+    *.Z       setlocal bin
+    *.lzma    setlocal bin
+    *.xz      setlocal bin
+    *.lz      setlocal bin
+    *.zst     setlocal bin
+coc_nvim  FileType
+    *         call s:Autocmd('FileType', expand('<amatch>'), +expand('<abuf>'))
+syntaxset  FileType
+    *         exe "set syntax=" . expand("<amatch>")
+mygroup  FileType
+    typescript
+              setl formatexpr=CocAction('formatSelected')
+    json      setl formatexpr=CocAction('formatSelected')
+Network  FileWriteCmd
+    ftp://*   exe "sil doau FileWritePre ".fnameescape(expand("<amatch>"))|exe "'[,']".'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau FileWritePost ".fnameescape(expand("<amatch>"))
+    rcp://*   exe "sil doau FileWritePre ".fnameescape(expand("<amatch>"))|exe "'[,']".'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau FileWritePost ".fnameescape(expand("<amatch>"))
+    scp://*   exe "sil doau FileWritePre ".fnameescape(expand("<amatch>"))|exe "'[,']".'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau FileWritePost ".fnameescape(expand("<amatch>"))
+    http://*  exe "sil doau FileWritePre ".fnameescape(expand("<amatch>"))|exe "'[,']".'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau FileWritePost ".fnameescape(expand("<amatch>"))
+    file://*  exe "sil doau FileWritePre ".fnameescape(expand("<amatch>"))|exe "'[,']".'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau FileWritePost ".fnameescape(expand("<amatch>"))
+    dav://*   exe "sil doau FileWritePre ".fnameescape(expand("<amatch>"))|exe "'[,']".'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau FileWritePost ".fnameescape(expand("<amatch>"))
+    davs://*  exe "sil doau FileWritePre ".fnameescape(expand("<amatch>"))|exe "'[,']".'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau FileWritePost ".fnameescape(expand("<amatch>"))
+    rsync://* exe "sil doau FileWritePre ".fnameescape(expand("<amatch>"))|exe "'[,']".'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau FileWritePost ".fnameescape(expand("<amatch>"))
+    sftp://*  exe "sil doau FileWritePre ".fnameescape(expand("<amatch>"))|exe "'[,']".'Nwrite '.fnameescape(expand("<amatch>"))|exe "sil doau FileWritePost ".fnameescape(expand("<amatch>"))
+ShaDaCommands  FileWriteCmd
+    *.shada   :if !empty(v:cmdarg)|throw '++opt not supported'|endif |call writefile(shada#get_binstrings(getline(min([line("'["), line("']")]),max([line("'["), line("']")]))),expand('<afile>'),'b')
+    *.shada.tmp.[a-z]
+              :if !empty(v:cmdarg)|throw '++opt not supported'|endif |call writefile(shada#get_binstrings(getline(min([line("'["), line("']")]),max([line("'["), line("']")]))),expand('<afile>'),'b')
+tar  FileWriteCmd
+    tarfile::*
+              call tar#Write(expand("<amatch>"))
+    tarfile::*/*
+              call tar#Write(expand("<amatch>"))
+zip  FileWriteCmd
+    zipfile:* call zip#Write(expand("<amatch>"))
+    zipfile:*/*
+              call zip#Write(expand("<amatch>"))
+gzip  FileWritePost
+    *.gz      call gzip#write("gzip")
+    *.bz2     call gzip#write("bzip2")
+    *.Z       call gzip#write("compress -f")
+    *.lzma    call gzip#write("lzma -z")
+    *.xz      call gzip#write("xz -z")
+    *.lz      call gzip#write("lzip")
+    *.zst     call gzip#write("zstd --rm")
+coc_nvim  FocusGained
+    *         if mode() !~# '^c' | call s:Autocmd('FocusGained') | endif
+RPC_DEFINE_AUTOCMD_GROUP_1  FuncUndefined
+    _deoplete_init
+              call remote#define#FunctionBootstrap("python3", "/home/jari/.local/share/nvim/plugged/deoplete.nvim/rplugin/python3/deoplete:function:_deoplete_init", v:false, "_deoplete_init", {}, "RPC_DEFINE_AUTOCMD_GROUP_1")
+coc_nvim  InsertCharPre
+    *         call s:Autocmd('InsertCharPre', v:char)
+coc_nvim  InsertEnter
+    *         call s:Autocmd('InsertEnter', +expand('<abuf>'))
+coc_nvim  InsertLeave
+    *         call s:Autocmd('InsertLeave', +expand('<abuf>'))
+SpellPopupMenu  MenuPopup
+    *         call <SID>SpellPopup()
+coc_dynamic_autocmd  OptionSet
+    runtimepath
+              call coc#rpc#notify('OptionSet',[expand('<amatch>'), v:option_old, v:option_new])
+    completeopt
+              call coc#rpc#notify('OptionSet',[expand('<amatch>'), v:option_old, v:option_new])
+coc_nvim  SourceCmd
+    list://*  call coc#list#setup(expand('<amatch>'))
+Network  SourceCmd
+    ftp://*   exe 'Nsource '.fnameescape(expand("<amatch>"))
+    rcp://*   exe 'Nsource '.fnameescape(expand("<amatch>"))
+    scp://*   exe 'Nsource '.fnameescape(expand("<amatch>"))
+    http://*  exe 'Nsource '.fnameescape(expand("<amatch>"))
+    file://*  exe 'Nsource '.fnameescape(expand("<amatch>"))
+    https://* exe 'Nsource '.fnameescape(expand("<amatch>"))
+    dav://*   exe 'Nsource '.fnameescape(expand("<amatch>"))
+    davs://*  exe 'Nsource '.fnameescape(expand("<amatch>"))
+    rsync://* exe 'Nsource '.fnameescape(expand("<amatch>"))
+    sftp://*  exe 'Nsource '.fnameescape(expand("<amatch>"))
+ShaDaCommands  SourceCmd
+    *.shada   :execute 'rshada' fnameescape(expand('<afile>'))
+    *.shada.tmp.[a-z]
+              :execute 'rshada' fnameescape(expand('<afile>'))
+coc_dynamic_autocmd  SourceCmd
+    output://*
+              call coc#rpc#request('CocAutocmd', ['BufReadCmd','output', expand('<amatch>')])
+    coc://*   call coc#rpc#request('CocAutocmd', ['BufReadCmd','coc', expand('<amatch>')])
+SpellFileMissing
+    *         call spellfile#LoadFile(expand('<amatch>'))
+Syntax
+    *         call s:SynSet()
+    c         if (exists('b:load_doxygen_syntax') && b:load_doxygen_syntax)^I|| (exists('g:load_doxygen_syntax') && g:load_doxygen_syntax)   | runtime! syntax/doxygen.vim | endif
+    cpp       if (exists('b:load_doxygen_syntax') && b:load_doxygen_syntax)^I|| (exists('g:load_doxygen_syntax') && g:load_doxygen_syntax)   | runtime! syntax/doxygen.vim | endif
+    cs        if (exists('b:load_doxygen_syntax') && b:load_doxygen_syntax)^I|| (exists('g:load_doxygen_syntax') && g:load_doxygen_syntax)   | runtime! syntax/doxygen.vim | endif
+    idl       if (exists('b:load_doxygen_syntax') && b:load_doxygen_syntax)^I|| (exists('g:load_doxygen_syntax') && g:load_doxygen_syntax)   | runtime! syntax/doxygen.vim | endif
+    java      if (exists('b:load_doxygen_syntax') && b:load_doxygen_syntax)^I|| (exists('g:load_doxygen_syntax') && g:load_doxygen_syntax)   | runtime! syntax/doxygen.vim | endif
+    php       if (exists('b:load_doxygen_syntax') && b:load_doxygen_syntax)^I|| (exists('g:load_doxygen_syntax') && g:load_doxygen_syntax)   | runtime! syntax/doxygen.vim | endif
+    datascript
+              if (exists('b:load_doxygen_syntax') && b:load_doxygen_syntax)^I|| (exists('g:load_doxygen_syntax') && g:load_doxygen_syntax)   | runtime! syntax/doxygen.vim | endif
+coc_nvim  TermClose
+    *         call s:Autocmd('TermClose', +expand('<abuf>'))
+coc_nvim  TermOpen
+    *         call s:Autocmd('TermOpen', +expand('<abuf>'))
+coc_nvim  TextChanged
+    *         call s:Autocmd('TextChanged', +expand('<abuf>'), getbufvar(+expand('<abuf>'), 'changedtick'))
+matchparen  TextChanged
+    *         call s:Highlight_Matching_Pair()
+coc_nvim  TextChangedI
+    *         call s:Autocmd('TextChangedI', +expand('<abuf>'), {'lnum': line('.'), 'col': col('.'), 'pre': strpart(getline('.'), 0, col('.') - 1), 'changedtick': b:changedtick})
+matchparen  TextChangedI
+    *         call s:Highlight_Matching_Pair()
+coc_nvim  TextChangedP
+    *         call s:Autocmd('TextChangedP', +expand('<abuf>'), {'lnum': line('.'), 'col': col('.'), 'pre': strpart(getline('.'), 0, col('.') - 1), 'changedtick': b:changedtick})
+User
+    asyncomplete_setup
+              call asyncomplete#sources#tmuxcomplete#register(s:options)
+    Ncm2Plugin
+              call ncm2#sources#tmuxcomplete#register()
+mygroup  User
+    CocJumpPlaceholder
+              call CocActionAsync('showSignatureHelp')
+coc_nvim  VimEnter
+    *         call coc#rpc#notify('VimEnter', [])
+FileExplorer  VimEnter
+    *         sil call s:VimEnter(expand("<amatch>"))
+coc_nvim  VimLeavePre
+    *         let g:coc_vim_leaving = 1
+coc_nvim  VimResized
+    *         call s:Autocmd('VimResized', &columns, &lines)
+coc_nvim  WinEnter
+    *         call coc#float#nvim_win_enter(win_getid())
+              call s:Autocmd('WinEnter', win_getid())
+WinEnter
+    *         :lua golden_size.on_win_enter()
+matchparen  WinEnter
+    *         call s:Highlight_Matching_Pair()
+WinEnter
+    *         :lua golden_size.on_win_enter()
+              :lua golden_size.on_win_enter()
+              if &ft == "netrw"|call s:NetrwInsureWinVars()|endif
+              :lua golden_size.on_win_enter()
+              :lua golden_size.on_win_enter()
+coc_nvim  WinLeave
+    *         call s:Autocmd('WinLeave', win_getid())
+--- Normal/Visual mode mappings ---
+
+   <CR>        *@<C-\><C-N>:call <SNR>84_CR()<CR>
+   <Space>     *@:call <SNR>84_Space()<CR>
+x  <C-A>       * <C-C>ggVG
+s  <C-A>       * <C-C>gggH<C-O>G
+o  <C-A>       * <C-C>gggH<C-O>G
+n  <C-A>       * gggH<C-O>G
+v  <C-B>       * coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-B>"
+n  <C-B>       * coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-B>"
+v  <C-C>       * "+y
+v  <C-F>       * coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-F>"
+n  <C-F>       * coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-F>"
+n  <Tab>       * pumvisible() ? "\<C-N>" : "\<Tab>"
+   <C-Q>       * <C-V>
+v  <C-S>       * <C-C>:update<CR>
+no <C-S>       * :update<CR>
+v  <C-V>       & "-c<Esc>:call paste#Paste()<CR>
+no <C-V>         "+gP
+v  <C-X>       * "+x
+   <C-Y>       * <C-R>
+   <C-Z>       * u
+n  <Space>p    * :<C-U>CocListResume<CR>
+n  <Space>k    * :<C-U>CocPrev<CR>
+n  <Space>j    * :<C-U>CocNext<CR>
+n  <Space>s    * :<C-U>CocList -I symbols<CR>
+n  <Space>o    * :<C-U>CocList outline<CR>
+n  <Space>c    * :<C-U>CocList commands<CR>
+n  <Space>e    * :<C-U>CocList extensions<CR>
+n  <Space>a    * :<C-U>CocList diagnostics<CR>
+o  %             <Plug>(MatchitOperationForward)
+x  %             <Plug>(MatchitVisualForward)
+n  %             <Plug>(MatchitNormalForward)
+n  K           * :call <SNR>59_show_documentation()<CR>
+n  [g            <Plug>(coc-diagnostic-prev)
+o  [%            <Plug>(MatchitOperationMultiBackward)
+x  [%            <Plug>(MatchitVisualMultiBackward)
+n  [%            <Plug>(MatchitNormalMultiBackward)
+n  \qf           <Plug>(coc-fix-current)
+n  \ac           <Plug>(coc-codeaction)
+n  \a            <Plug>(coc-codeaction-selected)
+x  \a            <Plug>(coc-codeaction-selected)
+n  \f            <Plug>(coc-format-selected)
+x  \f            <Plug>(coc-format-selected)
+n  \rn           <Plug>(coc-rename)
+n  \d          * :call CocActionAsync('codeLensAction')<CR>
+n  \g          * :call CocActionAsync('codeLensAction')<CR>
+n  \h          * :call CocActionAsync('doHover')<CR>
+n  ]g            <Plug>(coc-diagnostic-next)
+o  ]%            <Plug>(MatchitOperationMultiForward)
+x  ]%            <Plug>(MatchitVisualMultiForward)
+n  ]%            <Plug>(MatchitNormalMultiForward)
+o  ac            <Plug>(coc-classobj-a)
+x  ac            <Plug>(coc-classobj-a)
+o  af            <Plug>(coc-funcobj-a)
+x  af            <Plug>(coc-funcobj-a)
+x  a%            <Plug>(MatchitVisualTextObject)
+n  gr            <Plug>(coc-references)
+n  gi            <Plug>(coc-implementation)
+n  gy            <Plug>(coc-type-definition)
+n  gd            <Plug>(coc-definition)
+v  gx            <Plug>NetrwBrowseXVis
+n  gx            <Plug>NetrwBrowseX
+o  g%            <Plug>(MatchitOperationBackward)
+x  g%            <Plug>(MatchitVisualBackward)
+n  g%            <Plug>(MatchitNormalBackward)
+n  gV          * `[v`]
+o  ic            <Plug>(coc-classobj-i)
+x  ic            <Plug>(coc-classobj-i)
+o  if            <Plug>(coc-funcobj-i)
+x  if            <Plug>(coc-funcobj-i)
+n  j           * gj
+n  k           * gk
+o  <C-F4>      * <C-C><C-W>c
+o  <C-Tab>     * <C-C><C-W>w
+v  <S-Insert>    <C-V>
+nv <C-F4>      * <C-W>c
+nv <C-Tab>     * <C-W>w
+no <S-Insert>    "+gP
+v  <C-Insert>  * "+y
+v  <S-Del>     * "+x
+v  <BS>        * d
+o  <D-g>         <Esc><D-g>
+v  <D-g>         <Esc><D-g>
+n  <D-g>       * n
+o  <D-f>         <Esc><D-f>
+v  <D-f>         <Esc><D-f>
+n  <D-f>       * /
+o  <D-a>         <Esc><D-a>
+v  <D-a>         <Esc><D-a>
+n  <D-a>       * :if &slm != ""|exe ":norm gggH<C-O>G"| else|exe ":norm ggVG"|endif<CR>
+v  <D-v>       & "-c<Esc>:call paste#Paste()<CR>
+n  <D-v>       * "+gP
+v  <D-c>       * "+y
+v  <D-x>       * "+x
+o  <D-z>         <Esc><D-z>
+v  <D-z>         <Esc><D-z>gv
+n  <D-z>       * u
+o  <S-D-s>       <Esc><D-s>
+v  <S-D-s>       <Esc><D-s>gv
+n  <S-D-s>     * :browse confirm saveas<CR>
+o  <D-s>         <Esc><D-s>
+v  <D-s>         <Esc><D-s>gv
+n  <D-s>       * :if expand("%") == ""|browse confirm w| else|confirm w|endif<CR>
+o  <D-w>         <Esc><D-w>
+v  <D-w>         <Esc><D-w>gv
+n  <D-w>       * :if winheight(2) < 0 | confirm enew | else | confirm close | endif<CR>
+o  <D-o>         <Esc><D-o>
+v  <D-o>         <Esc><D-o>gv
+n  <D-o>       * :browse confirm e<CR>
+o  <D-n>         <Esc><D-n>
+v  <D-n>         <Esc><D-n>gv
+n  <D-n>       * :confirm enew<CR>
+x  <Plug>(coc-git-chunk-outer) * :<C-U>call coc#rpc#request('doKeymap', ['git-chunk-outer'])<CR>
+o  <Plug>(coc-git-chunk-outer) * :<C-U>call coc#rpc#request('doKeymap', ['git-chunk-outer'])<CR>
+x  <Plug>(coc-git-chunk-inner) * :<C-U>call coc#rpc#request('doKeymap', ['git-chunk-inner'])<CR>
+o  <Plug>(coc-git-chunk-inner) * :<C-U>call coc#rpc#request('doKeymap', ['git-chunk-inner'])<CR>
+n  <Plug>(coc-git-commit) * :<C-U>call coc#rpc#notify('doKeymap', ['git-commit'])<CR>
+n  <Plug>(coc-git-chunkinfo) * :<C-U>call coc#rpc#notify('doKeymap', ['git-chunkinfo'])<CR>
+n  <Plug>(coc-git-keepincoming) * :<C-U>call coc#rpc#notify('doKeymap', ['git-keepincoming'])<CR>
+n  <Plug>(coc-git-keepcurrent) * :<C-U>call coc#rpc#notify('doKeymap', ['git-keepcurrent'])<CR>
+n  <Plug>(coc-git-prevconflict) * :<C-U>call coc#rpc#notify('doKeymap', ['git-prevconflict'])<CR>
+n  <Plug>(coc-git-nextconflict) * :<C-U>call coc#rpc#notify('doKeymap', ['git-nextconflict'])<CR>
+n  <Plug>(coc-git-prevchunk) * :<C-U>call coc#rpc#notify('doKeymap', ['git-prevchunk'])<CR>
+n  <Plug>(coc-git-nextchunk) * :<C-U>call coc#rpc#notify('doKeymap', ['git-nextchunk'])<CR>
+v  <Plug>NetrwBrowseXVis * :<C-U>call netrw#BrowseXVis()<CR>
+n  <Plug>NetrwBrowseX * :call netrw#BrowseX(expand((exists("g:netrw_gx")? g:netrw_gx : '<cfile>')),netrw#CheckIfRemote())<CR>
+v  <Plug>(MatchitVisualTextObject)   <Plug>(MatchitVisualMultiBackward)o<Plug>(MatchitVisualMultiForward)
+o  <Plug>(MatchitOperationMultiForward) * :<C-U>call matchit#MultiMatch("W",  "o")<CR>
+o  <Plug>(MatchitOperationMultiBackward) * :<C-U>call matchit#MultiMatch("bW", "o")<CR>
+v  <Plug>(MatchitVisualMultiForward) * :<C-U>call matchit#MultiMatch("W",  "n")<CR>m'gv``
+v  <Plug>(MatchitVisualMultiBackward) * :<C-U>call matchit#MultiMatch("bW", "n")<CR>m'gv``
+n  <Plug>(MatchitNormalMultiForward) * :<C-U>call matchit#MultiMatch("W",  "n")<CR>
+n  <Plug>(MatchitNormalMultiBackward) * :<C-U>call matchit#MultiMatch("bW", "n")<CR>
+o  <Plug>(MatchitOperationBackward) * :<C-U>call matchit#Match_wrapper('',0,'o')<CR>
+o  <Plug>(MatchitOperationForward) * :<C-U>call matchit#Match_wrapper('',1,'o')<CR>
+v  <Plug>(MatchitVisualBackward) * :<C-U>call matchit#Match_wrapper('',0,'v')<CR>m'gv``
+v  <Plug>(MatchitVisualForward) * :<C-U>call matchit#Match_wrapper('',1,'v')<CR>m'gv``
+n  <Plug>(MatchitNormalBackward) * :<C-U>call matchit#Match_wrapper('',0,'n')<CR>
+n  <Plug>(MatchitNormalForward) * :<C-U>call matchit#Match_wrapper('',1,'n')<CR>
+n  <Plug>(Tman) * :<C-U>call man#get_page_from_cword('tab',        v:count)<CR>
+n  <Plug>(Vman) * :<C-U>call man#get_page_from_cword('vertical',   v:count)<CR>
+n  <Plug>(Sman) * :<C-U>call man#get_page_from_cword('horizontal', v:count)<CR>
+n  <Plug>(Man) * :<C-U>call man#get_page_from_cword('horizontal', v:count)<CR>
+o  <Plug>(coc-classobj-a) * :<C-U>call coc#rpc#request('selectSymbolRange', [v:false, '', ['Interface', 'Struct', 'Class']])<CR>
+o  <Plug>(coc-classobj-i) * :<C-U>call coc#rpc#request('selectSymbolRange', [v:true, '', ['Interface', 'Struct', 'Class']])<CR>
+v  <Plug>(coc-classobj-a) * :<C-U>call coc#rpc#request('selectSymbolRange', [v:false, visualmode(), ['Interface', 'Struct', 'Class']])<CR>
+v  <Plug>(coc-classobj-i) * :<C-U>call coc#rpc#request('selectSymbolRange', [v:true, visualmode(), ['Interface', 'Struct', 'Class']])<CR>
+o  <Plug>(coc-funcobj-a) * :<C-U>call coc#rpc#request('selectSymbolRange', [v:false, '', ['Method', 'Function']])<CR>
+o  <Plug>(coc-funcobj-i) * :<C-U>call coc#rpc#request('selectSymbolRange', [v:true, '', ['Method', 'Function']])<CR>
+v  <Plug>(coc-funcobj-a) * :<C-U>call coc#rpc#request('selectSymbolRange', [v:false, visualmode(), ['Method', 'Function']])<CR>
+v  <Plug>(coc-funcobj-i) * :<C-U>call coc#rpc#request('selectSymbolRange', [v:true, visualmode(), ['Method', 'Function']])<CR>
+n  <Plug>(coc-cursors-position) * :<C-U>call coc#rpc#request('cursorsSelect', [bufnr('%'), 'position', 'n'])<CR>
+n  <Plug>(coc-cursors-word) * :<C-U>call coc#rpc#request('cursorsSelect', [bufnr('%'), 'word', 'n'])<CR>
+v  <Plug>(coc-cursors-range) * :<C-U>call coc#rpc#request('cursorsSelect', [bufnr('%'), 'range', visualmode()])<CR>
+n  <Plug>(coc-cursors-operator) * :<C-U>set operatorfunc=<SNR>14_CursorRangeFromSelected<CR>g@
+n  <Plug>(coc-refactor) * :<C-U>call       CocActionAsync('refactor')<CR>
+n  <Plug>(coc-command-repeat) * :<C-U>call       CocAction('repeatCommand')<CR>
+n  <Plug>(coc-float-jump) * :<C-U>call       coc#float#jump()<CR>
+n  <Plug>(coc-float-hide) * :<C-U>call       coc#float#close_all()<CR>
+n  <Plug>(coc-fix-current) * :<C-U>call       CocActionAsync('doQuickfix')<CR>
+n  <Plug>(coc-openlink) * :<C-U>call       CocActionAsync('openLink')<CR>
+n  <Plug>(coc-references-used) * :<C-U>call       CocActionAsync('jumpUsed')<CR>
+n  <Plug>(coc-references) * :<C-U>call       CocActionAsync('jumpReferences')<CR>
+n  <Plug>(coc-type-definition) * :<C-U>call       CocActionAsync('jumpTypeDefinition')<CR>
+n  <Plug>(coc-implementation) * :<C-U>call       CocActionAsync('jumpImplementation')<CR>
+n  <Plug>(coc-declaration) * :<C-U>call       CocActionAsync('jumpDeclaration')<CR>
+n  <Plug>(coc-definition) * :<C-U>call       CocActionAsync('jumpDefinition')<CR>
+n  <Plug>(coc-diagnostic-prev-error) * :<C-U>call       CocActionAsync('diagnosticPrevious', 'error')<CR>
+n  <Plug>(coc-diagnostic-next-error) * :<C-U>call       CocActionAsync('diagnosticNext',     'error')<CR>
+n  <Plug>(coc-diagnostic-prev) * :<C-U>call       CocActionAsync('diagnosticPrevious')<CR>
+n  <Plug>(coc-diagnostic-next) * :<C-U>call       CocActionAsync('diagnosticNext')<CR>
+n  <Plug>(coc-diagnostic-info) * :<C-U>call       CocActionAsync('diagnosticInfo')<CR>
+n  <Plug>(coc-format) * :<C-U>call       CocActionAsync('format')<CR>
+n  <Plug>(coc-format-selected) * :<C-U>set        operatorfunc=<SNR>14_FormatFromSelected<CR>g@
+n  <Plug>(coc-rename) * :<C-U>call       CocActionAsync('rename')<CR>
+n  <Plug>(coc-codeaction-line) * :<C-U>call       CocActionAsync('codeAction',         'n')<CR>
+n  <Plug>(coc-codeaction) * :<C-U>call       CocActionAsync('codeAction',         '')<CR>
+n  <Plug>(coc-codeaction-selected) * :<C-U>set        operatorfunc=<SNR>14_CodeActionFromSelected<CR>g@
+v  <Plug>(coc-codeaction-selected) * :<C-U>call       CocActionAsync('codeAction',         visualmode())<CR>
+v  <Plug>(coc-format-selected) * :<C-U>call       CocActionAsync('formatSelected',     visualmode())<CR>
+n  <Plug>(coc-codelens-action) * :<C-U>call       CocActionAsync('codeLensAction')<CR>
+n  <Plug>(coc-range-select) * :<C-U>call       CocActionAsync('rangeSelect',     '', v:true)<CR>
+v  <Plug>(coc-range-select-backward) * :<C-U>call       CocActionAsync('rangeSelect',     visualmode(), v:false)<CR>
+v  <Plug>(coc-range-select) * :<C-U>call       CocActionAsync('rangeSelect',     visualmode(), v:true)<CR>
+n  <S-Tab>     * pumvisible() ? "\<C-P>" : "\<S-Tab>"
+--- Insert/Command-line mode mappings ---
+
+i  <CR>        *@<Esc>:call <SNR>84_CR()<CR>
+c  <C-F4>      * <C-C><C-W>c
+i  <C-F4>      * <C-O><C-W>c
+c  <C-Tab>     * <C-C><C-W>w
+i  <C-Tab>     * <C-O><C-W>w
+i  <S-Insert>    <C-V>
+c  <S-Insert>    <C-R>+
+c  <D-g>         <C-C><D-g>
+i  <D-g>         <C-O><D-g>
+c  <D-f>         <C-C><D-f>
+i  <D-f>         <Esc><D-f>
+c  <D-a>         <C-C><D-a>
+i  <D-a>         <Esc><D-a>
+i  <D-v>       & <C-\><C-O>"+gP
+c  <D-v>       * <C-R>+
+c  <D-c>       * <C-Y>
+c  <D-z>         <C-C><D-z>
+i  <D-z>         <C-O><D-z>
+c  <S-D-s>       <C-C><D-s>
+i  <S-D-s>       <C-O><D-s>
+c  <D-s>         <C-C><D-s>
+i  <D-s>         <C-O><D-s>
+c  <D-w>         <C-C><D-w>
+i  <D-w>         <C-O><D-w>
+c  <D-o>         <C-C><D-o>
+i  <D-o>         <C-O><D-o>
+c  <D-n>         <C-C><D-n>
+i  <D-n>         <C-O><D-n>
+i  <C-Space>   * coc#refresh()
+i  <Plug>CocRefresh * <C-R>=coc#_complete()<CR>
+i  <S-Tab>     * pumvisible() ? "\<C-P>" : "\<C-H>"
+c  <C-A>       * <C-C>gggH<C-O>G
+i  <C-A>       * <C-O>gg<C-O>gH<C-O>G
+i  <C-B>       * coc#float#has_scroll() ? "\<C-R>=coc#float#scroll(0)\<CR>" : "\<Left>"
+i  <C-F>       * coc#float#has_scroll() ? "\<C-R>=coc#float#scroll(1)\<CR>" : "\<Right>"
+i  <Tab>       * pumvisible() ? "\<C-N>" : <SNR>59_check_back_space() ? "\<Tab>" : coc#refresh()
+i  <CR>        * pumvisible() ? coc#_select_confirm(): "\<C-G>u\<CR>\<C-R>=coc#on_enter()\<CR>"
+i  <C-S>       * <Esc>:update<CR>gi
+i  <C-V>       & <C-G>u<C-\><C-O>"+gP
+c  <C-V>         <C-R>+
+i  <C-Y>       * <C-O><C-R>
+i  <C-Z>       * <C-O>u
+--- Abbreviations ---
+
+No abbreviation found
+--- Highlighting ---
+SpecialKey     xxx ctermfg=81 guifg=Cyan
+EndOfBuffer    xxx links to NonText
+TermCursor     xxx cterm=reverse gui=reverse
+TermCursorNC   xxx cleared
+NonText        xxx ctermfg=12 gui=bold guifg=Blue
+Directory      xxx ctermfg=159 guifg=Cyan
+ErrorMsg       xxx ctermfg=15 ctermbg=1 guifg=White guibg=Red
+IncSearch      xxx cterm=reverse gui=reverse
+Search         xxx ctermfg=0 ctermbg=11 guifg=Black guibg=Yellow
+MoreMsg        xxx ctermfg=121 gui=bold guifg=SeaGreen
+ModeMsg        xxx cterm=bold gui=bold
+LineNr         xxx ctermfg=11 guifg=Yellow
+CursorLineNr   xxx ctermfg=11 gui=bold guifg=Yellow
+Question       xxx ctermfg=121 gui=bold guifg=Green
+StatusLine     xxx cterm=bold,reverse gui=bold,reverse
+StatusLineNC   xxx cterm=reverse gui=reverse
+VertSplit      xxx cterm=reverse gui=reverse
+Title          xxx ctermfg=225 gui=bold guifg=Magenta
+Visual         xxx ctermbg=242 guibg=DarkGrey
+VisualNC       xxx cleared
+WarningMsg     xxx ctermfg=224 guifg=Red
+WildMenu       xxx ctermfg=0 ctermbg=11 guifg=Black guibg=Yellow
+Folded         xxx ctermfg=14 ctermbg=242 guifg=Cyan guibg=DarkGrey
+FoldColumn     xxx ctermfg=14 ctermbg=242 guifg=Cyan guibg=Grey
+DiffAdd        xxx ctermbg=4 guibg=DarkBlue
+DiffChange     xxx ctermbg=5 guibg=DarkMagenta
+DiffDelete     xxx ctermfg=12 ctermbg=6 gui=bold guifg=Blue guibg=DarkCyan
+DiffText       xxx cterm=bold ctermbg=9 gui=bold guibg=Red
+SignColumn     xxx ctermfg=14 ctermbg=242 guifg=Cyan guibg=Grey
+Conceal        xxx ctermfg=7 ctermbg=242 guifg=LightGrey guibg=DarkGrey
+SpellBad       xxx ctermbg=9 gui=undercurl guisp=Red
+SpellCap       xxx ctermbg=12 gui=undercurl guisp=Blue
+SpellRare      xxx ctermbg=13 gui=undercurl guisp=Magenta
+SpellLocal     xxx ctermbg=14 gui=undercurl guisp=Cyan
+Pmenu          xxx ctermfg=0 ctermbg=13 guibg=Magenta
+PmenuSel       xxx ctermfg=242 ctermbg=0 guibg=DarkGrey
+PmenuSbar      xxx ctermbg=248 guibg=Grey
+PmenuThumb     xxx ctermbg=15 guibg=White
+TabLine        xxx cterm=underline ctermfg=15 ctermbg=242 gui=underline guibg=DarkGrey
+TabLineSel     xxx cterm=bold gui=bold
+TabLineFill    xxx cterm=reverse gui=reverse
+CursorColumn   xxx ctermbg=242 guibg=Grey40
+CursorLine     xxx cterm=underline guibg=Grey40
+ColorColumn    xxx ctermbg=1 guibg=DarkRed
+QuickFixLine   xxx links to Search
+Whitespace     xxx links to NonText
+NormalNC       xxx cleared
+MsgSeparator   xxx links to StatusLine
+NormalFloat    xxx links to Pmenu
+MsgArea        xxx cleared
+RedrawDebugNormal xxx cterm=reverse gui=reverse
+RedrawDebugClear xxx ctermbg=11 guibg=Yellow
+RedrawDebugComposed xxx ctermbg=10 guibg=Green
+RedrawDebugRecompose xxx ctermbg=9 guibg=Red
+Cursor         xxx guifg=bg guibg=fg
+lCursor        xxx guifg=bg guibg=fg
+Substitute     xxx links to Search
+MatchParen     xxx ctermbg=6 guibg=DarkCyan
+Normal         xxx cleared
+NvimInternalError xxx ctermfg=9 ctermbg=9 guifg=Red guibg=Red
+NvimAssignment xxx links to Operator
+Operator       xxx links to Statement
+NvimPlainAssignment xxx links to NvimAssignment
+NvimAugmentedAssignment xxx links to NvimAssignment
+NvimAssignmentWithAddition xxx links to NvimAugmentedAssignment
+NvimAssignmentWithSubtraction xxx links to NvimAugmentedAssignment
+NvimAssignmentWithConcatenation xxx links to NvimAugmentedAssignment
+NvimOperator   xxx links to Operator
+NvimUnaryOperator xxx links to NvimOperator
+NvimUnaryPlus  xxx links to NvimUnaryOperator
+NvimUnaryMinus xxx links to NvimUnaryOperator
+NvimNot        xxx links to NvimUnaryOperator
+NvimBinaryOperator xxx links to NvimOperator
+NvimComparison xxx links to NvimBinaryOperator
+NvimComparisonModifier xxx links to NvimComparison
+NvimBinaryPlus xxx links to NvimBinaryOperator
+NvimBinaryMinus xxx links to NvimBinaryOperator
+NvimConcat     xxx links to NvimBinaryOperator
+NvimConcatOrSubscript xxx links to NvimConcat
+NvimOr         xxx links to NvimBinaryOperator
+NvimAnd        xxx links to NvimBinaryOperator
+NvimMultiplication xxx links to NvimBinaryOperator
+NvimDivision   xxx links to NvimBinaryOperator
+NvimMod        xxx links to NvimBinaryOperator
+NvimTernary    xxx links to NvimOperator
+NvimTernaryColon xxx links to NvimTernary
+NvimParenthesis xxx links to Delimiter
+Delimiter      xxx links to Special
+NvimLambda     xxx links to NvimParenthesis
+NvimNestingParenthesis xxx links to NvimParenthesis
+NvimCallingParenthesis xxx links to NvimParenthesis
+NvimSubscript  xxx links to NvimParenthesis
+NvimSubscriptBracket xxx links to NvimSubscript
+NvimSubscriptColon xxx links to NvimSubscript
+NvimCurly      xxx links to NvimSubscript
+NvimContainer  xxx links to NvimParenthesis
+NvimDict       xxx links to NvimContainer
+NvimList       xxx links to NvimContainer
+NvimIdentifier xxx links to Identifier
+Identifier     xxx cterm=bold ctermfg=14 guifg=#40ffff
+NvimIdentifierScope xxx links to NvimIdentifier
+NvimIdentifierScopeDelimiter xxx links to NvimIdentifier
+NvimIdentifierName xxx links to NvimIdentifier
+NvimIdentifierKey xxx links to NvimIdentifier
+NvimColon      xxx links to Delimiter
+NvimComma      xxx links to Delimiter
+NvimArrow      xxx links to Delimiter
+NvimRegister   xxx links to SpecialChar
+SpecialChar    xxx links to Special
+NvimNumber     xxx links to Number
+Number         xxx links to Constant
+NvimFloat      xxx links to NvimNumber
+NvimNumberPrefix xxx links to Type
+Type           xxx ctermfg=121 gui=bold guifg=#60ff60
+NvimOptionSigil xxx links to Type
+NvimOptionName xxx links to NvimIdentifier
+NvimOptionScope xxx links to NvimIdentifierScope
+NvimOptionScopeDelimiter xxx links to NvimIdentifierScopeDelimiter
+NvimEnvironmentSigil xxx links to NvimOptionSigil
+NvimEnvironmentName xxx links to NvimIdentifier
+NvimString     xxx links to String
+String         xxx links to Constant
+NvimStringBody xxx links to NvimString
+NvimStringQuote xxx links to NvimString
+NvimStringSpecial xxx links to SpecialChar
+NvimSingleQuote xxx links to NvimStringQuote
+NvimSingleQuotedBody xxx links to NvimStringBody
+NvimSingleQuotedQuote xxx links to NvimStringSpecial
+NvimDoubleQuote xxx links to NvimStringQuote
+NvimDoubleQuotedBody xxx links to NvimStringBody
+NvimDoubleQuotedEscape xxx links to NvimStringSpecial
+NvimFigureBrace xxx links to NvimInternalError
+NvimSingleQuotedUnknownEscape xxx links to NvimInternalError
+NvimSpacing    xxx links to Normal
+NvimInvalidSingleQuotedUnknownEscape xxx links to NvimInternalError
+NvimInvalid    xxx links to Error
+Error          xxx ctermfg=15 ctermbg=9 guifg=White guibg=Red
+NvimInvalidAssignment xxx links to NvimInvalid
+NvimInvalidPlainAssignment xxx links to NvimInvalidAssignment
+NvimInvalidAugmentedAssignment xxx links to NvimInvalidAssignment
+NvimInvalidAssignmentWithAddition xxx links to NvimInvalidAugmentedAssignment
+NvimInvalidAssignmentWithSubtraction xxx links to NvimInvalidAugmentedAssignment
+NvimInvalidAssignmentWithConcatenation xxx links to NvimInvalidAugmentedAssignment
+NvimInvalidOperator xxx links to NvimInvalid
+NvimInvalidUnaryOperator xxx links to NvimInvalidOperator
+NvimInvalidUnaryPlus xxx links to NvimInvalidUnaryOperator
+NvimInvalidUnaryMinus xxx links to NvimInvalidUnaryOperator
+NvimInvalidNot xxx links to NvimInvalidUnaryOperator
+NvimInvalidBinaryOperator xxx links to NvimInvalidOperator
+NvimInvalidComparison xxx links to NvimInvalidBinaryOperator
+NvimInvalidComparisonModifier xxx links to NvimInvalidComparison
+NvimInvalidBinaryPlus xxx links to NvimInvalidBinaryOperator
+NvimInvalidBinaryMinus xxx links to NvimInvalidBinaryOperator
+NvimInvalidConcat xxx links to NvimInvalidBinaryOperator
+NvimInvalidConcatOrSubscript xxx links to NvimInvalidConcat
+NvimInvalidOr  xxx links to NvimInvalidBinaryOperator
+NvimInvalidAnd xxx links to NvimInvalidBinaryOperator
+NvimInvalidMultiplication xxx links to NvimInvalidBinaryOperator
+NvimInvalidDivision xxx links to NvimInvalidBinaryOperator
+NvimInvalidMod xxx links to NvimInvalidBinaryOperator
+NvimInvalidTernary xxx links to NvimInvalidOperator
+NvimInvalidTernaryColon xxx links to NvimInvalidTernary
+NvimInvalidDelimiter xxx links to NvimInvalid
+NvimInvalidParenthesis xxx links to NvimInvalidDelimiter
+NvimInvalidLambda xxx links to NvimInvalidParenthesis
+NvimInvalidNestingParenthesis xxx links to NvimInvalidParenthesis
+NvimInvalidCallingParenthesis xxx links to NvimInvalidParenthesis
+NvimInvalidSubscript xxx links to NvimInvalidParenthesis
+NvimInvalidSubscriptBracket xxx links to NvimInvalidSubscript
+NvimInvalidSubscriptColon xxx links to NvimInvalidSubscript
+NvimInvalidCurly xxx links to NvimInvalidSubscript
+NvimInvalidContainer xxx links to NvimInvalidParenthesis
+NvimInvalidDict xxx links to NvimInvalidContainer
+NvimInvalidList xxx links to NvimInvalidContainer
+NvimInvalidValue xxx links to NvimInvalid
+NvimInvalidIdentifier xxx links to NvimInvalidValue
+NvimInvalidIdentifierScope xxx links to NvimInvalidIdentifier
+NvimInvalidIdentifierScopeDelimiter xxx links to NvimInvalidIdentifier
+NvimInvalidIdentifierName xxx links to NvimInvalidIdentifier
+NvimInvalidIdentifierKey xxx links to NvimInvalidIdentifier
+NvimInvalidColon xxx links to NvimInvalidDelimiter
+NvimInvalidComma xxx links to NvimInvalidDelimiter
+NvimInvalidArrow xxx links to NvimInvalidDelimiter
+NvimInvalidRegister xxx links to NvimInvalidValue
+NvimInvalidNumber xxx links to NvimInvalidValue
+NvimInvalidFloat xxx links to NvimInvalidNumber
+NvimInvalidNumberPrefix xxx links to NvimInvalidNumber
+NvimInvalidOptionSigil xxx links to NvimInvalidIdentifier
+NvimInvalidOptionName xxx links to NvimInvalidIdentifier
+NvimInvalidOptionScope xxx links to NvimInvalidIdentifierScope
+NvimInvalidOptionScopeDelimiter xxx links to NvimInvalidIdentifierScopeDelimiter
+NvimInvalidEnvironmentSigil xxx links to NvimInvalidOptionSigil
+NvimInvalidEnvironmentName xxx links to NvimInvalidIdentifier
+NvimInvalidString xxx links to NvimInvalidValue
+NvimInvalidStringBody xxx links to NvimStringBody
+NvimInvalidStringQuote xxx links to NvimInvalidString
+NvimInvalidStringSpecial xxx links to NvimStringSpecial
+NvimInvalidSingleQuote xxx links to NvimInvalidStringQuote
+NvimInvalidSingleQuotedBody xxx links to NvimInvalidStringBody
+NvimInvalidSingleQuotedQuote xxx links to NvimInvalidStringSpecial
+NvimInvalidDoubleQuote xxx links to NvimInvalidStringQuote
+NvimInvalidDoubleQuotedBody xxx links to NvimInvalidStringBody
+NvimInvalidDoubleQuotedEscape xxx links to NvimInvalidStringSpecial
+NvimInvalidDoubleQuotedUnknownEscape xxx links to NvimInvalidValue
+NvimInvalidFigureBrace xxx links to NvimInvalidDelimiter
+NvimInvalidSpacing xxx links to ErrorMsg
+NvimDoubleQuotedUnknownEscape xxx links to NvimInvalidValue
+Comment        xxx ctermfg=14 guifg=#80a0ff
+Constant       xxx ctermfg=13 guifg=#ffa0a0
+Special        xxx ctermfg=224 guifg=Orange
+Statement      xxx ctermfg=11 gui=bold guifg=#ffff60
+PreProc        xxx ctermfg=81 guifg=#ff80ff
+Underlined     xxx cterm=underline ctermfg=81 gui=underline guifg=#80a0ff
+Ignore         xxx ctermfg=0 guifg=bg
+Todo           xxx ctermfg=0 ctermbg=11 guifg=Blue guibg=Yellow
+Character      xxx links to Constant
+Boolean        xxx links to Constant
+Float          xxx links to Number
+Function       xxx links to Identifier
+Conditional    xxx links to Statement
+Repeat         xxx links to Statement
+Label          xxx links to Statement
+Keyword        xxx links to Statement
+Exception      xxx links to Statement
+Include        xxx links to PreProc
+Define         xxx links to PreProc
+Macro          xxx links to PreProc
+PreCondit      xxx links to PreProc
+StorageClass   xxx links to Type
+Structure      xxx links to Type
+Typedef        xxx links to Type
+Tag            xxx links to Special
+SpecialComment xxx links to Special
+Debug          xxx links to Special
+CocCodeLens    xxx guifg=#ffffff
+CocErrorSign   xxx ctermfg=9 guifg=#ff0000
+CocWarningSign xxx ctermfg=130 guifg=#ff922b
+CocInfoSign    xxx ctermfg=11 guifg=#fab005
+CocHintSign    xxx ctermfg=12 guifg=#15aabf
+CocSelectedText xxx ctermfg=9 guifg=#fb4934
+CocUnderline   xxx cterm=underline gui=underline
+CocBold        xxx cterm=bold gui=bold
+CocItalic      xxx cterm=italic gui=italic
+CocMarkdownLink xxx ctermfg=12 guifg=#15aabf
+CocMarkdownCode xxx links to markdownCode
+markdownCode   xxx cleared
+CocMarkdownHeader xxx links to markdownH1
+markdownH1     xxx cleared
+CocMenuSel     xxx links to PmenuSel
+CocErrorFloat  xxx links to CocErrorSign
+CocWarningFloat xxx links to CocWarningSign
+CocInfoFloat   xxx links to CocInfoSign
+CocHintFloat   xxx links to CocHintSign
+CocErrorHighlight xxx links to CocUnderline
+CocWarningHighlight xxx links to CocUnderline
+CocInfoHighlight xxx links to CocUnderline
+CocHintHighlight xxx links to CocUnderline
+CocListMode    xxx links to ModeMsg
+CocListPath    xxx links to Comment
+CocHighlightText xxx links to CursorColumn
+CocHoverRange  xxx links to Search
+CocCursorRange xxx links to Search
+CocHighlightRead xxx links to CocHighlightText
+CocHighlightWrite xxx links to CocHighlightText
+CocFloating    xxx links to NormalFloat
+CocErrorVirtualText xxx links to CocErrorSign
+CocWarningVirtualText xxx links to CocWarningSign
+CocInfoVirtualText xxx links to CocInfoSign
+CocHintVirtualText xxx links to CocHintSign
+CocListBlackBlack xxx guifg=#282828 guibg=#282828
+CocListBlackBlue xxx guifg=#282828 guibg=#458588
+CocListBlackGreen xxx guifg=#282828 guibg=#98971a
+CocListBlackGrey xxx guifg=#282828 guibg=#928374
+CocListBlackWhite xxx guifg=#282828 guibg=#a89984
+CocListBlackCyan xxx guifg=#282828 guibg=#689d6a
+CocListBlackYellow xxx guifg=#282828 guibg=#d79921
+CocListBlackMagenta xxx guifg=#282828 guibg=#b16286
+CocListBlackRed xxx guifg=#282828 guibg=#cc241d
+CocListFgBlack xxx ctermfg=0 guifg=#282828
+CocListBgBlack xxx ctermbg=0 guibg=#282828
+CocListBlueBlack xxx guifg=#458588 guibg=#282828
+CocListBlueBlue xxx guifg=#458588 guibg=#458588
+CocListBlueGreen xxx guifg=#458588 guibg=#98971a
+CocListBlueGrey xxx guifg=#458588 guibg=#928374
+CocListBlueWhite xxx guifg=#458588 guibg=#a89984
+CocListBlueCyan xxx guifg=#458588 guibg=#689d6a
+CocListBlueYellow xxx guifg=#458588 guibg=#d79921
+CocListBlueMagenta xxx guifg=#458588 guibg=#b16286
+CocListBlueRed xxx guifg=#458588 guibg=#cc241d
+CocListFgBlue  xxx ctermfg=12 guifg=#458588
+CocListBgBlue  xxx ctermbg=12 guibg=#458588
+CocListGreenBlack xxx guifg=#98971a guibg=#282828
+CocListGreenBlue xxx guifg=#98971a guibg=#458588
+CocListGreenGreen xxx guifg=#98971a guibg=#98971a
+CocListGreenGrey xxx guifg=#98971a guibg=#928374
+CocListGreenWhite xxx guifg=#98971a guibg=#a89984
+CocListGreenCyan xxx guifg=#98971a guibg=#689d6a
+CocListGreenYellow xxx guifg=#98971a guibg=#d79921
+CocListGreenMagenta xxx guifg=#98971a guibg=#b16286
+CocListGreenRed xxx guifg=#98971a guibg=#cc241d
+CocListFgGreen xxx ctermfg=10 guifg=#98971a
+CocListBgGreen xxx ctermbg=10 guibg=#98971a
+CocListGreyBlack xxx guifg=#928374 guibg=#282828
+CocListGreyBlue xxx guifg=#928374 guibg=#458588
+CocListGreyGreen xxx guifg=#928374 guibg=#98971a
+CocListGreyGrey xxx guifg=#928374 guibg=#928374
+CocListGreyWhite xxx guifg=#928374 guibg=#a89984
+CocListGreyCyan xxx guifg=#928374 guibg=#689d6a
+CocListGreyYellow xxx guifg=#928374 guibg=#d79921
+CocListGreyMagenta xxx guifg=#928374 guibg=#b16286
+CocListGreyRed xxx guifg=#928374 guibg=#cc241d
+CocListFgGrey  xxx ctermfg=248 guifg=#928374
+CocListBgGrey  xxx ctermbg=248 guibg=#928374
+CocListWhiteBlack xxx guifg=#a89984 guibg=#282828
+CocListWhiteBlue xxx guifg=#a89984 guibg=#458588
+CocListWhiteGreen xxx guifg=#a89984 guibg=#98971a
+CocListWhiteGrey xxx guifg=#a89984 guibg=#928374
+CocListWhiteWhite xxx guifg=#a89984 guibg=#a89984
+CocListWhiteCyan xxx guifg=#a89984 guibg=#689d6a
+CocListWhiteYellow xxx guifg=#a89984 guibg=#d79921
+CocListWhiteMagenta xxx guifg=#a89984 guibg=#b16286
+CocListWhiteRed xxx guifg=#a89984 guibg=#cc241d
+CocListFgWhite xxx ctermfg=15 guifg=#a89984
+CocListBgWhite xxx ctermbg=15 guibg=#a89984
+CocListCyanBlack xxx guifg=#689d6a guibg=#282828
+CocListCyanBlue xxx guifg=#689d6a guibg=#458588
+CocListCyanGreen xxx guifg=#689d6a guibg=#98971a
+CocListCyanGrey xxx guifg=#689d6a guibg=#928374
+CocListCyanWhite xxx guifg=#689d6a guibg=#a89984
+CocListCyanCyan xxx guifg=#689d6a guibg=#689d6a
+CocListCyanYellow xxx guifg=#689d6a guibg=#d79921
+CocListCyanMagenta xxx guifg=#689d6a guibg=#b16286
+CocListCyanRed xxx guifg=#689d6a guibg=#cc241d
+CocListFgCyan  xxx ctermfg=14 guifg=#689d6a
+CocListBgCyan  xxx ctermbg=14 guibg=#689d6a
+CocListYellowBlack xxx guifg=#d79921 guibg=#282828
+CocListYellowBlue xxx guifg=#d79921 guibg=#458588
+CocListYellowGreen xxx guifg=#d79921 guibg=#98971a
+CocListYellowGrey xxx guifg=#d79921 guibg=#928374
+CocListYellowWhite xxx guifg=#d79921 guibg=#a89984
+CocListYellowCyan xxx guifg=#d79921 guibg=#689d6a
+CocListYellowYellow xxx guifg=#d79921 guibg=#d79921
+CocListYellowMagenta xxx guifg=#d79921 guibg=#b16286
+CocListYellowRed xxx guifg=#d79921 guibg=#cc241d
+CocListFgYellow xxx ctermfg=11 guifg=#d79921
+CocListBgYellow xxx ctermbg=11 guibg=#d79921
+CocListMagentaBlack xxx guifg=#b16286 guibg=#282828
+CocListMagentaBlue xxx guifg=#b16286 guibg=#458588
+CocListMagentaGreen xxx guifg=#b16286 guibg=#98971a
+CocListMagentaGrey xxx guifg=#b16286 guibg=#928374
+CocListMagentaWhite xxx guifg=#b16286 guibg=#a89984
+CocListMagentaCyan xxx guifg=#b16286 guibg=#689d6a
+CocListMagentaYellow xxx guifg=#b16286 guibg=#d79921
+CocListMagentaMagenta xxx guifg=#b16286 guibg=#b16286
+CocListMagentaRed xxx guifg=#b16286 guibg=#cc241d
+CocListFgMagenta xxx ctermfg=13 guifg=#b16286
+CocListBgMagenta xxx ctermbg=13 guibg=#b16286
+CocListRedBlack xxx guifg=#cc241d guibg=#282828
+CocListRedBlue xxx guifg=#cc241d guibg=#458588
+CocListRedGreen xxx guifg=#cc241d guibg=#98971a
+CocListRedGrey xxx guifg=#cc241d guibg=#928374
+CocListRedWhite xxx guifg=#cc241d guibg=#a89984
+CocListRedCyan xxx guifg=#cc241d guibg=#689d6a
+CocListRedYellow xxx guifg=#cc241d guibg=#d79921
+CocListRedMagenta xxx guifg=#cc241d guibg=#b16286
+CocListRedRed  xxx guifg=#cc241d guibg=#cc241d
+CocListFgRed   xxx ctermfg=9 guifg=#cc241d
+CocListBgRed   xxx ctermbg=9 guibg=#cc241d
+haskellBackpackStructure xxx links to Structure
+haskellBackpackDependency xxx links to Include
+haskellBlock   xxx cleared
+haskellIdentifier xxx links to Identifier
+haskellOperators xxx links to Operator
+haskellSeparator xxx links to Delimiter
+haskellParens  xxx cleared
+haskellRecordField xxx cleared
+haskellWhere   xxx links to Structure
+haskellLet     xxx links to Structure
+haskellDefault xxx links to Keyword
+haskellTypeSig xxx cleared
+HaskellDerive  xxx links to Structure
+haskellDeclKeyword xxx links to Structure
+haskellDecl    xxx links to Structure
+haskellImportKeywords xxx links to Include
+haskellForeignKeywords xxx links to Structure
+haskellString  xxx links to String
+haskellForeignImport xxx cleared
+haskellType    xxx links to Type
+haskellLineComment xxx links to Comment
+haskellBlockComment xxx links to Comment
+haskellPragma  xxx links to SpecialComment
+haskellImport  xxx cleared
+haskellKeyword xxx links to Keyword
+haskellStatic  xxx links to Keyword
+haskellConditional xxx links to Conditional
+haskellNumber  xxx links to Number
+haskellFloat   xxx links to Float
+haskellDelimiter xxx links to Delimiter
+haskellBrackets xxx cleared
+haskellInfix   xxx links to Keyword
+haskellBottom  xxx links to Macro
+haskellQuote   xxx links to Operator
+haskellQuotedType xxx links to Type
+haskellQuoted  xxx cleared
+haskellTodo    xxx links to Todo
+haskellBacktick xxx links to Operator
+haskellChar    xxx links to String
+haskellLiquid  xxx links to SpecialComment
+haskellPreProc xxx links to PreProc
+haskellShebang xxx links to Comment
+haskellQuasiQuote xxx cleared
+haskellTypeRoles xxx links to Structure
+haskellTypeRoleBlock xxx cleared
+haskellForall  xxx links to Operator
+haskellRecursiveDo xxx links to Keyword
+haskellArrowSyntax xxx links to Keyword
+haskellPatternKeyword xxx links to Structure
+haskellTH      xxx links to Boolean
+haskellQuasiQuoted xxx links to String
+haskellAssocType xxx links to Type
+CocErrorLine   xxx cleared
+CocWarningLine xxx cleared
+CocInfoLine    xxx cleared
+CocHintLine    xxx cleared
+CocSelectedLine xxx cleared
+CocGitChangedSign xxx links to DiffChange
+CocGitAddedSign xxx links to DiffAdd
+CocGitRemovedSign xxx links to DiffDelete
+CocGitTopRemovedSign xxx links to DiffDelete
+CocGitChangeRemovedSign xxx links to DiffChange
+CodeBlock1     xxx cleared
+CodeBlock2     xxx cleared
+vimTodo        xxx links to Todo
+vimCommand     xxx links to Statement
+vimOnlyCommand xxx cleared
+vimStdPlugin   xxx cleared
+vimOnlyOption  xxx cleared
+vimTermOption  xxx cleared
+vimErrSetting  xxx links to vimError
+vimGroup       xxx links to Type
+vimHLGroup     xxx links to vimGroup
+vimOnlyHLGroup xxx cleared
+nvimHLGroup    xxx links to vimHLGroup
+vimGlobal      xxx cleared
+vimSubst       xxx links to vimCommand
+vimComment     xxx links to Comment
+vimNumber      xxx links to Number
+vimAddress     xxx links to vimMark
+vimAutoCmd     xxx links to vimCommand
+vimEcho        xxx cleared
+vimIsCommand   xxx cleared
+vimExtCmd      xxx cleared
+vimFilter      xxx cleared
+vimLet         xxx links to vimCommand
+vimMap         xxx links to vimCommand
+vimMark        xxx links to Number
+vimSet         xxx cleared
+vimSyntax      xxx links to vimCommand
+vimUserCmd     xxx cleared
+vimCmdSep      xxx cleared
+vimVar         xxx links to Identifier
+vimFBVar       xxx links to vimVar
+vimInsert      xxx links to vimString
+vimBehaveModel xxx links to vimBehave
+vimBehaveError xxx links to vimError
+vimBehave      xxx links to vimCommand
+vimFTCmd       xxx links to vimCommand
+vimFTOption    xxx links to vimSynType
+vimFTError     xxx links to vimError
+vimFiletype    xxx cleared
+vimAugroup     xxx cleared
+vimExecute     xxx cleared
+vimNotFunc     xxx links to vimCommand
+vimFuncName    xxx links to Function
+vimFunction    xxx cleared
+vimFunctionError xxx links to vimError
+vimLineComment xxx links to vimComment
+vimSpecFile    xxx links to Identifier
+vimOper        xxx links to Operator
+vimOperParen   xxx cleared
+vimString      xxx links to String
+vimRegister    xxx links to SpecialChar
+vimCmplxRepeat xxx links to SpecialChar
+vimRegion      xxx cleared
+vimSynLine     xxx cleared
+vimNotation    xxx links to Special
+vimCtrlChar    xxx links to SpecialChar
+vimFuncVar     xxx links to Identifier
+vimContinue    xxx links to Special
+vimSetEqual    xxx cleared
+vimOption      xxx links to PreProc
+vimAugroupKey  xxx links to vimCommand
+vimAugroupError xxx links to vimError
+vimEnvvar      xxx links to PreProc
+vimFunc        xxx links to vimError
+vimParenSep    xxx links to Delimiter
+vimSep         xxx links to Delimiter
+vimOperError   xxx links to Error
+vimFuncKey     xxx links to vimCommand
+vimFuncSID     xxx links to Special
+vimAbb         xxx links to vimCommand
+vimEchoHL      xxx links to vimCommand
+vimHighlight   xxx links to vimCommand
+vimNorm        xxx links to vimCommand
+vimSearch      xxx links to vimString
+vimUnmap       xxx links to vimMap
+vimUserCommand xxx links to vimCommand
+vimFuncBody    xxx cleared
+vimFuncBlank   xxx cleared
+vimPattern     xxx links to Type
+vimSpecFileMod xxx links to vimSpecFile
+vimEscapeBrace xxx cleared
+vimSetString   xxx links to vimString
+vimSubstRep    xxx cleared
+vimSubstRange  xxx cleared
+vimUserAttrb   xxx links to vimSpecial
+vimUserAttrbError xxx links to Error
+vimUserAttrbKey xxx links to vimOption
+vimUserAttrbCmplt xxx links to vimSpecial
+vimUserCmdError xxx links to Error
+vimUserAttrbCmpltFunc xxx links to Special
+vimCommentString xxx links to vimString
+vimPatSepErr   xxx links to vimError
+vimPatSep      xxx links to SpecialChar
+vimPatSepZ     xxx links to vimPatSep
+vimPatSepZone  xxx links to vimString
+vimPatSepR     xxx links to vimPatSep
+vimPatRegion   xxx cleared
+vimNotPatSep   xxx links to vimString
+vimStringEnd   xxx links to vimString
+vimStringCont  xxx links to vimString
+vimSubstTwoBS  xxx links to vimString
+vimSubstSubstr xxx links to SpecialChar
+vimCollection  xxx cleared
+vimSubstPat    xxx cleared
+vimSubst1      xxx links to vimSubst
+vimSubst2      xxx cleared
+vimSubstDelim  xxx links to Delimiter
+vimSubstRep4   xxx cleared
+vimSubstFlagErr xxx links to vimError
+vimCollClass   xxx cleared
+vimCollClassErr xxx links to vimError
+vimSubstFlags  xxx links to Special
+vimMarkNumber  xxx links to vimNumber
+vimPlainMark   xxx links to vimMark
+vimRange       xxx cleared
+vimPlainRegister xxx links to vimRegister
+vimSetMod      xxx links to vimOption
+vimSetSep      xxx links to Statement
+vimMapMod      xxx links to vimBracket
+vimMapLhs      xxx cleared
+vimAutoEvent   xxx links to Type
+nvimAutoEvent  xxx links to vimAutoEvent
+vimAutoCmdSpace xxx cleared
+vimAutoEventList xxx cleared
+vimAutoCmdSfxList xxx cleared
+vimEchoHLNone  xxx links to vimGroup
+vimMapBang     xxx links to vimCommand
+nvimMap        xxx links to vimMap
+nvimUnmap      xxx links to vimUnmap
+vimMapRhs      xxx cleared
+vimMapModKey   xxx links to vimFuncSID
+vimMapModErr   xxx links to vimError
+vimMapRhsExtend xxx cleared
+vimMenuBang    xxx cleared
+vimMenuPriority xxx cleared
+vimMenuName    xxx links to PreProc
+vimMenuMod     xxx links to vimMapMod
+vimMenuNameMore xxx links to vimMenuName
+vimMenuMap     xxx cleared
+vimMenuRhs     xxx cleared
+vimBracket     xxx links to Delimiter
+vimUserFunc    xxx links to Normal
+vimElseIfErr   xxx links to Error
+vimBufnrWarn   xxx links to vimWarn
+vimNormCmds    xxx cleared
+vimGroupSpecial xxx links to Special
+vimGroupList   xxx cleared
+vimSynError    xxx links to Error
+vimSynContains xxx links to vimSynOption
+vimSynKeyContainedin xxx links to vimSynContains
+vimSynNextgroup xxx links to vimSynOption
+vimSynType     xxx links to vimSpecial
+vimAuSyntax    xxx cleared
+vimSynCase     xxx links to Type
+vimSynCaseError xxx links to vimError
+vimClusterName xxx cleared
+vimGroupName   xxx links to vimGroup
+vimGroupAdd    xxx links to vimSynOption
+vimGroupRem    xxx links to vimSynOption
+vimIskList     xxx cleared
+vimIskSep      xxx links to Delimiter
+vimSynKeyOpt   xxx links to vimSynOption
+vimSynKeyRegion xxx cleared
+vimMtchComment xxx links to vimComment
+vimSynMtchOpt  xxx links to vimSynOption
+vimSynRegPat   xxx links to vimString
+vimSynMatchRegion xxx cleared
+vimSynMtchCchar xxx cleared
+vimSynMtchGroup xxx cleared
+vimSynPatRange xxx links to vimString
+vimSynNotPatRange xxx links to vimSynRegPat
+vimSynRegOpt   xxx links to vimSynOption
+vimSynReg      xxx links to Type
+vimSynMtchGrp  xxx links to vimSynOption
+vimSynRegion   xxx cleared
+vimSynPatMod   xxx cleared
+vimSyncC       xxx links to Type
+vimSyncLines   xxx cleared
+vimSyncMatch   xxx cleared
+vimSyncError   xxx links to Error
+vimSyncLinebreak xxx cleared
+vimSyncLinecont xxx cleared
+vimSyncRegion  xxx cleared
+vimSyncGroupName xxx links to vimGroupName
+vimSyncKey     xxx links to Type
+vimSyncGroup   xxx links to vimGroupName
+vimSyncNone    xxx links to Type
+vimHiLink      xxx cleared
+vimHiClear     xxx links to vimHighlight
+vimHiKeyList   xxx cleared
+vimHiCtermError xxx links to vimError
+vimHiBang      xxx cleared
+vimHiGroup     xxx links to vimGroupName
+vimHiAttrib    xxx links to PreProc
+vimFgBgAttrib  xxx links to vimHiAttrib
+vimHiAttribList xxx links to vimError
+vimHiCtermColor xxx cleared
+vimHiFontname  xxx cleared
+vimHiGuiFontname xxx cleared
+vimHiGuiRgb    xxx links to vimNumber
+vimHiTerm      xxx links to Type
+vimHiCTerm     xxx links to vimHiTerm
+vimHiStartStop xxx links to vimHiTerm
+vimHiCtermFgBg xxx links to vimHiTerm
+vimHiGui       xxx links to vimHiTerm
+vimHiGuiFont   xxx links to vimHiTerm
+vimHiGuiFgBg   xxx links to vimHiTerm
+vimHiKeyError  xxx links to vimError
+vimHiTermcap   xxx cleared
+vimHiNmbr      xxx links to Number
+vimCommentTitle xxx links to PreProc
+vimCommentTitleLeader xxx cleared
+vimSearchDelim xxx links to Statement
+vimEmbedError  xxx links to Normal
+vimAugroupSyncA xxx cleared
+vimError       xxx links to Error
+vimKeyCodeError xxx links to vimError
+vimWarn        xxx links to WarningMsg
+vimAuHighlight xxx links to vimHighlight
+vimAutoCmdOpt  xxx links to vimOption
+vimAutoSet     xxx links to vimCommand
+vimCondHL      xxx links to vimCommand
+vimElseif      xxx links to vimCondHL
+vimFold        xxx links to Folded
+vimSynOption   xxx links to Special
+vimHLMod       xxx links to PreProc
+vimKeyCode     xxx links to vimSpecFile
+vimKeyword     xxx links to Statement
+vimScriptDelim xxx links to Comment
+vimSpecial     xxx links to Type
+vimStatement   xxx links to Statement
+optwinHeader   xxx links to Title
+optwinComment  xxx links to Comment
+optwinName     xxx links to Identifier
+--- Variables ---
+netrw_winsize         #50
+netrw_use_errorwindow #1
+tmuxcomplete#asyncomplete_source_options {'name': 'tmuxcomplete', 'whitelist': ['*'], 'config': {'show_incomplete': 1, 'truncate': 0, 'scrollback': 0, 'splitmode': 'words', 'sort_candidates': 0, 'filter_prefix': 1}}
+netrw_special_syntax  #0
+netrw_timefmt          %c
+loaded_plug           #1
+tar_copycmd            cp
+netrw_wiw             #1
+netrw_fastbrowse      #1
+netrw_cygdrive         /cygdrive
+netrw_keepj            keepj
+tmuxcomplete#loaded    0.1.3
+langonly               en
+loaded_gzip           #1
+netrw_ftp_browse_reject  ^total\s\+\d\+$\|^Trying\s\+\d\+.*$\|^KERBEROS_V\d rejected\|^Security extensions not\|No such file\|: connect to address [0-9a-fA-F:]*: No route to host$
+netrw_ignorenetrc     #0
+coc_global_extensions []
+vim_man_cmd            /usr/bin/man
+haskell_enable_quantification #1
+netrw_mkdir_cmd        ssh USEPORT HOSTNAME mkdir
+netrw_glob_escape      *[]?`{~$\
+netrw_sepchr           ÿ
+netrw_http_xcmd        -L -o
+tar_readoptions        OPxf
+coc_status             
+netrw_rename_cmd       ssh USEPORT HOSTNAME mv
+netrw_sshport          -p
+netrw_sort_by          name
+netrw_dirhistmax      #10
+haskell_enable_static_pointers #1
+netrw_localmkdir       mkdir
+netrw_suppress_gx_mesg #1
+loaded_tarPlugin       v29
+netrw_localmovecmd     mv
+netrw_retmap          #0
+tmuxcomplete#trigger   
+netrw_bufsettings      noma nomod nonu nobl nowrap ro nornu
+netrw_localcmdshell    
+netrw_alto            #0
+netrw_localmovecmdopt  
+netrw_keepdir         #1
+netrw_ftp_options      -i -n
+netrw_chgperm          chmod PERM FILENAME
+netrw_altv            #0
+netrw_sort_direction   normal
+netrw_rsync_sep        /
+loaded_vim_utils_man  #1
+haskell_enable_recursivedo #1
+matchparen_insert_timeout #60
+coc_process_pid       #96102
+netrw_remote_mkdir     mkdir
+netrw_use_noswf       #1
+loaded_zipPlugin       v28
+netrw_rmf_cmd          ssh USEPORT HOSTNAME rm -f 
+netrw_compress         gzip
+netrw_http_put_cmd     curl -T
+tar_extractcmd         tar -xf
+haskell_enable_pattern_synonyms #1
+netrw_localrmdiropt    
+netrw_preview         #0
+netrw_markfileesc      *./[\~
+loaded_spellfile_plugin #1
+netrw_scpport          -P
+netrw_quickhelp       #0
+netrw_decompress      {'.xz': 'unxz', '.tar': 'tar -xf', '.gz': 'gunzip', '.bz2': 'bunzip2', '.zip': 'unzip'}
+plugs_order           ['haskell-vim', 'coc.nvim', 'vim-man', 'golden_size', 'tmux-complete.vim', 'async.vim', 'asyncomplete.vim']
+netrw_menu_escape      .&? \
+did_install_default_menus #1
+netrw_ssh_browse_reject  ^total\s\+\d\+$
+netrw_xstrlen         #1
+plug_home              /home/jari/.local/share/nvim/plugged
+netrw_cursor          #2
+coc_enabled           #1
+netrw_localcopycmdopt  
+netrw_list_cmd         ssh USEPORT HOSTNAME ls -FLa
+coc_last_float_win    #1046
+netrw_cygwin          #0
+golden_size_off       #0
+ptch                  #213
+deoplete#enable_at_startup #1
+netrw_ftp_cmd          ftp
+netrw_errorlvl        #0
+netrw_localcopydircmd  cp
+netrw_ftp_timelist_cmd  ls -tlF
+syntax_on             #1
+coc#_context          {'preselect': -1, 'candidates': [], 'start': 0}
+netrw_mousemaps       #0
+netrw_ftp_sizelist_cmd  ls -slF
+netrw_sftp_cmd         sftp
+loaded_tutor_mode_plugin #1
+bmenu_priority        #60
+coc_service_initialized #1
+haskell_enable_arrowsyntax #1
+netrw_ssh_cmd          ssh
+bmenu_max_pathlen     #35
+tar_shq                '
+haskell_backpack      #1
+ctags_command          ctags -R .
+tar_writeoptions       uf
+loaded_netrwPlugin     v165
+more_save             #1
+NetrwTopLvlMenu        Netrw.
+loaded_shada_plugin   #1
+netrw_list_hide        
+netrw_browse_split    #0
+netrw_sort_options     
+loaded_man            #1
+netrw_hide            #1
+did_install_syntax_menu #1
+netrw_fetch_cmd        
+netrw_ftpmode          binary
+haskell_enable_typeroles #1
+loaded_clipboard_provider #2
+netrw_tmpfile_escape    &;
+netrw_localmkdiropt    
+zipPlugin_ext          *.apk,*.celzip,*.crtx,*.docm,*.docx,*.dotm,*.dotx,*.ear,*.epub,*.gcsx,*.glox,*.gqsx,*.ja,*.jar,*.kmz,*.oxt,*.potm,*.potx,*.ppam,*.ppsm,*.ppsx,*.pptm,*.pptx,*.sldx,*.thmx,*.vdw,*.war,*.wsz,*.xap,*.xlam,*.xlam,*.xlsb,*.xlsm,*.xlsx,*.xltm,*.xltx,*.xpi,*.zip
+netrw_sizestyle        b
+netrw_http_cmd         curl
+netrw_maxfilenamelen  #32
+netrw_rm_cmd           ssh USEPORT HOSTNAME rm
+loaded_2html_plugin    vim8.1_v1
+loaded_matchparen     #1
+vimsyn_embed          #0
+netrw_servername       NETRWSERVER
+netrw_rmdir_cmd        ssh USEPORT HOSTNAME rmdir
+netrw_ftp_list_cmd     ls -lF
+WorkspaceFolders      ['/home/jari/paracletus']
+netrw_scp_cmd          scp -q
+matchparen_timeout    #300
+buf                   #42
+haskell_indent_disable #1
+coc_selected_text      
+loaded_matchit        #1
+netrw_chgwin          #-1
+paste#paste_cmd       {'v': '"-c<Esc>:call paste#Paste()<CR>', 'i': '^\^O"+gP', 'n': ':call paste#Paste()<CR>'}
+netrw_localcopycmd     cp
+haskell_disable_TH    #1
+netrw_dirhistcnt      #0
+did_optwin_syntax_inits #1
+netrw_rsync_cmd        rsync
+netrw_dav_cmd          curl
+netrw_fname_escape      ?&;%
+coc_user_config       {}
+did_coc_loaded        #1
+netrw_menu            #1
+netrw_liststyle       #0
+netrw_rcp_cmd          rcp
+netrw_banner          #1
+netrw_win95ftp        #1
+netrw_localcopydircmdopt   -R
+loaded_remote_plugins  /home/jari/.local/share/nvim/rplugin.vim
+tar_cmd                tar
+plugs                 {'coc.nvim': {'uri': 'https://git::@github.com/neoclide/coc.nvim.git', 'dir': '/home/jari/.local/share/nvim/plugged/coc.nvim/', 'frozen': 0, 'branch': 'master', 'do': 'yarn install --frozen-lockfile'}, 'tmux-complete.vim': {'uri': 'https://git::@github.com/wellle/tmux-complete.vim.git', 'dir': '/home/jari/.local/share/nvim/plugged/tmux-complete.vim/', 'frozen': 0, 'branch': 'master'}, 'vim-man': {'uri': 'https://git::@github.com/vim-utils/vim-man.git', 'dir': '/home/jari/.local/share/nvim/plugged/vim-man/', 'frozen': 0, 'branch': 'master'}, 'async.vim': {'uri': 'https://git::@github.com/prabirshrestha/async.vim.git', 'dir': '/home/jari/.local/share/nvim/plugged/async.vim/', 'frozen': 0, 'branch': 'master'}, 'asyncomplete.vim': {'uri': 'https://git::@github.com/prabirshrestha/asyncomplete.vim.git', 'dir': '/home/jari/.local/share/nvim/plugged/asyncomplete.vim/', 'frozen': 0, 'branch': 'master'}, 'golden_size': {'uri': 'https://git::@github.com/dm1try/golden_size.git', 'dir': '/home/jari/.local/share/nvim/plugged/golden_size/', 'frozen': 0, 'branch': 'master'}, 'haskell-vim': {'uri': 'https://git::@github.com/neovimhaskell/haskell-vim.git', 'dir': '/home/jari/.local/share/nvim/plugged/haskell-vim/', 'frozen': 0, 'branch': 'master'}}
+loaded_netrw           v165
+coc_git_status         
+coc_workspace_initialized #1
+tar_browseoptions      Ptf
+coc_vim_commands      []
+winids                []
+netrw_sort_sequence    [\/]$,\<core\%(\.\d\+\)\=\>,\.h$,\.c$,\.cpp$,\~\=\*$,*,\.o$,\.obj$,\.info$,\.swp$,\.bak$,\~$
+loaded_tar             v29
+ft_ignore_pat          \.\(Z\|gz\|bz2\|zip\|tgz\)$
+netrw_ctags            ctags
+b:current_syntax       vim
+b:changedtick         #2571
+w:netrw_prvfile        /usr/share/nvim/runtime/synmenu.vim
+v:stderr              #2
+v:beval_winid         #0
+v:version             #800
+v:t_list              #3
+v:beval_winnr         #0
+v:errors              []
+v:lnum                #0
+v:hlsearch            #1
+v:scrollstart          Unknown
+v:oldfiles            ['/home/jari/paracletus/src/Anamnesis/Event.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Buff.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Draw.hs', '/home/jari/paracletus-tmp/paracletus/src/Epiklesis/World.hs', '/home/jari/paracletus/src/Epiklesis.hs', '/home/jari/paracletus/src/Epiklesis/Command.hs', '/home/jari/paracletus/src/Epiklesis/Shell.hs', '/home/jari/paracletus/src/Epiklesis/ShCmd.hs', '/home/jari/paracletus/src/Epiklesis/Data.hs', '/home/jari/paracletus/mod/base/base.lua', '/home/jari/paracletus/mod/game/abfa.lua', '/home/jari/paracletus/src/Artos/Data.hs', '/home/jari/paracletus/src/Epiklesis/Sh', '/home/jari/paracletus/src/Paracletus/Load.hs', '/home/jari/paracletus/src/Paracletus/Data.hs', '/home/jari/paracletus/src/Paracletus/Buff.hs', '/home/jari/paracletus/src/Paracletus/Draw.hs', '/home/jari/paracletus-tmp/paracletus/src/Epiklesis/Shell.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Load.hs', '/home/jari/paracletus/src/Anamnesis/Data.hs', '/home/jari/paracletus/paracletus.cabal', '/home/jari/paracletus-tmp/paracletus/src/Epiklesis/ShCmd.hs', '/home/jari/paracletus/src/Epiklesis/World.hs', '/home/jari/paracletus/src/Paracletus/Vulkan.hs', '/home/jari/paracletus/src/Epiklesis/Window.hs', '/home/jari/paracletus/src/Anamnesis/Init.hs', '/home/jari/paracletus/src/Paracletus/Oblatum/Mouse.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Vulkan/Load.hs', '/home/jari/paracletus/src/Paracletus/Vulkan/Load.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Oblatum/Mouse.hs', '/home/jari/paracletus/src/Paracletus/Oblatum/Event.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Vulkan.hs', '/home/jari/paracletus/src/Paracletus/Vulkan', '/home/jari/paracletus/src/Epiklesis/Elem.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Dyn.hs', '/home/jari/paracletus/src/Paracletus/Dy', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Elem.hs', '/home/jari/paracletus-tmp/paracletus/mod/game/abfa.lua', '/home/jari/paracletus/src/Paracletus/Vulkan/Device.hs', '/home/jari/paracletus/src/Paracletus/Vulkan/Instance.hs', '/home/jari/temp/paracletus/src/Paracletus/Vulkan/Device.hs', '/home/jari/temp/paracletus/src/Paracletus/Oblatum.hs', '/home/jari/temp/paracletus/src/Paracletus/Vulkan/Instance.hs', '/home/jari/temp/paracletus/src/Paracletus/Vulkan.hs', '/home/jari/paracletus/src/Paracletus/Oblatum.hs', '/home/jari/paracletus/src/Paracletus/Vulkan/Pres.hs', '/home/jari/temp/paracletus/src/Paracletus/Vulkan/Pres.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Oblatum/Event.hs', '/home/jari/paracletus-tmp/paracletus/src/Epiklesis/Command.hs', '/home/jari/paracletus-tmp/paracletus/src/Epiklesis/ArgV.hs', '/home/jari/paracletus-tmp/paracletus/src/Epiklesis.hs', '/home/jari/paracletus/src/Paracletus/Oblatum/Font.hs', '/home/jari/paracletus-tmp/paracletus/src/Epiklesis/Dy', '/home/jari/paracletus-tmp/paracletus/src/Epiklesis/Data.hs', '/home/jari/paracletus/src/Epiklesis/ShC', '/home/jari/paracletus/src/Anamnesis/Util.hs', '/home/jari/paracletus/src/Paracletus/Bi', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Oblatum', '/home/jari/paracletus-tmp/paracletus/src/Epiklesis/Window.hs', '/home/jari/paracletus-tmp/paracletus/src/Anamnesis/Event.hs', '/home/jari/paracletus/src/Epiklesis/Settings.hs', '/home/jari/paracletus/src/Paracletus/Vulkan/Shader.hs', '/home/jari/paracletus/dat/shd/tile.vert', '/home/jari/paracletus-tmp/paracletus/dat/shd/triangle.vert', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Vulkan/Pres.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Vulkan/Pipeline.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Vulkan/Device.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Vulkan/Buffer.hs', '/home/jari/paracletus/src/Paracletus/Vulkan/Trans.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Vulkan/Trans.hs', '/home/jari/paracletus/src/Paracletus/Vulkan/Desc.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Vulkan/Command.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Vulkan/Desc.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Vulkan', '/home/jari/paracletus-tmp/paracletus/src/Artos/Data.hs', '/home/jari/paracletus/mod/base/window.lua', '/home/jari/paracletus-tmp/paracletus/mod/base/window.lua', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Oblatum.hs', '/home/jari/paracletus-tmp/paracletus/src/Anamnesis/Data.hs', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Oblatum/Lo', '/home/jari/paracletus-tmp/paracletus/src/Paracletus/Data.hs', '/home/jari/paracletus-tmp/paracletus/mod/base/pane.lua', '/home/jari/paracletus/mod/base/game.lua', '/home/jari/paracletus-tmp/paracletus/mod/base/game.lua', '/home/jari/paracletus-tmp/paracletus/mod/base/base.lua', '/home/jari/paracletus/src/Epiklesis', '/home/jari/paracletus-tmp/paracletus/src/Epiklesis/Elev.hs', '/home/jari/paracletus/.gitignore', '/home/jari/paracletus/src/Paracletus/Oblatum/Callback.hs', '/home/jari/paracletus/src/Paracletus/El', '/home/jari/.local/share/nvim/plugged/coc.nvim/doc/coc.txt', 'output:///info', '/home/jari/.config/nvim/init.vim', '/home/jari/.tmux.conf', '/home/jari/paracletus/src/Epiklesis/Border.hs', '/home/jari/paracletus/src/Epiklesis/Zazz.hs', '/home/jari/paracletus/src/Epiklesis/Map.hs', '/home/jari/paracletus/src/Paracletus/Text.hs', '/home/jari/paracletus-tmp/paracletus/src/Epiklesis/Zazz.hs', '/home/jari/paracletus/src/Epiklesis/Elev.hs']
+v:dying               #0
+v:windowid            #0
+v:mouse_winid         #0
+v:exiting              v:null
+v:lang                 en_US.UTF-8
+v:count               #0
+v:progpath             /usr/bin/nvim
+v:true                 v:true
+v:t_string            #1
+v:progname             nvim
+v:t_bool              #6
+v:t_number            #0
+v:_null_dict          {}
+v:vim_did_enter       #1
+v:echospace           #72
+v:cmdbang             #0
+v:foldlevel           #0
+v:msgpack_types       {'float': [], 'array': [], 'binary': [], 'integer': [], 'nil': [], 'boolean': [], 'ext': [], 'map': [], 'string': []}
+v:t_func              #2
+v:ctype                en_US.UTF-8
+v:prevcount           #0
+v:register             +
+v:mouse_win           #0
+v:count1              #1
+v:char                 
+v:foldstart           #0
+v:foldend             #0
+v:_null_list          []
+v:profiling           #0
+v:t_float             #5
+v:null                 v:null
+v:beval_col           #0
+v:errmsg               E492: Not an editor command: 144 238 144^I^ILightGreen
+v:beval_lnum          #0
+v:mouse_lnum          #0
+v:insertmode           i
+v:completed_item      {'word': 'Integer', 'menu': '[LS]', 'user_data': '{"cid":1616006473,"source":"languageserver.haskell-1","index":21}', 'info': '*Defined in ''Prelude''*^@* * *^@^@^@Invariant:  `Jn#`  and  `Jp#`  are used iff value doesn''t fit in  `S#` ^@^@Useful properties resulting from the invariants: ^@+ ```haskell^@  abs ( `S#`  _) <= abs ( `Jp#`  _)^@  ```^@^@+ ```haskell^@  abs ( `S#`  _) <  abs ( `Jn#`  _)^@  ```^@^@* * *^@^@', 'kind': 'S', 'abbr': 'Integer~'}
+v:t_dict              #4
+v:false                v:false
+v:beval_bufnr         #0
+v:shell_error         #0
+v:testing             #0
+v:servername           /tmp/nvim98qbSO/0
+v:lc_time              en_US.UTF-8
+v:searchforward       #1
+v:event               {}
+v:mouse_col           #0
+v:statusmsg            No abbreviation found
+v:warningmsg           W10: Warning: Changing a readonly file

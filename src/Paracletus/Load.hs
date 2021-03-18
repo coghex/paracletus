@@ -13,7 +13,8 @@ import Artos.Queue
     ( readChan, tryReadChan, tryReadQueue, writeQueue )
 import Epiklesis.Data
     ( Window(..), WinElem(..)
-    , PaneBit(..), LinkAction(..) )
+    , PaneBit(..), LinkAction(..)
+    , WorldData(..) )
 import Epiklesis.Elem ( loadNewBit, findBitPos )
 import Epiklesis.Shell
     ( findShell, commandShell, evalShell, replaceShell )
@@ -21,10 +22,11 @@ import Epiklesis.Window
     ( switchWin, findWin, replaceWin
     , calcWinModTexs, currentWin
     , printWinElems )
-import Epiklesis.World ( findWorld, genWorldBuff )
+import Epiklesis.World ( findWorld, genWorldBuff, printWorld )
 import Paracletus.Buff
-    ( loadDyns, setTileBuff, genShBuff, initBuff
-    , clearBuff, moveSlider, printBuff, textDyns )
+    ( loadDyns, setTileBuff, genShBuff
+    , initBuff, clearBuff, moveSlider
+    , printBuff, textDyns, printMem )
 import Paracletus.Data
     ( GraphicsLayer(..), Verts(..), FPS(..), Dyns(..)
     , DrawState(..), DrawStateP(..), DSStatus(..), LoadResult(..) )
@@ -144,10 +146,12 @@ processCommand env ds cmd = case cmd of
   LoadCmdPrint  arg → do
     let ret = case arg of
                 PrintCam      → "no cam defined"
+                PrintMem      → printMem ds
                 PrintBuff     → printBuff $ dsBuff ds
                 PrintWinElems → printWinElems $ currentWin $ dsWins ds
+                PrintWorld    → printWorld $ currentWin $ dsWins ds
                 PrintNULL     → "no arg " ⧺ (show arg) ⧺ " known"
-    atomically $ writeQueue (envEventQ env) $ EventLogDebug $ show ret
+    atomically $ writeQueue (envEventQ env) $ EventLogInfo $ show ret
     return $ ResSuccess
   LoadCmdSetFPS fps → do
     let ds'    = ds { dsFPS = fps }
@@ -163,8 +167,9 @@ processCommand env ds cmd = case cmd of
     let newVerts = Verts $ calcVertices $ loadTiles ds
         ds'      = ds { dsTiles = loadTiles ds }
         dyns     = loadDyns ds'
-    atomically $ writeQueue (envLoadQ  env) $ LoadCmdDyns
     atomically $ writeQueue (envEventQ env) $ EventVerts newVerts
+    atomically $ writeQueue (envLoadQ  env) $ LoadCmdDyns
+    --atomically $ writeQueue (envEventQ env) $ EventDyns dyns
     return $ ResDrawState ds'
   LoadCmdInitBuff tiles → do
     return $ ResDrawState $ ds { dsTiles = tiles
@@ -173,7 +178,7 @@ processCommand env ds cmd = case cmd of
                                              Just w  → winBuffs w }
   LoadCmdDyns → do
     let newDyns = loadDyns ds'
-        ds'     = ds { dsBuff = genDynBuffs ds }
+        ds'    = ds { dsBuff = genDynBuffs ds }
     atomically $ writeQueue (envEventQ env) $ EventDyns newDyns
     return $ ResDrawState ds'
   LoadCmdBuff n dyns → return $ ResDrawState $ ds { dsBuff = setTileBuff n dyns (dsBuff ds) }
@@ -185,9 +190,10 @@ processCommand env ds cmd = case cmd of
     where ds' = ds { dsWins = win:(dsWins ds) }
   LoadCmdSwitchWin win → do
     let ds' = ds { dsWins      = switchWin win (dsWins ds)
-                 , dsBuffSizes = case (findWin win (dsWins ds)) of
+                 , dsBuffSizes = buffSizes }
+        buffSizes = case (findWin win (dsWins ds)) of
                                    Nothing → [64,64,256]
-                                   Just w  → winBuffs w }
+                                   Just w  → winBuffs w
     atomically $ writeQueue (envEventQ env) $ EventLoad 50
     return $ ResDrawState ds'
   LoadCmdLoadWin → do
@@ -267,4 +273,3 @@ genDynBuffs ds = dyns2
          Just w  → case (findWorld (winElems w)) of
            Nothing → dyns1
            Just (wp,wd) → genWorldBuff dyns1 3 (dsNDefTex ds) wp wd
-

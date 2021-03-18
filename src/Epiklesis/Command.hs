@@ -17,7 +17,8 @@ import Epiklesis.Data
     , WinArgV(..), WinElem(..)
     , LinkAction(..), PaneBit(..)
     , WorldParams(..), WorldData(..)
-    , Zone(..), Segment(..), Shell(..) )
+    , Zone(..), Segment(..)
+    , Spot(..), Shell(..) )
 import Epiklesis.Elem ( calcTextBoxSize )
 
 -- quits everything using glfw in parent thread
@@ -34,6 +35,12 @@ hsRecreate env = Lua.liftIO $ atomically $ writeQueue (envEventQ env) $ EventRec
 
 hsReload ∷ Env → Lua.Lua ()
 hsReload env = Lua.liftIO $ atomically $ writeQueue (envEventQ env) $ EventReload
+
+hsPrint ∷ Env → String → Lua.Lua ()
+hsPrint env "world" = Lua.liftIO $ atomically $ writeQueue (envLoadQ  env) $ LoadCmdPrint PrintWorld
+hsPrint env "buff"  = Lua.liftIO $ atomically $ writeQueue (envLoadQ  env) $ LoadCmdPrint PrintBuff
+hsPrint env "mem"   = Lua.liftIO $ atomically $ writeQueue (envLoadQ  env) $ LoadCmdPrint PrintMem
+hsPrint env str     = Lua.liftIO $ atomically $ writeQueue (envEventQ env) $ EventLogDebug $ "value " ⧺ str ⧺ " not known"
 
 -- adds a window to the lua draw state
 hsNewWindow ∷ Env → String → String → Lua.Lua ()
@@ -124,5 +131,7 @@ hsNewWorld env win dp = do
       (zx,zy) = (4,3)
       wp = WorldParams (12,8) (zx,zy) (10,10) [] []
       wd = WorldData (1.0,1.0) [Zone (0,0) initSegs] Nothing
-      initSegs = take (zy+2) (repeat (take (zx+2) (repeat SegmentNULL)))
+      initSegs = take (zy+2) (repeat (take (zx+2) (repeat (Segment grid))))-- (repeat SegmentNULL)))
+      grid = take sh $ repeat $ take sw $ repeat $ Spot 1 1 Nothing 1
+      (sw,sh) = (10,8)
   Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem win $ WinElemWorld wp wd dps
