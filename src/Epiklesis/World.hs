@@ -24,6 +24,17 @@ printWorld (Just w) = case (findWorld (winElems w)) of
 printWorldData ∷ WorldData → String
 printWorldData wd = show $ wdZones wd
 
+-- generates the world data
+genWorldData ∷ WorldParams → WorldData → WorldData
+genWorldData wp wd = wd { wdZones = zones0 }
+  where zones0    = replaceZones newSegs0 zoneSize (wdZones wd)
+        newSegs0  = genWorld wp wd
+        zoneSize  = wpZSize wp
+
+-- generates zones and segments for a given cursor
+genWorld ∷ WorldParams → WorldData → [((Int,Int),((Int,Int),Segment))]
+genWorld wp wd = []
+
 -- generates the world dyns and plugs it in to the buffer
 genWorldBuff ∷ [Dyns] → Int → Int → WorldParams → WorldData → [Dyns]
 genWorldBuff buff b nDefTex wp wd = setTileBuff b dyns buff
@@ -53,6 +64,7 @@ genCursDynsF n nDefTex size ((zi,zj),(i,j)) wp wd d
           (zi',zj') = (fromIntegral zi, fromIntegral zj)
           (zw',zh') = (fromIntegral (fst (wpZSize wp)), fromIntegral (snd (wpZSize wp)))
 
+-- turns a cursor point into a zone and segment index
 fixCurs ∷ WorldParams → (Int,Int) → ((Int,Int),(Int,Int))
 fixCurs wp (i,j) = ((zi,zj),(i',j'))
   where zi      = (i `div` zw)
@@ -94,3 +106,27 @@ evalScreenCursor (w,h) (cx,cy) = [pos,posn,pose,poss,posw,posnw,posne,posse,poss
         y      = (-1) + (floor $ cy / h')
         w'     = fromIntegral w
         h'     = fromIntegral h
+
+-- replaces a segment in a collection of zones
+replaceZones ∷ [((Int,Int),((Int,Int),Segment))] → (Int,Int) → [Zone] → [Zone]
+replaceZones []     _        zs = zs
+replaceZones (s:ss) zoneSize zs = replaceZones ss zoneSize $ replaceSegs False s zoneSize zs
+replaceSegs ∷ Bool → ((Int,Int),((Int,Int),Segment)) → (Int,Int) → [Zone] → [Zone]
+replaceSegs True  _                   _        [] = []
+replaceSegs False (zoneInd,(ind,seg)) zoneSize [] = replaceZones [(zoneInd,(ind,seg))] zoneSize $ [Zone zoneInd (initSegs)]
+  where (w,h) = zoneSize
+        initSegs = take h $ repeat $ take w $ repeat $ SegmentNULL
+replaceSegs bool  (zoneInd,(ind,seg)) zoneSize ((Zone zind segs):zs)
+  | zind ≡ zoneInd = [Zone zind (replaceSeg ind seg segs)] ⧺ replaceSegs True (zoneInd,(ind,seg)) zoneSize zs
+  | otherwise      = [Zone zind segs] ⧺ replaceSegs bool (zoneInd,(ind,seg)) zoneSize zs
+
+replaceSeg ∷ (Int,Int) → Segment → [[Segment]] → [[Segment]]
+replaceSeg ind seg segs = map (findAndReplaceSegmentRow ind seg) (zip yinds segs)
+  where yinds = take (length segs) [0..]
+findAndReplaceSegmentRow ∷ (Int,Int) → Segment → (Int,[Segment]) → [Segment]
+findAndReplaceSegmentRow ind seg (j,segs) = map (findAndReplaceSegmentSpot ind seg j) (zip xinds segs)
+  where xinds = take (length segs) [0..]
+findAndReplaceSegmentSpot ∷ (Int,Int) → Segment → Int → (Int,Segment) → Segment
+findAndReplaceSegmentSpot ind seg0 j (i,seg)
+  | (i,j) ≡ ind = seg0
+  | otherwise   = seg
