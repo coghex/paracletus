@@ -44,17 +44,19 @@ genCursDynsF ∷ Int → Int → Int → ((Int,Int),(Int,Int)) → WorldParams �
 genCursDynsF n nDefTex size ((zi,zj),(i,j)) wp wd d
   | n > size  = (d, n)
   | otherwise = (d',(n + 1))
-    where d'       = initlist ⧺ newvals ⧺ taillist
-          initlist = take n d
-          taillist = take (size - n - (length newvals)) $ repeat $ DynData 0 (0,0) (1,1) (0,0)
-          newvals  = tile1
-          tile1    = [DynData (nDefTex + 3) (2*i',2*j') (1,1) (1,1)]
-          (i',j')  = (fromIntegral i, fromIntegral j)
+    where d'        = initlist ⧺ newvals ⧺ taillist
+          initlist  = take n d
+          taillist  = take (size - n - (length newvals)) $ repeat $ DynData 0 (0,0) (1,1) (0,0)
+          newvals   = tile1
+          tile1     = [DynData (nDefTex + 3) (2*i'+(2*zj'*zw'),2*j'+(2*zi'*zh')) (1,1) (1,1)]
+          (i',j')   = (fromIntegral i,  fromIntegral j)
+          (zi',zj') = (fromIntegral zi, fromIntegral zj)
+          (zw',zh') = (fromIntegral (fst (wpZSize wp)), fromIntegral (snd (wpZSize wp)))
 
 fixCurs ∷ WorldParams → (Int,Int) → ((Int,Int),(Int,Int))
 fixCurs wp (i,j) = ((zi,zj),(i',j'))
-  where zi      = ((1 + i) `div` zw)
-        zj      = ((1 + j) `div` zh)
+  where zi      = (i `div` zw)
+        zj      = (j `div` zh)
         i'      = ((i + zw) `mod` zw)
         j'      = ((j + zh) `mod` zh)
         (zw,zh) = wpZSize wp
