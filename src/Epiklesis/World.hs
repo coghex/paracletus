@@ -33,7 +33,57 @@ genWorldData wp wd = wd { wdZones = zones0 }
 
 -- generates zones and segments for a given cursor
 genWorld ∷ WorldParams → WorldData → [((Int,Int),((Int,Int),Segment))]
-genWorld wp wd = []
+genWorld wp wd = genSegs zSize sSize conts rands cam
+  where cam     = map (fixCurs wp) $ take 9 (evalScreenCursor sSize (-cx,-cy))
+        sSize   = wpSSize wp
+        zSize   = wpZSize wp
+        (cx,cy) = wdCam wd
+        conts  = wpConts wp
+        rands  = wpRands wp
+genSegs ∷ (Int,Int) → (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [((Int,Int),(Int,Int))] → [((Int,Int),((Int,Int),Segment))]
+genSegs _     _    _     _     []         = []
+genSegs zsize size conts rands ((z,s):cs) = segind ⧺ genSegs zsize size conts rands cs
+  where segind = [(z,(s,seg))]
+        seg    = Segment $ genGrid zsize z size s conts rands
+genGrid ∷ (Int,Int) → (Int,Int) → (Int,Int) → (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [[Spot]]
+genGrid (zw,zh) (zi,zj) (w,h) (i,j) conts rands = stripGrid seg1
+  where seg1    = seedConts ind' conts rands zeroSeg
+        ind'    = ((i*w) + (zi*zw*zw), (j*h) + (zj*zh*h))
+        zeroSeg = take (h+4) (zip [-2..] (repeat (take (w+4) (zip [-2..] (repeat (Spot 1 0 Nothing 0.0))))))
+        -- takes a grid with indices and gets rid of them
+        stripGrid ∷ [(α,[(α,β)])] → [[β]]
+        stripGrid ((_,b):ys) = (stripRow b) : stripGrid ys
+        stripGrid _          = [[]]
+        stripRow ∷ [(α,β)] → [β]
+        stripRow ((_,b):ys) = b : stripRow ys
+        stripRow _          = []
+seedConts ∷ (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
+seedConts _   []     _      grid = grid
+seedConts _   _      []     grid = grid
+seedConts ind (c:cs) (r:rs) grid = seedConts ind cs rs spots
+  where spots = seedSpots ind c r grid
+seedSpots ∷ (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
+seedSpots _   _ _ []             = []
+seedSpots ind c r ((j,row):grid) = [(j,(rowSpots j ind c r row))] ⧺ seedSpots ind c r grid
+rowSpots ∷ Int → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → [(Int,Spot)] → [(Int,Spot)]
+rowSpots _ _   _ _ []             = []
+rowSpots j ind c r ((i,spot):row) = [(i,spotSpots i j ind c r spot)] ⧺ rowSpots j ind c r row
+spotSpots ∷ Int → Int → (Int,Int) → (Int,Int) → ((Int,Int),(Int,Int)) → Spot → Spot
+spotSpots i j (zi,zj) (rand,cont) ((w,x),(y,z)) (Spot c t b e)
+  | dist < (rand*100000) = Spot c' t' b e
+  | otherwise            = Spot c  t  b e0
+  where c'   = if e < 0 then 1 else cont
+        t'   = 0
+        i'   = i + zi
+        j'   = j + zj
+        dist = seedDistance i' j' w x y z
+        e0   = e
+-- formula for an ellipse
+seedDistance ∷ Int → Int → Int → Int → Int → Int → Int
+seedDistance x1 y1 x2 y2 x3 y3 = do
+  let p1 = (((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))
+      p2 = (((x1-x3)*(x1-x3))+((y1-y3)*(y1-y3)))
+  p1*p2
 
 -- generates the world dyns and plugs it in to the buffer
 genWorldBuff ∷ [Dyns] → Int → Int → WorldParams → WorldData → [Dyns]
