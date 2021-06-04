@@ -28,15 +28,36 @@ printWorldData wd = show $ wdZones wd
 genWorldBuff ∷ [Dyns] → Int → Int → WorldParams → WorldData → [Dyns]
 genWorldBuff buff b nDefTex wp wd = setTileBuff b dyns buff
   where dyns = Dyns $ genWorldDyns nDefTex 256 curs wp wd d0
-        curs = take 9 (evalScreenCursor sSiz (-cx/64.0, -cy/64.0))
+        curs = take 9 (evalScreenCursor sSiz (-cx, -cy))
         d0   = take 256 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
         sSiz = wpSSize wp
         (cx,cy) = wdCam wd
 genWorldDyns ∷ Int → Int → [(Int,Int)] → WorldParams → WorldData → [DynData] → [DynData]
-genWorldDyns nDefTex size curs wp wd d0 = dyns1
-  where dyns1 = til1 ⧺ til2 ⧺ (tail (tail d0))
-        til1  = [DynData (nDefTex + 3) (2,0) (1,1) (1,1)]
-        til2  = [DynData (nDefTex + 3) (4,0) (1,1) (2,2)]
+genWorldDyns nDefTex size curs wp wd d0 = genCursDyns 0 nDefTex size fcs wp wd d0
+  where fcs   = map (fixCurs wp) curs
+-- generates tiles for each cursor point
+genCursDyns ∷ Int → Int → Int → [((Int,Int),(Int,Int))] → WorldParams → WorldData → [DynData] → [DynData]
+genCursDyns _ _       _    []     _  _  d0 = d0
+genCursDyns n nDefTex size (c:cs) wp wd d0 = genCursDyns n' nDefTex size cs wp wd d1
+  where (d1,n') = genCursDynsF n nDefTex size c wp wd d0
+genCursDynsF ∷ Int → Int → Int → ((Int,Int),(Int,Int)) → WorldParams → WorldData → [DynData] → ([DynData],Int)
+genCursDynsF n nDefTex size ((zi,zj),(i,j)) wp wd d
+  | n > size  = (d, n)
+  | otherwise = (d',(n + 1))
+    where d'       = initlist ⧺ newvals ⧺ taillist
+          initlist = take n d
+          taillist = take (size - n - (length newvals)) $ repeat $ DynData 0 (0,0) (1,1) (0,0)
+          newvals  = tile1
+          tile1    = [DynData (nDefTex + 3) (2*i',2*j') (1,1) (1,1)]
+          (i',j')  = (fromIntegral i, fromIntegral j)
+
+fixCurs ∷ WorldParams → (Int,Int) → ((Int,Int),(Int,Int))
+fixCurs wp (i,j) = ((zi,zj),(i',j'))
+  where zi      = ((1 + i) `div` zw)
+        zj      = ((1 + j) `div` zh)
+        i'      = ((i + zw) `mod` zw)
+        j'      = ((j + zh) `mod` zh)
+        (zw,zh) = wpZSize wp
 
 -- returns the list of indecies
 -- of world segments to generate
