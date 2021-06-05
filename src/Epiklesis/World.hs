@@ -4,6 +4,7 @@ import UPrelude
 import Epiklesis.Data
     ( WinElem(..), WorldParams(..), WorldData(..)
     , Zone(..), Segment(..), Spot(..), Window(..) )
+import Epiklesis.Map
 import Epiklesis.Window
 import Paracletus.Buff ( setTileBuff )
 import Paracletus.Data
@@ -46,17 +47,10 @@ genSegs zsize size conts rands ((z,s):cs) = segind ⧺ genSegs zsize size conts 
   where segind = [(z,(s,seg))]
         seg    = Segment $ genGrid zsize z size s conts rands
 genGrid ∷ (Int,Int) → (Int,Int) → (Int,Int) → (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [[Spot]]
-genGrid (zw,zh) (zi,zj) (w,h) (i,j) conts rands = stripGrid seg1
+genGrid (zw,zh) (zi,zj) (w,h) (i,j) conts rands = stripGrid2 seg1
   where seg1    = seedConts ind' conts rands zeroSeg
         ind'    = ((i*w) + (zi*zw*zw), (j*h) + (zj*zh*h))
         zeroSeg = take (h+4) (zip [-2..] (repeat (take (w+4) (zip [-2..] (repeat (Spot 1 0 Nothing 0.0))))))
-        -- takes a grid with indices and gets rid of them
-        stripGrid ∷ [(α,[(α,β)])] → [[β]]
-        stripGrid ((_,b):ys) = (stripRow b) : stripGrid ys
-        stripGrid _          = [[]]
-        stripRow ∷ [(α,β)] → [β]
-        stripRow ((_,b):ys) = b : stripRow ys
-        stripRow _          = []
 seedConts ∷ (Int,Int) → [(Int,Int)] → [((Int,Int),(Int,Int))] → [(Int,[(Int,Spot)])] → [(Int,[(Int,Spot)])]
 seedConts _   []     _      grid = grid
 seedConts _   _      []     grid = grid
@@ -78,23 +72,16 @@ spotSpots i j (zi,zj) (rand,cont) ((w,x),(y,z)) (Spot c t b e)
         j'   = j + zj
         dist = seedDistance i' j' w x y z
         e0   = e
--- formula for an ellipse
-seedDistance ∷ Int → Int → Int → Int → Int → Int → Int
-seedDistance x1 y1 x2 y2 x3 y3 = do
-  let p1 = (((x1-x2)*(x1-x2))+((y1-y2)*(y1-y2)))
-      p2 = (((x1-x3)*(x1-x3))+((y1-y3)*(y1-y3)))
-  p1*p2
-
 -- generates the world dyns and plugs it in to the buffer
 genWorldBuff ∷ [Dyns] → Int → Int → WorldParams → WorldData → [Dyns]
 genWorldBuff buff b nDefTex wp wd = setTileBuff b dyns buff
-  where dyns = Dyns $ genWorldDyns nDefTex 256 curs wp wd d0
+  where dyns = Dyns $ genWorldDyns nDefTex 512 curs wp wd d0
         curs = take 9 (evalScreenCursor sSiz (-cx, -cy))
-        d0   = take 256 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
+        d0   = take 512 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
         sSiz = wpSSize wp
         (cx,cy) = wdCam wd
 genWorldDyns ∷ Int → Int → [(Int,Int)] → WorldParams → WorldData → [DynData] → [DynData]
-genWorldDyns nDefTex size curs wp wd d0 = genCursDyns 0 nDefTex size fcs wp wd d0
+genWorldDyns nDefTex size curs wp wd d0 = take size $ genCursDyns 0 nDefTex size fcs wp wd d0
   where fcs   = map (fixCurs wp) curs
 -- generates tiles for each cursor point
 genCursDyns ∷ Int → Int → Int → [((Int,Int),(Int,Int))] → WorldParams → WorldData → [DynData] → [DynData]
@@ -108,11 +95,26 @@ genCursDynsF n nDefTex size ((zi,zj),(i,j)) wp wd d
     where d'        = initlist ⧺ newvals ⧺ taillist
           initlist  = take n d
           taillist  = take (size - n - (length newvals)) $ repeat $ DynData 0 (0,0) (1,1) (0,0)
-          newvals   = tile1
+          newvals   = tile1--segToDyns nDefTex (2*i'+(2*zj'*zw'),2*j'+(2*zi'*zh')) seg
           tile1     = [DynData (nDefTex + 3) (2*i'+(2*zj'*zw'),2*j'+(2*zi'*zh')) (1,1) (1,1)]
           (i',j')   = (fromIntegral i,  fromIntegral j)
           (zi',zj') = (fromIntegral zi, fromIntegral zj)
           (zw',zh') = (fromIntegral (fst (wpZSize wp)), fromIntegral (snd (wpZSize wp)))
+          seg       = indexZone (zi,zj) (i,j) (wdZones wd)
+segToDyns ∷ Int → (Float,Float) → Segment → [DynData]
+segToDyns _       _   SegmentNULL = []
+segToDyns nDefTex ind (Segment g) = segToDynsF nDefTex ind g'
+  where g' = trimFat g
+segToDynsF ∷ Int → (Float,Float) → [[Spot]] → [DynData]
+segToDynsF _       _   []         = []
+segToDynsF _       _   [[]]       = []
+segToDynsF nDefTex ind (row:grid) = dd ⧺ segToDynsF nDefTex ind grid
+  where dd = rowToDyns nDefTex ind row
+rowToDyns ∷ Int → (Float,Float) → [Spot] → [DynData]
+rowToDyns _       _     []         = []
+rowToDyns nDefTex (i,j) (spot:row) = dd ⧺ rowToDyns nDefTex (i,j) row
+  where dd = [DynData (nDefTex + 3) (i,j) (1,1) (1,1)]
+        c  = spotCont spot
 
 -- turns a cursor point into a zone and segment index
 fixCurs ∷ WorldParams → (Int,Int) → ((Int,Int),(Int,Int))
@@ -180,3 +182,15 @@ findAndReplaceSegmentSpot ∷ (Int,Int) → Segment → Int → (Int,Segment) �
 findAndReplaceSegmentSpot ind seg0 j (i,seg)
   | (i,j) ≡ ind = seg0
   | otherwise   = seg
+-- returns a segment in a collection of zones
+indexZone ∷ (Int,Int) → (Int,Int) → [Zone] → Segment
+indexZone _    _   []     = SegmentNULL
+indexZone zind ind (z:zs)
+  | (zoneIndex z) ≡ zind = indexSegment ind $ zoneSegs z
+  | otherwise            = indexZone zind ind zs
+-- oob index will just return max or min possible index
+indexSegment ∷ (Int,Int) → [[Segment]] → Segment
+indexSegment (i',j') s = s' !! i
+  where s' = s !! j
+        i  = max 0 $ min (length s') i
+        j  = max 0 $ min (length s)  j

@@ -20,6 +20,7 @@ import Epiklesis.Data
     , Zone(..), Segment(..)
     , Spot(..), Shell(..) )
 import Epiklesis.Elem ( calcTextBoxSize )
+import Epiklesis.World ( genWorldData )
 
 -- quits everything using glfw in parent thread
 hsExit ∷ Env → Lua.Lua ()
@@ -128,10 +129,11 @@ hsNewWorld env win dp = do
       filterOutPathJunk "."  = False
       filterOutPathJunk ".." = False
       filterOutPathJunk _    = True
-      (zx,zy) = (4,3)
-      wp = WorldParams (12,8) (zx,zy) (10,10) [] []
-      wd = WorldData (1.0,1.0) [Zone (0,0) initSegs] Nothing
+      (zx,zy)  = (4,3)
+      wp       = WorldParams (12,8) (zx,zy) (10,10) [] []
+      wd0      = WorldData (1.0,1.0) [Zone (0,0) initSegs] Nothing
+      wd1      = wd0--genWorldData wp wd0
       initSegs = take (zy+2) (repeat (take (zx+2) (repeat (Segment grid))))-- (repeat SegmentNULL)))
-      grid = take sh $ repeat $ take sw $ repeat $ Spot 1 1 Nothing 1
-      (sw,sh) = (10,8)
-  Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem win $ WinElemWorld wp wd dps
+      grid     = take sh $ repeat $ take sw $ repeat $ Spot 1 1 Nothing 1
+      (sw,sh)  = (10,8)
+  Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem win $ WinElemWorld wp wd1 dps

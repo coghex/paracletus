@@ -30,7 +30,7 @@ makeBufferTiles b n atl
 
 -- sets up buffer for world tiles
 loadWorldBuff ∷ WorldParams → [Tile]
-loadWorldBuff wp = makeBufferTiles 3 256 (3,20)
+loadWorldBuff wp = makeBufferTiles 3 512 (3,20)
   where size = sw*sh
         (sw,sh) = wpSSize wp
 
