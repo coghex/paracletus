@@ -27,6 +27,7 @@ data Event = EventError !GLFW.Error !String
            | EventCap !Bool
            | EventRecreate
            | EventReload
+           | EventCam !CamAction
 
 -- cmds that can be asked of
 -- the loading thread
@@ -77,3 +78,6 @@ data ShellCard = ShellUp | ShellDown | ShellLeft | ShellRight deriving (Show, Eq
 
 -- possible shell control keys
 data ShellControl = ShCtlC | ShCtlA | ShCtlE | ShCtlR | ShCtlG | ShCtlO | ShCtlL | ShCtlU | ShCtlW | ShCtlNULL deriving (Show, Eq)
+
+-- possible camera controls
+data CamAction = CASet !(Double,Double,Double) | CAMove !(Double,Double,Double) | CANULL

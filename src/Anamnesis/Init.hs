@@ -37,12 +37,15 @@ initEnv = do
   newC2 ← newTChan
   -- the vert tvar holds verticies and dyns
   newVs ← atomically $ newTVar Nothing
-  newDs ← atomically $ newTVar $ Dyns []
+  --newDs ← atomically $ newTVar $ Dyns []
+  -- cam tvar so we are not constantly updating state for no reason
+  newCam ← atomically $ newTVar (0,0,(-1))
   let env = Env { envEventQ = newQ1
                 , envLoadQ  = newQ2
                 , envLoadCh = newC1
                 , envLuaCh  = newC2
                 , envLuaSt  = newLS
+                , envCamVar = newCam
                 , envVerts  = newVs }
   -- env accessed transactionally
   envChan ← atomically $ newTVar env

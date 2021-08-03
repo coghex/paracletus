@@ -22,10 +22,10 @@ loadTiles ds = winTiles ⧺ buffTiles ⧺ fpsTiles
         nDefTex   = dsNDefTex ds
 genFPSTiles ∷ [Tile]
 genFPSTiles = [tile1,tile2,tile3,tile4]
-  where tile1 = DTile (DMFPS 3) (6.0,4.0) (chW',chH') (0,0) (1,1) chIndex
-        tile2 = DTile (DMFPS 2) (6.8,4.0) (chW',chH') (0,0) (1,1) chIndex
-        tile3 = DTile (DMFPS 1) (7.6,4.0) (chW',chH') (0,0) (1,1) chIndex
-        tile4 = DTile (DMFPS 0) (8.4,4.0) (chW',chH') (0,0) (1,1) chIndex
+  where tile1 = DTile (DMFPS 3) (6.0,4.0) (chW',chH') (0,0) (1,1) False chIndex
+        tile2 = DTile (DMFPS 2) (6.8,4.0) (chW',chH') (0,0) (1,1) False chIndex
+        tile3 = DTile (DMFPS 1) (7.6,4.0) (chW',chH') (0,0) (1,1) False chIndex
+        tile4 = DTile (DMFPS 0) (8.4,4.0) (chW',chH') (0,0) (1,1) False chIndex
         TTFData chIndex chW chH _   _   = indexTTF '0'
         chW'  = chW
         chH'  = chH
@@ -37,4 +37,4 @@ makeTileBuff ∷ Int → Int → [Tile]
 makeTileBuff b n
   | (n ≡ 0)   = []
   | otherwise = makeTileBuff b (n - 1) ⧺ [tile]
-  where tile = DTile (DMBuff b (n - 1)) (0,0) (1,1) (0,0) (1,1) 0
+  where tile = DTile (DMBuff b (n - 1)) (0,0) (1,1) (0,0) (1,1) False 0

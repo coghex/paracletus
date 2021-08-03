@@ -60,11 +60,13 @@ data Tile = GTile { tPos   ∷ (Double,Double)
                   , tSize  ∷ (Int,Int)
                   , tT     ∷ Int
                   }
+-- dtiles change data dynamically
           | DTile { tDyn   ∷ DynMap
                   , tPos   ∷ (Double,Double)
                   , tScale ∷ (Double,Double)
                   , tInd   ∷ (Int,Int)
                   , tSize  ∷ (Int,Int)
+                  , tMoves ∷ Bool
                   , tT     ∷ Int
                   } deriving (Show, Eq)
 

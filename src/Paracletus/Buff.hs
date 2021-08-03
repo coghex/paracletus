@@ -26,7 +26,7 @@ makeBufferTiles ∷ Int → Int → (Int,Int) → [Tile]
 makeBufferTiles b n atl
   | (n ≡ 0)   = []
   | otherwise = makeBufferTiles b (n - 1) atl ⧺ [tile]
-  where tile = DTile (DMBuff b (n - 1)) (0,0) (1,1) (0,0) atl 0
+  where tile = DTile (DMBuff b (n - 1)) (0,0) (1,1) (0,0) atl True 0
 
 -- sets up buffer for world tiles
 loadWorldBuff ∷ WorldParams → [Tile]
@@ -94,19 +94,19 @@ loadDyns ∷ DrawState → Dyns
 loadDyns ds = Dyns $ reverse $ loadDynData ds $ dsTiles ds
 loadDynData _  []                     = []
 loadDynData ds ((GTile _ _ _ _ _):ts) = [] ⧺ loadDynData ds ts
-loadDynData ds ((DTile (DMBuff b n) _ _ _ _ _):ts) = [buff !! n] ⧺ loadDynData ds ts
+loadDynData ds ((DTile (DMBuff b n) _ _ _ _ _ _):ts) = [buff !! n] ⧺ loadDynData ds ts
   where Dyns buff = dsBuff ds !! b
-loadDynData ds ((DTile (DMFPS n) _ _ _ _ _):ts) = [DynData dig (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
+loadDynData ds ((DTile (DMFPS n) _ _ _ _ _ _):ts) = [DynData dig (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
   where dig = calcDiglet n $ dsFPS ds
-loadDynData ds ((DTile (DMSliderVal n d) _ _ _ _ _):ts) = [DynData dig (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
+loadDynData ds ((DTile (DMSliderVal n d) _ _ _ _ _ _):ts) = [DynData dig (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
   where dig = case (currentWin (dsWins ds)) of
                 Just w  → sliderDiglet (winElems w) n d
                 Nothing → 0
-loadDynData ds ((DTile (DMSlider n) _ _ _ _ _):ts) = [DynData 0 (x,0) (1,1) (0,0)] ⧺ loadDynData ds ts
+loadDynData ds ((DTile (DMSlider n) _ _ _ _ _ _):ts) = [DynData 0 (x,0) (1,1) (0,0)] ⧺ loadDynData ds ts
   where x   = case (currentWin (dsWins ds)) of
                 Just w  → calcSliderOffset w n
                 Nothing → 0
-loadDynData ds ((DTile (DMNULL)     _ _ _ _ _):ts) = [DynData 0 (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
+loadDynData ds ((DTile (DMNULL)     _ _ _ _ _ _):ts) = [DynData 0 (0,0) (1,1) (0,0)] ⧺ loadDynData ds ts
 
 -- set dyns in buff
 setTileBuff ∷ Int → Dyns → [Dyns] → [Dyns]

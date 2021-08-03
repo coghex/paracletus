@@ -22,6 +22,7 @@ data Env = Env { envEventQ ∷ Queue Event
                , envLoadCh ∷ TChan TState
                , envLuaCh  ∷ TChan TState
                , envLuaSt  ∷ Lua.State
+               , envCamVar ∷ TVar (Double,Double,Double)
                , envVerts  ∷ TVar (Maybe Verts) }
 -- state holds mutable data, and the
 -- current status of the whole App

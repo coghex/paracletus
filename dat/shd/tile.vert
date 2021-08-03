@@ -34,7 +34,13 @@ void main() {
     int bufI = int(floor(inMove.x - 0.5));
     int dynI = int(floor(inMove.y - 0.5));
 
-    mat4 view = trans.view;
+    vec4 col0 = vec4(1.0,0.0,0.0,0.0);
+    vec4 col1 = vec4(0.0,1.0,0.0,0.0);
+    vec4 col2 = vec4(0.0,0.0,1.0,0.0);
+    vec4 col3 = vec4(0.0,0.0,-1.0,1.0);
+    mat4 basicI = mat4(col0,col1,col2,col3);
+
+    mat4 view = (inMove.z > 0.0) ? trans.view : basicI;
     mat4 proj = trans.proj;
     mat4 dynV = (inMove.y > 0.0) ? (trans.model * (dyn.move[dynI])) : trans.model;
     gl_Position = proj * view * dynV * vec4(inPosition, 1.0);

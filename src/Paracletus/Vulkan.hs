@@ -162,6 +162,7 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
     shouldLoad ← glfwMainLoop window $ do
       env ← ask
       stNew ← get
+      cam ← liftIO . atomically $ readTVar $ envCamVar env
       let Dyns dynData = stDyns stNew
           nDynData = length dynData
           rdata = RenderData { dev
@@ -176,7 +177,7 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
                              , memories = transObjMemories
                              , dynMemories = transDynMemories
                              , texMemories = transTexMemories
-                             , memoryMutator = updateTransObj (0,0,(-1)) dev (swapExtent swapInfo)
+                             , memoryMutator = updateTransObj cam dev (swapExtent swapInfo)
                              , dynMemoryMutator = updateTransDyn nDynData dynData dev (swapExtent swapInfo)
                              , texMemoryMutator = updateTransTex nDynData dynData dev (swapExtent swapInfo) }
       liftIO pollEvents

@@ -54,6 +54,10 @@ evalKey window k ks mk = do
         ch ← liftIO $ GLFW.calcInpKey k mk
         liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdString ch
     else return ()
+  when (GLFW.keyCheck cap keyLayout k "UPA") $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventCam (CAMove (0,(-1),0))
+  when (GLFW.keyCheck cap keyLayout k "DNA") $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventCam (CAMove (0,1,0))
+  when (GLFW.keyCheck cap keyLayout k "LFA") $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventCam (CAMove (1,0,0))
+  when (GLFW.keyCheck cap keyLayout k "RTA") $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventCam (CAMove ((-1),0,0))
 
 -- mouse bools move cam acceleration each frame
 moveCamWithKeys ∷ Anamnesis ε σ ()

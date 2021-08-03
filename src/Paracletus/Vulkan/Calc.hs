@@ -36,12 +36,13 @@ vertices ts = fromList $ combineVertices (1∷Int) ts
           withPos f = map (\(S v) → S v { pos = fromHom ∘ f ∘ toHomPoint $ pos v })
           withTC f = map (\(S v) → S v { texCoord = f $ texCoord v })
           withScale f = map (\(S v) → S v { pos = f $ pos v })
-        combineVertices nDyn ((DTile _ (x',y') (xscale',yscale') (ax',ay') (sx,sy) t'):tts) = withMove (+ vec3 1 dyn 0) (withTC (indexAtlas ax ay sx sy) (withTC (+ vec3 0 0 t) (withPos (+ vec4 x0 y0 0 0) (withScale (* vec3 xscale yscale 1) vertsqs)))) ⧺ combineVertices (nDyn + 1) tts where
+        combineVertices nDyn ((DTile _ (x',y') (xscale',yscale') (ax',ay') (sx,sy) moves t'):tts) = withMove (+ vec3 1 dyn moves') (withTC (indexAtlas ax ay sx sy) (withTC (+ vec3 0 0 t) (withPos (+ vec4 x0 y0 0 0) (withScale (* vec3 xscale yscale 1) vertsqs)))) ⧺ combineVertices (nDyn + 1) tts where
           (x0,y0) = (realToFrac(2*x'), realToFrac(2*y'))
           ( ax,  ay) = (fromIntegral ax', fromIntegral ay')
           (xscale, yscale)  = (realToFrac xscale', realToFrac yscale')
           t = fromIntegral t'
           dyn = fromIntegral nDyn
+          moves' = if moves then 1 else 0
           withPos f = map (\(S v) → S v { pos = fromHom ∘ f ∘ toHomPoint $ pos v })
           withTC f = map (\(S v) → S v { texCoord = f $ texCoord v })
           withScale f = map (\(S v) → S v { pos = f $ pos v })

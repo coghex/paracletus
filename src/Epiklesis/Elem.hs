@@ -48,7 +48,7 @@ calcPaneBoxSize pbs = (24,2.0*fromIntegral(length pbs))
 -- create a slider of arbitrary bounds
 calcPaneSlider ∷ Int → (Double,Double) → Int → Int → Int → [Tile]
 calcPaneSlider n pos mn mx _ = sliderTile ⧺ barTiles ⧺ minTiles ⧺ maxTiles ⧺ valTiles
-  where sliderTile = [DTile (DMSlider n) sliderPos (0.1,0.5) (0,0) (1,1) 93]
+  where sliderTile = [DTile (DMSlider n) sliderPos (0.1,0.5) (0,0) (1,1) False 93]
         sliderPos  = ((fst pos) + 4.0, (snd pos))
         barTiles   = calcText 0 posBar "<-------->"
         posBar     = ((fst pos) + 4.0, (snd pos))
@@ -151,7 +151,7 @@ calcDText _ _   _  _     []         = []
 calcDText n len x0 (_,y) ('\n':str) = calcDText n len x0 (x0,(y - 1)) str
 calcDText n len x0 (x,y) (' ':str)  = calcDText n len x0 (x + 0.25,y) str
 calcDText n len x0 (x,y) (ch:str)   = [textTile] ⧺ calcDText n (len - 1) x0 (x + chX',y) str
-  where textTile = DTile (DMSliderVal n len) (x+(chX'/2.0),y+chY') (chW',chH') (0,0) (1,1) chIndex
+  where textTile = DTile (DMSliderVal n len) (x+(chX'/2.0),y+chY') (chW',chH') (0,0) (1,1) False chIndex
         TTFData chIndex chW chH chX chY = indexTTF ch
         chW' = 0.5*chW
         chH' = 0.5*chH

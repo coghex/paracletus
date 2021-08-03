@@ -100,3 +100,12 @@ processEvent event = case event of
     case stRel of
       RSRecreate → return ()
       _          → modify $ \s → s { stReload = RSReload }
+  (EventCam camaction) → case camaction of
+    CASet cam → do
+      env ← ask
+      liftIO . atomically $ modifyTVar' (envCamVar env) $ const cam
+    CAMove move → do
+      env ← ask
+      liftIO . atomically $ modifyTVar' (envCamVar env) $ \cam → moveCam cam move
+        where moveCam (cx,cy,cz) (x,y,z) = (cx+x,cy+y,cz+z)
+    CANULL → return ()

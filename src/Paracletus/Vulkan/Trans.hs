@@ -36,8 +36,8 @@ data DynTransObject = DynTransObject
   } deriving (Show, Generic)
 instance PrimBytes DynTransObject
 
-updateTransObj ∷ (Float,Float,Float) → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
-updateTransObj cam device extent uniBuf = do
+updateTransObj ∷ (Double,Double,Double) → VkDevice → VkExtent2D → VkDeviceMemory → Anamnesis ε σ ()
+updateTransObj (cx,cy,cz) device extent uniBuf = do
   uboPtr ← allocaPeek $ runVk ∘ vkMapMemory device uniBuf 0 (bSizeOf @TransformationObject undefined) VK_ZERO_FLAGS
   let model = DF4
                 (DF4 32 0 0 0)
@@ -49,7 +49,7 @@ updateTransObj cam device extent uniBuf = do
   -- these commands are all backwards
   -- ortho near far w h
   where view = translate3 (vec3 x y z)
-        (x,y,z) = cam
+        (x,y,z) = (realToFrac cx, realToFrac cy, realToFrac cz)
         proj  = proj' %* clip
         proj' = orthogonal (0.1) (500) (fromIntegral width) (fromIntegral height)
         --proj' = perspective 0.1 500 (45/360*2*pi) aspectRatio
