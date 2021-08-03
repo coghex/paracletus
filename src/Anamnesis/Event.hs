@@ -17,7 +17,7 @@ import Artos.Except ( ExType(ExParacletus) )
 import Artos.Queue ( tryReadQueue, writeQueue )
 import Artos.Var ( atomically, modifyTVar', modifyTVar )
 import Paracletus.Buff ( textDyns, clearDDs )
-import Paracletus.Oblatum.Event ( evalKey )
+import Paracletus.Oblatum.Event ( evalKey, keyInputState )
 import Paracletus.Oblatum.Mouse
     ( evalMouse, evalScroll
     , addLink, toggleLink )
@@ -82,6 +82,11 @@ processEvent event = case event of
     st ← get
     let oldIS = stInput st
         newIS = toggleLink link oldIS
+    modify $ \s → s { stInput = newIS }
+  (EventKeyInput key ks) → do
+    st ← get
+    let oldIS = stInput st
+        newIS = keyInputState oldIS key ks
     modify $ \s → s { stInput = newIS }
   (EventCap cap) → do
     st ← get

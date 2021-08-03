@@ -24,6 +24,7 @@ data Event = EventError !GLFW.Error !String
            | EventLoad !Int
            | EventNewInput !LinkAction
            | EventInput !LinkAction
+           | EventKeyInput !String !Bool
            | EventCap !Bool
            | EventRecreate
            | EventReload

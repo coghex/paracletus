@@ -54,18 +54,39 @@ evalKey window k ks mk = do
         ch ← liftIO $ GLFW.calcInpKey k mk
         liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell $ ShellCmdString ch
     else return ()
-  when (GLFW.keyCheck cap keyLayout k "UPA") $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventCam (CAMove (0,(-1),0))
-  when (GLFW.keyCheck cap keyLayout k "DNA") $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventCam (CAMove (0,1,0))
-  when (GLFW.keyCheck cap keyLayout k "LFA") $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventCam (CAMove (1,0,0))
-  when (GLFW.keyCheck cap keyLayout k "RTA") $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventCam (CAMove ((-1),0,0))
+  when ((ks ≡ GLFW.KeyState'Pressed) && (GLFW.keyCheck cap keyLayout k "UPA")) $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventKeyInput "UPA" True
+  when ((ks ≡ GLFW.KeyState'Released) && (GLFW.keyCheck cap keyLayout k "UPA")) $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventKeyInput "UPA" False
+  when ((ks ≡ GLFW.KeyState'Pressed) && (GLFW.keyCheck cap keyLayout k "DNA")) $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventKeyInput "DNA" True
+  when ((ks ≡ GLFW.KeyState'Released) && (GLFW.keyCheck cap keyLayout k "DNA")) $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventKeyInput "DNA" False
+  when ((ks ≡ GLFW.KeyState'Pressed) && (GLFW.keyCheck cap keyLayout k "RTA")) $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventKeyInput "RTA" True
+  when ((ks ≡ GLFW.KeyState'Released) && (GLFW.keyCheck cap keyLayout k "RTA")) $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventKeyInput "RTA" False
+  when ((ks ≡ GLFW.KeyState'Pressed) && (GLFW.keyCheck cap keyLayout k "LFA")) $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventKeyInput "LFA" True
+  when ((ks ≡ GLFW.KeyState'Released) && (GLFW.keyCheck cap keyLayout k "LFA")) $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventKeyInput "LFA" False
+
+keyInputState ∷ InputState → String → Bool → InputState
+keyInputState inputstate "UPA" ks = inputstate { keySt = newKS }
+  where newKS = (keySt inputstate) { keyUp = ks }
+keyInputState inputstate "DNA" ks = inputstate { keySt = newKS }
+  where newKS = (keySt inputstate) { keyDown = ks }
+keyInputState inputstate "RTA" ks = inputstate { keySt = newKS }
+  where newKS = (keySt inputstate) { keyRight = ks }
+keyInputState inputstate "LFA" ks = inputstate { keySt = newKS }
+  where newKS = (keySt inputstate) { keyLeft = ks }
+keyInputState inputstate _     _  = inputstate
 
 -- mouse bools move cam acceleration each frame
 moveCamWithKeys ∷ Anamnesis ε σ ()
 moveCamWithKeys = do
   env ← ask
   is  ← gets stInput
-  let loadQ    = envLoadQ env 
-  return ()--liftIO $ atomically $ writeQueue loadQ $ LoadCmdMoveCam (keySt is)
+  let eventQ = envEventQ env 
+      move1  = if (keyUp    (keySt is)) then              (0,(-1),0) else (0,0,0)
+      move2  = if (keyDown  (keySt is)) then addvec move1 (0,1,0)    else move1
+      move3  = if (keyLeft  (keySt is)) then addvec move2 (1,0,0)    else move2
+      move4  = if (keyRight (keySt is)) then addvec move3 ((-1),0,0) else move3
+      addvec (a,b,c) (d,e,f) = (a+d,b+e,c+f)
+  liftIO $ atomically $ writeQueue eventQ $ EventCam $ CAMove move4
+  --liftIO $ atomically $ writeQueue loadQ $ LoadCmdMoveCam (keySt is)
   --st  ← get
   --let oldIS    = stInput st
   --    newIS    = oldIS { keySt = (keySt oldIS) { keyAccel = newaccel } }

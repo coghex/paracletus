@@ -16,8 +16,9 @@ import Anamnesis
       Anamnesis' )
 import Anamnesis.Data
     ( Env(envEventQ),
-      InputState(mouse3, mouse1),
+      InputState(..),
       LoopControl(ContinueLoop),
+      ISKeys(..),
       ReloadState(RSNULL),
       State(stInput, stFPS, stReload) )
 import Anamnesis.Util
@@ -142,8 +143,8 @@ processInput ∷ Anamnesis ε σ ()
 processInput = do
   st ← get
   let is = stInput st
-      --ks = keySt   is
-  --if ((keyUp ks) ∨ (keyLeft ks) ∨ (keyDown ks) ∨ (keyRight ks) ∨ (((abs (fst (keyAccel ks))) > 0.0) ∨ (abs (snd (keyAccel ks)) > 0.0))) then moveCamWithKeys
+      ks = keySt   is
+  if ((keyUp ks) ∨ (keyLeft ks) ∨ (keyDown ks) ∨ (keyRight ks)) then moveCamWithKeys else return ()
   --if (accelCap is) then moveCamWithKeys
   --else return ()
   case (mouse1 is) of
