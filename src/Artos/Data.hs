@@ -81,4 +81,4 @@ data ShellCard = ShellUp | ShellDown | ShellLeft | ShellRight deriving (Show, Eq
 data ShellControl = ShCtlC | ShCtlA | ShCtlE | ShCtlR | ShCtlG | ShCtlO | ShCtlL | ShCtlU | ShCtlW | ShCtlNULL deriving (Show, Eq)
 
 -- possible camera controls
-data CamAction = CASet !(Double,Double,Double) | CAMove !(Double,Double,Double) | CANULL
+data CamAction = CASet !(Double,Double,Double) | CAMove !(Double,Double,Double) | CAAccel !(Double,Double) | CANULL

@@ -9,9 +9,7 @@ import Anamnesis
     ( MonadIO(liftIO), MonadReader(ask), MonadState(get), Anamnesis )
 import Anamnesis.Data
     ( Env(..), Settings(sKeyLayout), State(..),
-      Cardinal(..),
-      ISKeys(keyRight, keyDown, keyLeft, keyUp),
-      InputState(..) )
+      Cardinal(..), ISKeys(..), InputState(..) )
 import Anamnesis.Util ( logDebug, logInfo )
 import Artos.Data
 import Artos.Queue ( writeQueue )
@@ -64,14 +62,18 @@ evalKey window k ks mk = do
   when ((ks ≡ GLFW.KeyState'Released) && (GLFW.keyCheck cap keyLayout k "LFA")) $ liftIO $ atomically $ writeQueue (envEventQ env) $ EventKeyInput "LFA" False
 
 keyInputState ∷ InputState → String → Bool → InputState
-keyInputState inputstate "UPA" ks = inputstate { keySt = newKS }
+keyInputState inputstate "UPA" ks = inputstate { keySt = newKS, accelCap = newAC }
   where newKS = (keySt inputstate) { keyUp = ks }
-keyInputState inputstate "DNA" ks = inputstate { keySt = newKS }
+        newAC = (accelCap inputstate) ∨ ks
+keyInputState inputstate "DNA" ks = inputstate { keySt = newKS, accelCap = newAC }
   where newKS = (keySt inputstate) { keyDown = ks }
-keyInputState inputstate "RTA" ks = inputstate { keySt = newKS }
+        newAC = (accelCap inputstate) ∨ ks
+keyInputState inputstate "RTA" ks = inputstate { keySt = newKS, accelCap = newAC }
   where newKS = (keySt inputstate) { keyRight = ks }
-keyInputState inputstate "LFA" ks = inputstate { keySt = newKS }
+        newAC = (accelCap inputstate) ∨ ks
+keyInputState inputstate "LFA" ks = inputstate { keySt = newKS, accelCap = newAC }
   where newKS = (keySt inputstate) { keyLeft = ks }
+        newAC = (accelCap inputstate) ∨ ks
 keyInputState inputstate _     _  = inputstate
 
 -- mouse bools move cam acceleration each frame
@@ -80,12 +82,13 @@ moveCamWithKeys = do
   env ← ask
   is  ← gets stInput
   let eventQ = envEventQ env 
-      move1  = if (keyUp    (keySt is)) then              (0,(-1),0) else (0,0,0)
-      move2  = if (keyDown  (keySt is)) then addvec move1 (0,1,0)    else move1
-      move3  = if (keyLeft  (keySt is)) then addvec move2 (1,0,0)    else move2
-      move4  = if (keyRight (keySt is)) then addvec move3 ((-1),0,0) else move3
+      ks     = keySt is
       addvec (a,b,c) (d,e,f) = (a+d,b+e,c+f)
-  liftIO $ atomically $ writeQueue eventQ $ EventCam $ CAMove move4
+      newAccel = decell $ accelIS dir (keyAccel ks)
+      dir      = case findDir ks of
+                   Just d  → d
+                   Nothing → CardNULL
+  liftIO $ atomically $ writeQueue eventQ $ EventCam $ CAAccel newAccel
   --liftIO $ atomically $ writeQueue loadQ $ LoadCmdMoveCam (keySt is)
   --st  ← get
   --let oldIS    = stInput st
@@ -98,11 +101,11 @@ moveCamWithKeys = do
   --liftIO $ atomically $ writeQueue loadQ $ LoadCmdMoveCam $ addZ newaccel (-1.0)
   --modify' $ \s → s { stInput = newIS }
 
-calcCam ∷ (Float,Float) → (Float,Float,Float) → (Float,Float,Float)
+calcCam ∷ (Double,Double) → (Double,Double,Double) → (Double,Double,Double)
 calcCam (x,y) (cx,cy,cz) = (cx+x,cy+y,cz)
 
 -- accelerate the inputstate
-accelIS ∷ Cardinal → (Float,Float) → (Float,Float)
+accelIS ∷ Cardinal → (Double,Double) → (Double,Double)
 accelIS North (x,y) = (x, 1.1*(y - 0.1))
 accelIS West  (x,y) = (1.1*(x + 0.1), y)
 accelIS South (x,y) = (x, 1.1*(y + 0.1))
@@ -113,7 +116,7 @@ accelIS SouthWest (x,y) = (1.1*(x + 0.1), 1.1*(y + 0.1))
 accelIS SouthEast (x,y) = (1.1*(x - 0.1), 1.1*(y + 0.1))
 accelIS CardNULL (x,y) = (x,y)
 
-decell ∷ (Float,Float) → (Float,Float)
+decell ∷ (Double,Double) → (Double,Double)
 decell (x,y)
   | ((abs x) < 0.01) ∧ ((abs y) < 0.01) = (0.0,0.0)
   | ((abs x) < 0.01) = (0.0,(y / 1.1))

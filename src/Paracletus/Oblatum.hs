@@ -144,9 +144,8 @@ processInput = do
   st ← get
   let is = stInput st
       ks = keySt   is
-  if ((keyUp ks) ∨ (keyLeft ks) ∨ (keyDown ks) ∨ (keyRight ks)) then moveCamWithKeys else return ()
-  --if (accelCap is) then moveCamWithKeys
-  --else return ()
+  --if ((keyUp ks) ∨ (keyLeft ks) ∨ (keyDown ks) ∨ (keyRight ks) ∨ (((abs (fst (keyAccel ks))) > 0.0) ∨ (abs (snd (keyAccel ks)) > 0.0))) then moveCamWithKeys else return ()
+  if (accelCap is) then moveCamWithKeys else return ()
   case (mouse1 is) of
     Just _  → if ((sliderPressed is) > 0) then do
                 moveSliderWithMouse is
