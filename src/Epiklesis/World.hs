@@ -27,9 +27,15 @@ printWorld ∷ Maybe Window → String
 printWorld Nothing  = "no window found"
 printWorld (Just w) = case (findWorld (winElems w)) of
   Nothing      → "no world found"
-  Just (_ ,wd) → printWorldData wd
+  Just (_, wd) → printWorldData wd
 printWorldData ∷ WorldData → String
 printWorldData wd = show $ wdZones wd
+-- just prints the camera
+printCam ∷ Maybe Window → String
+printCam Nothing  = "no window found"
+printCam (Just w) = case (findWorld (winElems w)) of
+  Nothing → "no world found"
+  Just (_, wd) → show $ wdCam wd
 
 -- generates the world data
 genWorldData ∷ WorldParams → WorldData → WorldData
@@ -101,13 +107,13 @@ genCursDynsF n nDefTex size ((zi,zj),(i,j)) wp wd d
     where d'        = initlist ⧺ newvals ⧺ taillist
           initlist  = take n d
           taillist  = take (size - n - (length newvals)) $ repeat $ DynData 0 (0,0) (1,1) (0,0)
-          newvals   = segToDyns nDefTex (sw'*i'+(zj'*zw'),sh'*j'+(zi'*zh')) seg'
+          newvals   = segToDyns nDefTex (sw'*i'+(zj'*sw'*zw'),sh'*j'+(zi'*sh'*zh')) seg'
           (i',j')   = (fromIntegral i,  fromIntegral j)
           (zi',zj') = (fromIntegral zi, fromIntegral zj)
           (sw',sh') = (fromIntegral (fst (wpSSize wp)), fromIntegral (snd (wpSSize wp)))
           (sw,sh)   = (fst (wpSSize wp), snd (wpSSize wp))
           (zw',zh') = (fromIntegral (fst (wpZSize wp)), fromIntegral (snd (wpZSize wp)))
-          seg       = indexZone (zi,zj) (i,j) (wdZones wd)
+          seg       = SegmentNULL--indexZone (zi,zj) (i,j) (wdZones wd)
           seg'      = initSeg seg (wpSSize wp)
 segToDyns ∷ Int → (Float,Float) → Segment → [DynData]
 segToDyns _       _   SegmentNULL = []
@@ -132,10 +138,10 @@ initSeg SegmentNULL (w,h) = Segment $ take (h+4) $ repeat $ take (w+4) $ repeat 
 -- turns a cursor point into a zone and segment index
 fixCurs ∷ WorldParams → (Int,Int) → ((Int,Int),(Int,Int))
 fixCurs wp (i,j) = ((zi,zj),(i',j'))
-  where zi      = (i `div` zw)
-        zj      = (j `div` zh)
-        i'      = ((i + zw) `mod` zw)
-        j'      = ((j + zh) `mod` zh)
+  where zi      = (1 + i) `div` zw
+        zj      = (1 + j) `div` zh
+        i'      = (1 + i + zw) `mod` zw
+        j'      = (1 + j + zh) `mod` zh
         (zw,zh) = wpZSize wp
 
 -- returns the list of indecies
@@ -169,8 +175,8 @@ evalScreenCursor (w,h) (cx,cy) = [pos,posn,pose,poss,posw,posnw,posne,posse,poss
         poswnw = (x - 2,y + 1)
         -- an extra shift centers it since
         -- vulkan is indexed to side of screen
-        x      = (-1) + (floor $ (cx / w'))
-        y      = (-1) + (floor $ (cy / h'))
+        x      = (floor $ (cx / (64.0*w')))
+        y      = (floor $ (cy / (64.0*h')))
         w'     = fromIntegral w
         h'     = fromIntegral h
 
@@ -197,15 +203,3 @@ findAndReplaceSegmentSpot ∷ (Int,Int) → Segment → Int → (Int,Segment) �
 findAndReplaceSegmentSpot ind seg0 j (i,seg)
   | (i,j) ≡ ind = seg0
   | otherwise   = seg
--- returns a segment in a collection of zones
-indexZone ∷ (Int,Int) → (Int,Int) → [Zone] → Segment
-indexZone _    _   []     = SegmentNULL
-indexZone zind ind (z:zs)
-  | (zoneIndex z) ≡ zind = indexSegment ind $ zoneSegs z
-  | otherwise            = indexZone zind ind zs
--- oob index will just return max or min possible index
-indexSegment ∷ (Int,Int) → [[Segment]] → Segment
-indexSegment (i',j') s = s' !! i
-  where s' = s !! j
-        i  = max 0 $ min (length s') i
-        j  = max 0 $ min (length s)  j

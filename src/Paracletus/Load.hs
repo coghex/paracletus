@@ -23,7 +23,8 @@ import Epiklesis.Window
     , calcWinModTexs, currentWin
     , printWinElems )
 import Epiklesis.World ( findWorld, genWorldBuff
-                       , printWorld, replaceWorldData )
+                       , printWorld, replaceWorldData
+                       , printCam )
 import Paracletus.Buff
     ( loadDyns, setTileBuff, genShBuff
     , initBuff, clearBuff, moveSlider
@@ -146,7 +147,7 @@ processCommand ∷ Env → DrawState → LoadCmd → IO LoadResult
 processCommand env ds cmd = case cmd of
   LoadCmdPrint  arg → do
     let ret = case arg of
-                PrintCam      → "no cam defined"
+                PrintCam      → printCam $ currentWin $ dsWins ds
                 PrintMem      → printMem ds
                 PrintBuff     → printBuff $ dsBuff ds
                 PrintWinElems → printWinElems $ currentWin $ dsWins ds

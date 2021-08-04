@@ -231,7 +231,7 @@ genCommandBuffs dev pdev commandPool queues graphicsPipeline renderPass texData 
     (verts0, inds0) ← case (verts) of
             Nothing         → do
               let res   = calcVertices tiles
-                  tiles = [GTile (0,0) (4,4) (0,0) (1,1) 1] ⧺ makeBufferTiles 0 64 (1,1) ⧺ genFPSTiles
+                  tiles = [GTile (0,0) (4,4) (0,0) (1,1) 1] ⧺ makeBufferTiles 0 64 False (1,1) ⧺ genFPSTiles
               fps ← gets stFPS
               modify $ \s → s { stDyns = textDyns 64 (-3,-8) "Loading... 0%" }
               liftIO . atomically $ do

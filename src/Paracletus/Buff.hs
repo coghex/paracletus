@@ -21,21 +21,21 @@ initBuff (n:ns) = dyns : initBuff ns
   where dyns    = Dyns $ take n $ repeat $ DynData 0 (0,0) (1,1) (0,0)
 
 -- b is the buffer index, n is the buffer
--- size, atl is the atlas size
-makeBufferTiles ∷ Int → Int → (Int,Int) → [Tile]
-makeBufferTiles b n atl
+-- size, move is movability, atl is the atlas size
+makeBufferTiles ∷ Int → Int → Bool → (Int,Int) → [Tile]
+makeBufferTiles b n move atl
   | (n ≡ 0)   = []
-  | otherwise = makeBufferTiles b (n - 1) atl ⧺ [tile]
-  where tile = DTile (DMBuff b (n - 1)) (0,0) (1,1) (0,0) atl True 0
+  | otherwise = makeBufferTiles b (n - 1) move atl ⧺ [tile]
+  where tile = DTile (DMBuff b (n - 1)) (0,0) (1,1) (0,0) atl move 0
 
 -- sets up buffer for world tiles
 loadWorldBuff ∷ WorldParams → [Tile]
-loadWorldBuff wp = makeBufferTiles 3 1000 (3,20)
+loadWorldBuff wp = makeBufferTiles 3 1000 True (3,20)
   where size = sw*sh
         (sw,sh) = wpSSize wp
 
 loadShell ∷ [Tile]
-loadShell = makeBufferTiles 2 256 (1,1)
+loadShell = makeBufferTiles 2 256 False (1,1)
 
 -- dyns required for shell
 genShBuff ∷ [Dyns] → Int → Shell → Bool → [Dyns]
