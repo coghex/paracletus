@@ -41,7 +41,9 @@ hsPrint ∷ Env → String → Lua.Lua ()
 hsPrint env "world" = Lua.liftIO $ atomically $ writeQueue (envLoadQ  env) $ LoadCmdPrint PrintWorld
 hsPrint env "buff"  = Lua.liftIO $ atomically $ writeQueue (envLoadQ  env) $ LoadCmdPrint PrintBuff
 hsPrint env "mem"   = Lua.liftIO $ atomically $ writeQueue (envLoadQ  env) $ LoadCmdPrint PrintMem
-hsPrint env "cam"   = Lua.liftIO $ atomically $ writeQueue (envLoadQ  env) $ LoadCmdPrint PrintCam
+hsPrint env "cam"   = do
+  Lua.liftIO $ atomically $ writeQueue (envLoadQ  env) $ LoadCmdPrint PrintCam
+  Lua.liftIO $ atomically $ writeQueue (envEventQ env) $ EventPrint PrintCam
 hsPrint env str     = Lua.liftIO $ atomically $ writeQueue (envEventQ env) $ EventLogDebug $ "value " ⧺ str ⧺ " not known"
 
 -- adds a window to the lua draw state

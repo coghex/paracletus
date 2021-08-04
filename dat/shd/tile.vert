@@ -39,9 +39,15 @@ void main() {
     vec4 col2 = vec4(0.0,0.0,1.0,0.0);
     vec4 col3 = vec4(0.0,0.0,-1.0,1.0);
     mat4 basicI = mat4(col0,col1,col2,col3);
-
     mat4 view = (inMove.z > 0.0) ? trans.view : basicI;
-    mat4 proj = trans.proj;
+
+    vec4 col4 = vec4(-4*trans.view[3][2]/4.0,0.0,0.0,0.0);
+    vec4 col5 = vec4(0.0,-4*trans.view[3][2]/3.0,0.0,0.0);
+    vec4 col6 = vec4(0.0,0.0,1.0,0.0);
+    vec4 col7 = vec4(0.0,0.0,0.0,1.0);
+    mat4 zoom = mat4(col4,col5,col6,col7);
+    mat4 proj = (inMove.z > 0.0) ? trans.proj * zoom : trans.proj;
+    
     mat4 dynV = (inMove.y > 0.0) ? (trans.model * (dyn.move[dynI])) : trans.model;
     gl_Position = proj * view * dynV * vec4(inPosition, 1.0);
     fragColor = inColor;

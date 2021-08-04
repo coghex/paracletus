@@ -45,9 +45,12 @@ processEvent event = case event of
   (EventLogDebug str) → logDebug str
   (EventLogInfo  str) → logInfo  str
   (EventPrint arg) → do
-    st ← get
+    env ← ask
+    st  ← get
     case arg of 
-      PrintCam  → logInfo $ "no cam defined" -- "> " ⧺ (show (stCam st))
+      PrintCam  → do
+        cam ← liftIO . atomically $ readTVar (envCamVar env)
+        logInfo $ "> " ⧺ (show cam)
       PrintNULL → logInfo $ "print null command"
   (EventExit) → do
     st ← get

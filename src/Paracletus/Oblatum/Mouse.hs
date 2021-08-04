@@ -8,13 +8,13 @@ import Control.Monad.State.Class (modify',gets)
 import Anamnesis
     ( MonadIO(liftIO), MonadReader(ask), MonadState(get), Anamnesis )
 import Anamnesis.Data
-    ( Env(envLoadQ),
+    ( Env(envLoadQ, envCamVar),
       State(stWindow, stInput),
       InputState(..), InputElem(..) )
 import Anamnesis.Util ( logDebug )
 import Artos.Data
 import Artos.Queue ( writeQueue )
-import Artos.Var ( atomically )
+import Artos.Var ( atomically, readTVar, modifyTVar' )
 import Epiklesis.Data ( Window(..), WinElem(..), LinkAction(..) )
 import Epiklesis.Window ( currentWin, switchWin, backWin, replaceWin )
 import Paracletus.Buff ( moveSlider )
@@ -28,10 +28,9 @@ convertPixels (x,y) = (x',y')
         y' = - ((y - ( 720.0 / 2.0)) / 64.0)
 
 evalScroll ∷ GLFW.Window → Double → Double → Anamnesis ε σ ()
-evalScroll _ _ y = return () --do
---  env ← ask
---  let loadQ = envLoadQ env
---  liftIO $ atomically $ writeQueue loadQ $ LoadCmdScroll y
+evalScroll _ _ y = do
+  env ← ask
+  liftIO . atomically $ modifyTVar' (envCamVar env) $ \(cx,cy,cz) → (cx,cy,(min -0.1 $ max -10 $ cz - (0.1*(realToFrac y))))
 
 evalMouse ∷ GLFW.Window → GLFW.MouseButton → GLFW.MouseButtonState → GLFW.ModifierKeys → Anamnesis ε σ ()
 evalMouse win mb mbs mk = do
