@@ -75,9 +75,9 @@ spotSpots i j (zi,zj) (rand,cont) ((w,x),(y,z)) (Spot c t b e)
 -- generates the world dyns and plugs it in to the buffer
 genWorldBuff ∷ [Dyns] → Int → Int → WorldParams → WorldData → [Dyns]
 genWorldBuff buff b nDefTex wp wd = setTileBuff b dyns buff
-  where dyns = Dyns $ genWorldDyns nDefTex 512 curs wp wd d0
+  where dyns = Dyns $ genWorldDyns nDefTex 1000 curs wp wd d0
         curs = take 9 (evalScreenCursor sSiz (-cx, -cy))
-        d0   = take 512 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
+        d0   = take 1000 $ repeat $ DynData 0 (0,0) (1,1) (0,0)
         sSiz = wpSSize wp
         (cx,cy) = wdCam wd
 genWorldDyns ∷ Int → Int → [(Int,Int)] → WorldParams → WorldData → [DynData] → [DynData]
@@ -91,30 +91,37 @@ genCursDyns n nDefTex size (c:cs) wp wd d0 = genCursDyns n' nDefTex size cs wp w
 genCursDynsF ∷ Int → Int → Int → ((Int,Int),(Int,Int)) → WorldParams → WorldData → [DynData] → ([DynData],Int)
 genCursDynsF n nDefTex size ((zi,zj),(i,j)) wp wd d
   | n > size  = (d, n)
-  | otherwise = (d',(n + 1))
+  | otherwise = (d',(n + (sw*sh)))
     where d'        = initlist ⧺ newvals ⧺ taillist
           initlist  = take n d
           taillist  = take (size - n - (length newvals)) $ repeat $ DynData 0 (0,0) (1,1) (0,0)
-          newvals   = tile1--segToDyns nDefTex (2*i'+(2*zj'*zw'),2*j'+(2*zi'*zh')) seg
-          tile1     = [DynData (nDefTex + 3) (2*i'+(2*zj'*zw'),2*j'+(2*zi'*zh')) (1,1) (1,1)]
+          newvals   = segToDyns nDefTex (sw'*i'+(zj'*zw'),sh'*j'+(zi'*zh')) seg'
           (i',j')   = (fromIntegral i,  fromIntegral j)
           (zi',zj') = (fromIntegral zi, fromIntegral zj)
+          (sw',sh') = (fromIntegral (fst (wpSSize wp)), fromIntegral (snd (wpSSize wp)))
+          (sw,sh)   = (fst (wpSSize wp), snd (wpSSize wp))
           (zw',zh') = (fromIntegral (fst (wpZSize wp)), fromIntegral (snd (wpZSize wp)))
           seg       = indexZone (zi,zj) (i,j) (wdZones wd)
+          seg'      = initSeg seg (wpSSize wp)
 segToDyns ∷ Int → (Float,Float) → Segment → [DynData]
 segToDyns _       _   SegmentNULL = []
 segToDyns nDefTex ind (Segment g) = segToDynsF nDefTex ind g'
   where g' = trimFat g
 segToDynsF ∷ Int → (Float,Float) → [[Spot]] → [DynData]
-segToDynsF _       _   []         = []
-segToDynsF _       _   [[]]       = []
-segToDynsF nDefTex ind (row:grid) = dd ⧺ segToDynsF nDefTex ind grid
-  where dd = rowToDyns nDefTex ind row
+segToDynsF _       _     []         = []
+segToDynsF _       _     [[]]       = []
+segToDynsF nDefTex (i,j) (row:grid) = dd ⧺ segToDynsF nDefTex (i,j+1) grid
+  where dd = rowToDyns nDefTex (i,j) row
 rowToDyns ∷ Int → (Float,Float) → [Spot] → [DynData]
 rowToDyns _       _     []         = []
-rowToDyns nDefTex (i,j) (spot:row) = dd ⧺ rowToDyns nDefTex (i,j) row
-  where dd = [DynData (nDefTex + 3) (i,j) (1,1) (1,1)]
+rowToDyns nDefTex (i,j) (spot:row) = dd ⧺ rowToDyns nDefTex (i+1,j) row
+  where dd = [DynData (nDefTex + 3) (2*i,2*j) (1,1) (1,1)]
         c  = spotCont spot
+
+-- creates a new empty segment when they havent been created yet
+initSeg ∷ Segment → (Int,Int) → Segment
+initSeg (Segment g) _     = Segment g
+initSeg SegmentNULL (w,h) = Segment $ take (h+4) $ repeat $ take (w+4) $ repeat $ Spot 1 1 Nothing 0
 
 -- turns a cursor point into a zone and segment index
 fixCurs ∷ WorldParams → (Int,Int) → ((Int,Int),(Int,Int))
@@ -154,6 +161,8 @@ evalScreenCursor (w,h) (cx,cy) = [pos,posn,pose,poss,posw,posnw,posne,posse,poss
         poswsw = (x - 2,y + 1)
         posww  = (x - 2,y)
         poswnw = (x - 2,y + 1)
+        -- an extra shift centers it since
+        -- vulkan is indexed to side of screen
         x      = (-1) + (floor $ cx / w')
         y      = (-1) + (floor $ cy / h')
         w'     = fromIntegral w

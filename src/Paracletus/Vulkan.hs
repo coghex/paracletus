@@ -126,7 +126,7 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
   (transObjMems, transObjBufs) ← unzip ⊚ createTransObjBuffers pdev dev swapchainLen
   transObjMemories ← newArrayRes transObjMems
   descriptorBufferInfos ← mapM transObjBufferInfo transObjBufs
-  let nDynObjs = 1000
+  let nDynObjs = 10000
   (transDynMems, transDynBuffs) ← unzip ⊚ createTransDynBuffers pdev dev swapchainLen nDynObjs
   dynDescBufInfos ← mapM (transDynBufferInfo nDynObjs) transDynBuffs
   transDynMemories ← newArrayRes transDynMems

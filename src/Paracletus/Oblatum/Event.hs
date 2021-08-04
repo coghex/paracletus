@@ -4,13 +4,13 @@ module Paracletus.Oblatum.Event where
 import Prelude()
 import UPrelude
 import Control.Monad (when)
-import Control.Monad.State.Class (modify',gets)
+import Control.Monad.State.Class (gets)
 import Anamnesis
     ( MonadIO(liftIO), MonadReader(ask), MonadState(get), Anamnesis )
 import Anamnesis.Data
     ( Env(..), Settings(sKeyLayout), State(..),
       Cardinal(..), ISKeys(..), InputState(..) )
-import Anamnesis.Util ( logDebug, logInfo )
+--import Anamnesis.Util ( logDebug, logInfo )
 import Artos.Data
 import Artos.Queue ( writeQueue )
 import Artos.Var ( atomically )
@@ -83,23 +83,11 @@ moveCamWithKeys = do
   is  ← gets stInput
   let eventQ = envEventQ env 
       ks     = keySt is
-      addvec (a,b,c) (d,e,f) = (a+d,b+e,c+f)
       newAccel = decell $ accelIS dir (keyAccel ks)
       dir      = case findDir ks of
                    Just d  → d
                    Nothing → CardNULL
   liftIO $ atomically $ writeQueue eventQ $ EventCam $ CAAccel newAccel
-  --liftIO $ atomically $ writeQueue loadQ $ LoadCmdMoveCam (keySt is)
-  --st  ← get
-  --let oldIS    = stInput st
-  --    newIS    = oldIS { keySt = (keySt oldIS) { keyAccel = newaccel } }
-  --    newaccel = decell $ accelIS dir (keyAccel (keySt oldIS))
-  --    dir      = case (findDir (keySt oldIS)) of
-  --                 Just d  → d
-  --                 Nothing → CardNULL
-  --let loadQ    = envLoadQ env 
-  --liftIO $ atomically $ writeQueue loadQ $ LoadCmdMoveCam $ addZ newaccel (-1.0)
-  --modify' $ \s → s { stInput = newIS }
 
 calcCam ∷ (Double,Double) → (Double,Double,Double) → (Double,Double,Double)
 calcCam (x,y) (cx,cy,cz) = (cx+x,cy+y,cz)
