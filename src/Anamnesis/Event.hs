@@ -119,6 +119,7 @@ processEvent event = case event of
       let is = stInput st
           ks = keySt is
       if (((abs (fst accel)) ≤ 0.0) ∧ ((abs (snd accel)) ≤ 0.0)) then do
+        liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
         modify $ \s → s { stInput = is { accelCap = False
                                        , keySt = ks { keyAccel = (0.0,0.0) } } }
       else do
