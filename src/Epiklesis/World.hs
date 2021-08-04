@@ -35,7 +35,12 @@ printCam ∷ Maybe Window → String
 printCam Nothing  = "no window found"
 printCam (Just w) = case (findWorld (winElems w)) of
   Nothing → "no world found"
-  Just (_, wd) → show $ wdCam wd
+  Just (wp, wd) → (show (wdCam wd)) ⧺ (printCams fixedCam)
+    where fixedCam = map (fixCurs wp) $ take 9 (evalScreenCursor (wpSSize wp) (-cx,-cy))
+          (cx,cy)  = wdCam wd
+printCams ∷ [((Int,Int),(Int,Int))] → String
+printCams []     = "."
+printCams (c:cs) = ", " ⧺ (show c) ⧺ printCams cs
 
 -- generates the world data
 genWorldData ∷ WorldParams → WorldData → WorldData

@@ -126,7 +126,7 @@ evalShell env sh = do
   return sh'
 
 execShell ∷ Lua.State → String → IO (Lua.Status,String)
-execShell ls str = return (Lua.OK,"")
+execShell ls ""  = return (Lua.OK,"")
 execShell ls str = do
   let str' = case last str of
                ')' → str
