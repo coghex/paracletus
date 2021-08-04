@@ -112,7 +112,7 @@ genCursDynsF n nDefTex size ((zi,zj),(i,j)) wp wd d
     where d'        = initlist ⧺ newvals ⧺ taillist
           initlist  = take n d
           taillist  = take (size - n - (length newvals)) $ repeat $ DynData 0 (0,0) (1,1) (0,0)
-          newvals   = segToDyns nDefTex (sw'*i'+(zj'*sw'*zw'),sh'*j'+(zi'*sh'*zh')) seg'
+          newvals   = segToDyns nDefTex (sw'*i'+(zi'*sw'*zw'),sh'*j'+(zj'*sh'*zh')) seg'
           (i',j')   = (fromIntegral i,  fromIntegral j)
           (zi',zj') = (fromIntegral zi, fromIntegral zj)
           (sw',sh') = (fromIntegral (fst (wpSSize wp)), fromIntegral (snd (wpSSize wp)))
