@@ -22,7 +22,8 @@ import Epiklesis.Window
     ( switchWin, findWin, replaceWin
     , calcWinModTexs, currentWin
     , printWinElems )
-import Epiklesis.World ( findWorld, genWorldBuff, printWorld )
+import Epiklesis.World ( findWorld, genWorldBuff
+                       , printWorld, replaceWorldData )
 import Paracletus.Buff
     ( loadDyns, setTileBuff, genShBuff
     , initBuff, clearBuff, moveSlider
@@ -163,6 +164,15 @@ processCommand env ds cmd = case cmd of
     where ds' = ds { dsNDefTex = nDefTex }
   LoadCmdLink pos → return $ ResDrawState ds'
     where ds' = linkTest pos ds
+  LoadCmdCam (x,y,_) → return $ ResDrawState ds'
+    where ds' = case (currentWin (dsWins ds)) of
+                  Nothing → ds
+                  Just w → case (findWorld (winElems w)) of
+                    Nothing → ds
+                    Just (wp,wd) → ds { dsWins = replaceWin newWin (dsWins ds) }
+                      where wd'    = wd { wdCam = cam' }
+                            cam'   = (realToFrac x, realToFrac y)
+                            newWin = w { winElems = replaceWorldData (winElems w) wd' }
   LoadCmdVerts → do
     let newVerts = Verts $ calcVertices $ loadTiles ds
         ds'      = ds { dsTiles = loadTiles ds }

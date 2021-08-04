@@ -16,6 +16,12 @@ findWorld []                           = Nothing
 findWorld ((WinElemWorld wp wd _):wes) = Just (wp,wd)
 findWorld (we:wes)                     = findWorld wes
 
+-- replaces the data of the first world in winelems
+replaceWorldData ∷ [WinElem] → WorldData → [WinElem]
+replaceWorldData []                              _  = []
+replaceWorldData ((WinElemWorld wp _ dir):elems) wd = [WinElemWorld wp wd dir] ⧺ elems
+replaceWorldData (elem:elems)                    wd = [elem] ⧺ replaceWorldData elems wd
+
 -- prints the first world found nicely
 printWorld ∷ Maybe Window → String
 printWorld Nothing  = "no window found"
@@ -163,8 +169,8 @@ evalScreenCursor (w,h) (cx,cy) = [pos,posn,pose,poss,posw,posnw,posne,posse,poss
         poswnw = (x - 2,y + 1)
         -- an extra shift centers it since
         -- vulkan is indexed to side of screen
-        x      = (-1) + (floor $ cx / w')
-        y      = (-1) + (floor $ cy / h')
+        x      = (-1) + (floor $ (cx / w'))
+        y      = (-1) + (floor $ (cy / h'))
         w'     = fromIntegral w
         h'     = fromIntegral h
 

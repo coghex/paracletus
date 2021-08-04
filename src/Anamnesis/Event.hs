@@ -15,7 +15,7 @@ import Anamnesis.Util ( logDebug, logExcept, logInfo, logWarn )
 import Artos.Data
 import Artos.Except ( ExType(ExParacletus) )
 import Artos.Queue ( tryReadQueue, writeQueue )
-import Artos.Var ( atomically, modifyTVar', modifyTVar )
+import Artos.Var ( atomically, modifyTVar', modifyTVar, readTVar )
 import Paracletus.Buff ( textDyns, clearDDs )
 import Paracletus.Oblatum.Event ( evalKey, keyInputState )
 import Paracletus.Oblatum.Mouse
@@ -122,6 +122,9 @@ processEvent event = case event of
         modify $ \s → s { stInput = is { accelCap = False
                                        , keySt = ks { keyAccel = (0.0,0.0) } } }
       else do
+        -- also sets the world cam to the old cam
+        oldcam ← liftIO . atomically $ readTVar (envCamVar env)
+        liftIO . atomically $ writeQueue (envLoadQ env) $ LoadCmdCam oldcam
         modify $ \s → s { stInput = is { keySt = ks { keyAccel = accel } } }
         liftIO . atomically $ modifyTVar' (envCamVar env) $ \cam → accelCam cam accel
           where accelCam (cx,cy,cz) (x,y) = (cx+x,cy+y,cz)

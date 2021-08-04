@@ -25,6 +25,7 @@ evalKey window k ks mk = do
   -- glfw is parent thread, so this
   -- will close everything
   when (GLFW.keyCheck False keyLayout k "ESC") $ liftIO $ GLFW.setWindowShouldClose window True
+  when (GLFW.keyCheck False keyLayout k "R") $ liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
   when (GLFW.keyCheck cap keyLayout k "SH") $ if (ks ≡ GLFW.KeyState'Pressed) then do
       liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdInput $ LCIShell ShellCmdToggle
       liftIO $ atomically $ writeQueue (envEventQ env) $ EventCap True
