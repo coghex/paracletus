@@ -162,7 +162,7 @@ vulkLoop (VulkanLoopData (GQData pdev dev commandPool _) queues scsd window vulk
     shouldLoad ← glfwMainLoop window $ do
       env ← ask
       stNew ← get
-      cam ← liftIO . atomically $ readTVar $ envCamVar env
+      (Camera cam _) ← liftIO . atomically $ readTVar $ envCamVar env
       let Dyns dynData = stDyns stNew
           nDynData = length dynData
           rdata = RenderData { dev

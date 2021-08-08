@@ -6,11 +6,13 @@ import UPrelude
 import Control.Monad (when)
 import Control.Monad.State.Class (modify',gets)
 import Anamnesis
-    ( MonadIO(liftIO), MonadReader(ask), MonadState(get), Anamnesis )
+    ( MonadIO(liftIO), MonadReader(ask)
+    , MonadState(get), Anamnesis )
 import Anamnesis.Data
-    ( Env(envLoadQ, envCamVar),
-      State(stWindow, stInput),
-      InputState(..), InputElem(..) )
+    ( Env(envLoadQ, envCamVar)
+    , State(stWindow, stInput)
+    , InputState(..), InputElem(..)
+    , Camera(..) )
 import Anamnesis.Util ( logDebug )
 import Artos.Data
 import Artos.Queue ( writeQueue )
@@ -30,7 +32,7 @@ convertPixels (x,y) = (x',y')
 evalScroll ∷ GLFW.Window → Double → Double → Anamnesis ε σ ()
 evalScroll _ _ y = do
   env ← ask
-  liftIO . atomically $ modifyTVar' (envCamVar env) $ \(cx,cy,cz) → (cx,cy,(min -0.1 $ max -10 $ cz - (0.1*(realToFrac y))))
+  liftIO . atomically $ modifyTVar' (envCamVar env) $ \(Camera (cx,cy,cz) mov) → Camera (cx,cy,(min -0.1 $ max -10 $ cz - (0.1*(realToFrac y)))) mov
 
 evalMouse ∷ GLFW.Window → GLFW.MouseButton → GLFW.MouseButtonState → GLFW.ModifierKeys → Anamnesis ε σ ()
 evalMouse win mb mbs mk = do

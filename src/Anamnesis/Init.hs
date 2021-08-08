@@ -39,7 +39,7 @@ initEnv = do
   newVs ← atomically $ newTVar Nothing
   --newDs ← atomically $ newTVar $ Dyns []
   -- cam tvar so we are not constantly updating state for no reason
-  newCam ← atomically $ newTVar (0,0,(-1))
+  newCam ← atomically $ newTVar (Camera (0,0,(-1)) (0,0))
   let env = Env { envEventQ = newQ1
                 , envLoadQ  = newQ2
                 , envLoadCh = newC1

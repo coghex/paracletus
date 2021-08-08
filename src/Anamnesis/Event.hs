@@ -10,7 +10,7 @@ import Anamnesis
     ( MonadIO(liftIO), MonadReader(ask), MonadState(get), Anamnesis )
 import Anamnesis.Data
     ( Env(..), ReloadState(..), ISKeys(..)
-    , State(..), InputState(..) )
+    , State(..), InputState(..), Camera(..) )
 import Anamnesis.Util ( logDebug, logExcept, logInfo, logWarn )
 import Artos.Data
 import Artos.Except ( ExType(ExParacletus) )
@@ -111,25 +111,37 @@ processEvent event = case event of
   (EventCam camaction) → case camaction of
     CASet cam → do
       env ← ask
-      liftIO . atomically $ modifyTVar' (envCamVar env) $ const cam
+      liftIO . atomically $ modifyTVar' (envCamVar env) $ const $ Camera cam (0,0)
     CAMove move → do
       env ← ask
       liftIO . atomically $ modifyTVar' (envCamVar env) $ \cam → moveCam cam move
-        where moveCam (cx,cy,cz) (x,y,z) = (cx+x,cy+y,cz+z)
-    CAAccel accel → do
+        where moveCam (Camera (cx,cy,cz) _) (x,y,z) = Camera (cx+x,cy+y,cz+z) (0,0)
+    CAAccel (x,y) → do
       env ← ask
       st ← get
       let is = stInput st
           ks = keySt is
-      if (((abs (fst accel)) ≤ 0.0) ∧ ((abs (snd accel)) ≤ 0.0)) then do
+      if (((abs x) ≤ 0.0) ∧ ((abs y) ≤ 0.0)) then do
         liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
         modify $ \s → s { stInput = is { accelCap = False
                                        , keySt = ks { keyAccel = (0.0,0.0) } } }
       else do
+        (Camera oldcam (ox,oy)) ← liftIO . atomically $ readTVar (envCamVar env)
+        -- checks if we have drifted too far
+        -- and reloads the dyns, thus the world
+        if ((abs ox) > 100) then do
+          liftIO . atomically $ modifyTVar' (envCamVar env) $
+            \(Camera cam (_,my)) → Camera cam (0,my)
+          liftIO . atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
+        else return ()
+        if ((abs oy) > 100) then do
+          liftIO . atomically $ modifyTVar' (envCamVar env) $
+            \(Camera cam (mx,_)) → Camera cam (mx,0)
+          liftIO . atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
+        else return ()
         -- also sets the world cam to the old cam
-        oldcam ← liftIO . atomically $ readTVar (envCamVar env)
         liftIO . atomically $ writeQueue (envLoadQ env) $ LoadCmdCam oldcam
-        modify $ \s → s { stInput = is { keySt = ks { keyAccel = accel } } }
-        liftIO . atomically $ modifyTVar' (envCamVar env) $ \cam → accelCam cam accel
-          where accelCam (cx,cy,cz) (x,y) = (cx+x,cy+y,cz)
+        modify $ \s → s { stInput = is { keySt = ks { keyAccel = (x,y) } } }
+        liftIO . atomically $ modifyTVar' (envCamVar env)
+          $ \(Camera (cx,cy,cz) (mx,my)) → Camera (cx+x,cy+y,cz) (mx+x,my+y)
     CANULL → return ()

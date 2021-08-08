@@ -22,7 +22,7 @@ data Env = Env { envEventQ ∷ Queue Event
                , envLoadCh ∷ TChan TState
                , envLuaCh  ∷ TChan TState
                , envLuaSt  ∷ Lua.State
-               , envCamVar ∷ TVar (Double,Double,Double)
+               , envCamVar ∷ TVar Camera--(Double,Double,Double)
                , envVerts  ∷ TVar (Maybe Verts) }
 -- state holds mutable data, and the
 -- current status of the whole App
@@ -43,6 +43,9 @@ data ReloadState = RSReload | RSRecreate | RSNULL deriving (Show, Eq)
 
 -- defines some user alterable settings
 data Settings = Settings { sKeyLayout ∷ GLFW.KeyLayout }
+
+data Camera = Camera { cam ∷ (Double,Double,Double)
+                     , mov ∷ (Double,Double) } deriving (Show, Eq)
 
 -- input data
 data InputState = InputState { mouse1   ∷ Maybe (Float,Float)
