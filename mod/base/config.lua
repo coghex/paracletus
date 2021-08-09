@@ -1,4 +1,6 @@
 -- configuration and settings go here
+
+-- key layouts
 esckey = 'ESC'
 retkey = 'RET'
 delkey = 'DEL'
@@ -9,3 +11,6 @@ lftkey = 'A'
 dwnkey = 'S'
 rgtkey = 'D'
 shkey  = 'SH'
+
+-- FPS Cap
+fpscap = 30

@@ -15,12 +15,6 @@ import Anamnesis
       Anamnesis,
       Anamnesis' )
 import Anamnesis.Data
-    ( Env(envEventQ),
-      InputState(..),
-      LoopControl(ContinueLoop),
-      ISKeys(..),
-      ReloadState(RSNULL),
-      State(stInput, stFPS, stReload) )
 import Anamnesis.Util
     ( allocResource,
       locally,
@@ -88,18 +82,22 @@ glfwMainLoop w action = go
           if not should then do
             newtick ← liftIO getCurTick
             status ← locally action
+            settings ← gets stSettings
             reload ← gets stReload
-            case reload of
-              RSNULL → do
-                -- TODO: PID loop
-                FPS fps dfps disp ← gets stFPS
-                let deltafps = 0.1
-                liftIO $ whileM_ ((\cur → (cur - (newtick)) < (1.0/fps)) <$> getCurTick) (liftIO (threadDelay 1000))
-                if (dfps > 60) then modify $ \s → s { stFPS = FPS (fps-deltafps) dfps disp }
-                else if (dfps < 60) then modify $ \s → s { stFPS = FPS (min 200.0 (fps+deltafps)) dfps disp }
-                else modify $ \s → s { stFPS = FPS fps dfps disp }
-              _ → return ()
-            if status ≡ ContinueLoop then go else return False
+            case (sFPSCap settings) of
+              Nothing     → if status ≡ ContinueLoop then go else return False
+              Just fpscap → do
+                case reload of
+                  RSNULL → do
+                    -- TODO: PID loop
+                    FPS fps dfps disp ← gets stFPS
+                    let deltafps = 0.1
+                    liftIO $ whileM_ ((\cur → (cur - (newtick)) < (1.0/fps)) <$> getCurTick) (liftIO (threadDelay 1000))
+                    if (dfps > fpscap) then modify $ \s → s { stFPS = FPS (fps-deltafps) dfps disp }
+                    else if (dfps < fpscap) then modify $ \s → s { stFPS = FPS (min 200.0 (fps+deltafps)) dfps disp }
+                    else modify $ \s → s { stFPS = FPS fps dfps disp }
+                  _ → return ()
+                if status ≡ ContinueLoop then go else return False
             else return True
 
 

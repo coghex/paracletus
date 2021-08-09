@@ -65,6 +65,10 @@ initState env = do
   st ← getSystemTime
   -- default settings
   settings ← initSettings (envLuaSt env) "mod/base/config.lua"
+  let fpscap = case (sFPSCap settings) of
+                 -- no FPS cap means unlimited FPS
+                 Nothing → 60
+                 Just fc → fc
   -- state is accessed transactionally
   atomically $ newTVar State { stStatus   = ref
                              , stLogFunc  = lf
@@ -74,7 +78,7 @@ initState env = do
                              , stInput    = is
                              , stStartT   = st
                              , stTick     = Nothing
-                             , stFPS      = FPS 60.0 60 True
+                             , stFPS      = FPS (fromIntegral fpscap) fpscap True
                              , stNDefTex  = 0
                              , stModTexs  = []
                              , stDyns     = Dyns [] }

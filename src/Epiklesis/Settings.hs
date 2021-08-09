@@ -3,6 +3,7 @@ module Epiklesis.Settings where
 import Prelude()
 import UPrelude
 import Anamnesis.Data ( Settings(Settings) )
+import Text.Read (readMaybe)
 import qualified Foreign.Lua as Lua
 import qualified Paracletus.Oblatum.GLFW as GLFW
 
@@ -20,4 +21,7 @@ initSettings ls fn = Lua.runWith ls $ do
   dwnkey ← Lua.getglobal "dwnkey" *> Lua.peek (-1)
   rgtkey ← Lua.getglobal "rgtkey" *> Lua.peek (-1)
   shkey  ← Lua.getglobal "shkey"  *> Lua.peek (-1)
-  return $ Settings $ GLFW.KeyLayout esckey retkey delkey spckey tabkey upkey lftkey dwnkey rgtkey shkey
+  fpscap ← Lua.getglobal "fpscap" *> Lua.peek (-1)
+  let keylayout = GLFW.KeyLayout esckey retkey delkey spckey tabkey upkey lftkey dwnkey rgtkey shkey
+      fps       = readMaybe fpscap
+  return $ Settings keylayout $ fps

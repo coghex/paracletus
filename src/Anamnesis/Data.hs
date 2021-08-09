@@ -42,7 +42,8 @@ data State = State { stStatus   ∷ AExcept
 data ReloadState = RSReload | RSRecreate | RSNULL deriving (Show, Eq)
 
 -- defines some user alterable settings
-data Settings = Settings { sKeyLayout ∷ GLFW.KeyLayout }
+data Settings = Settings { sKeyLayout ∷ GLFW.KeyLayout
+                         , sFPSCap    ∷ Maybe Int }
 
 data Camera = Camera { cam ∷ (Double,Double,Double)
                      , mov ∷ (Double,Double) } deriving (Show, Eq)
