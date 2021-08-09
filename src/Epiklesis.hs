@@ -27,6 +27,7 @@ loadEpiklesis env = do
     _ ← Lua.runWith ls $ do
       Lua.registerHaskellFunction "rawExit"         (hsExit         env)
       Lua.registerHaskellFunction "logDebug"        (hsLogDebug     env)
+      Lua.registerHaskellFunction "logInfo"         (hsLogInfo      env)
       Lua.registerHaskellFunction "rawPrint"        (hsPrint        env)
       Lua.registerHaskellFunction "recreate"        (hsRecreate     env)
       Lua.registerHaskellFunction "reload"          (hsReload       env)

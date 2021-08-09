@@ -4,6 +4,7 @@ module Anamnesis.Event where
 import Prelude()
 import UPrelude
 import Control.Monad.State.Class (modify,gets)
+import Data.List.Split (splitOn)
 import System.Exit (exitWith, ExitCode(..))
 import qualified Paracletus.Oblatum.GLFW as GLFW
 import Anamnesis
@@ -11,7 +12,8 @@ import Anamnesis
 import Anamnesis.Data
     ( Env(..), ReloadState(..), ISKeys(..)
     , State(..), InputState(..), Camera(..) )
-import Anamnesis.Util ( logDebug, logExcept, logInfo, logWarn )
+import Anamnesis.Util ( logDebug, logExcept, logInfo
+                      , logDebugs, logInfos, logWarn)
 import Artos.Data
 import Artos.Except ( ExType(ExParacletus) )
 import Artos.Queue ( tryReadQueue, writeQueue )
@@ -42,8 +44,8 @@ processEvent event = case event of
     case (stWindow st) of
       Just win → liftIO $ GLFW.setWindowShouldClose win True
       Nothing  → logWarn $ "no glfw window to close"
-  (EventLogDebug str) → logDebug str
-  (EventLogInfo  str) → logInfo  str
+  (EventLogDebug str) → logDebugs str
+  (EventLogInfo  str) → logInfos  str
   (EventPrint arg) → do
     env ← ask
     st  ← get

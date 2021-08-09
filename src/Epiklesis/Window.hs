@@ -62,6 +62,11 @@ replaceWorldElem _   [] = []
 replaceWorldElem wd0 ((WinElemWorld wp _  dp):wes) = [WinElemWorld wp wd0 dp] ⧺ replaceWorldElem wd0 wes
 replaceWorldElem wd0 (we:wes) = [we] ⧺ replaceWorldElem wd0 wes
 
+-- prints the layout of windows
+printWins ∷ [Window] → String
+printWins []     = []
+printWins (w:ws) = (winTitle w) ⧺ ": " ⧺ (show (winType w)) ⧺ ['\n'] ⧺ printWins ws
+
 -- prints list of current wins elems
 printWinElems ∷ Maybe Window → String
 printWinElems Nothing  = "no current window"

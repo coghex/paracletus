@@ -21,7 +21,7 @@ import Epiklesis.Shell
 import Epiklesis.Window
     ( switchWin, findWin, replaceWin
     , calcWinModTexs, currentWin
-    , printWinElems )
+    , printWinElems, printWins )
 import Epiklesis.World ( findWorld, genWorldBuff
                        , printWorld, replaceWorldData
                        , printCam )
@@ -152,8 +152,9 @@ processCommand env ds cmd = case cmd of
                 PrintBuff     → printBuff $ dsBuff ds
                 PrintWinElems → printWinElems $ currentWin $ dsWins ds
                 PrintWorld    → printWorld $ currentWin $ dsWins ds
+                PrintWins     → printWins $ dsWins ds
                 PrintNULL     → "no arg " ⧺ (show arg) ⧺ " known"
-    atomically $ writeQueue (envEventQ env) $ EventLogInfo $ show ret
+    atomically $ writeQueue (envEventQ env) $ EventLogInfo $ ret
     return $ ResSuccess
   LoadCmdSetFPS fps → do
     let ds'    = ds { dsFPS = fps }

@@ -55,6 +55,7 @@ data PrintArg = PrintCam
               | PrintBuff
               | PrintWinElems
               | PrintWorld
+              | PrintWins
               | PrintMem
               | PrintNULL deriving (Show, Eq)
 

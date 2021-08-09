@@ -31,6 +31,9 @@ hsExit env = Lua.liftIO $ atomically $ writeQueue (envEventQ env) $ EventExit
 hsLogDebug ∷ Env → String → Lua.Lua ()
 hsLogDebug env str = Lua.liftIO $ atomically $ writeQueue (envEventQ env) $ EventLogDebug str
 
+hsLogInfo ∷ Env → String → Lua.Lua ()
+hsLogInfo env str = Lua.liftIO $ atomically $ writeQueue (envEventQ env) $ EventLogInfo str
+
 hsRecreate ∷ Env → Lua.Lua ()
 hsRecreate env = Lua.liftIO $ atomically $ writeQueue (envEventQ env) $ EventRecreate
 
@@ -41,6 +44,7 @@ hsPrint ∷ Env → String → Lua.Lua ()
 hsPrint env "world" = Lua.liftIO $ atomically $ writeQueue (envLoadQ  env) $ LoadCmdPrint PrintWorld
 hsPrint env "buff"  = Lua.liftIO $ atomically $ writeQueue (envLoadQ  env) $ LoadCmdPrint PrintBuff
 hsPrint env "mem"   = Lua.liftIO $ atomically $ writeQueue (envLoadQ  env) $ LoadCmdPrint PrintMem
+hsPrint env "wins"  = Lua.liftIO $ atomically $ writeQueue (envLoadQ  env) $ LoadCmdPrint PrintWins
 hsPrint env "cam"   = do
   Lua.liftIO $ atomically $ writeQueue (envLoadQ  env) $ LoadCmdPrint PrintCam
   Lua.liftIO $ atomically $ writeQueue (envEventQ env) $ EventPrint PrintCam
@@ -86,16 +90,22 @@ hsNewLink ∷ Env → String → Double → Double → String → String → Lua
 hsNewLink env name x y args func = case (head (splitOn ":" func)) of
   -- exit closes everything using glfw
   "exit" → do
-    let (w,h) = calcTextBoxSize args
-    Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem name $ WinElemLink (x,y) (w,h) LinkExit
+    -- calcTextBoxSize returns values for scaling textures,
+    -- so we need to perform some scaling to match it to the
+    -- alpha offset from the textures
+    let (w',h') = calcTextBoxSize args
+        (w,h)   = (w'/2.75,h'/1.8)
+    Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem name $ WinElemLink (x + 1.5,y - 0.25) (w,h) LinkExit
   -- back returns to the last window
   "back" → do
-    let (w,h) = calcTextBoxSize args
-    Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem name $ WinElemLink (x,y) (w,h) LinkBack
+    let (w',h') = calcTextBoxSize args
+        (w,h)   = (w'/2.75,h'/1.8)
+    Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem name $ WinElemLink (x + 1.5,y - 0.25) (w,h) LinkBack
   -- link goes to specified window
   "link" → do
-    let (w,h) = calcTextBoxSize args
-    Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem name $ WinElemLink (x,y) (w,h) $ LinkLink $ last $ splitOn ":" func
+    let (w',h') = calcTextBoxSize args
+        (w,h)   = (w'/2.75,h'/1.8)
+    Lua.liftIO $ atomically $ writeQueue (envLoadQ env) $ LoadCmdNewElem name $ WinElemLink (x + 1.5,y - 0.25) (w,h) $ LinkLink $ last $ splitOn ":" func
   _ → hsLogDebug env $ "no known link function " ⧺ func
 
 -- adds a pane window element to the specified

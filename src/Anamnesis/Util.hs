@@ -12,6 +12,7 @@ import Prelude()
 import UPrelude
 import Control.Concurrent ( forkFinally, myThreadId, throwTo )
 import qualified Control.Monad.Logger.CallStack as LoggerCS
+import Data.List.Split (splitOn)
 import Data.String (fromString)
 import Data.Time.Clock.System
     ( SystemTime(systemNanoseconds, systemSeconds), getSystemTime )
@@ -126,3 +127,10 @@ logError = LoggerCS.logError ∘ fromString
 {-# INLINE logError #-}
 logExcept ∷ (Exceptable ς, HasCallStack) ⇒ ς → ExType → String → Anamnesis ε σ α
 logExcept ret exType msg = throwError $ AExcept (Just ret) exType (msg ⧺ "\n" ⧺ prettyCallStack callStack ⧺ "\n")
+
+-- logging functions that handle escape chars
+logDebugs ∷ String → Anamnesis ε σ ()
+logDebugs str = logDebug str
+logInfos ∷ String → Anamnesis ε σ ()
+logInfos str = logInfo str
+

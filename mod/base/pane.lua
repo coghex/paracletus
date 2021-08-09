@@ -15,7 +15,6 @@ function pane:initPane (x,y,n)
     self.pName = n
     self.pPosx = x
     self.pPosy = y
-    rawNewWindow (n,"menu")
 end
 function pane:addPaneBit (bit)
     table.insert (self.pBits,bit)
