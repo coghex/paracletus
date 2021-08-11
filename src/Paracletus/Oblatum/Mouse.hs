@@ -4,19 +4,19 @@ module Paracletus.Oblatum.Mouse where
 import Prelude()
 import UPrelude
 import Control.Monad (when)
-import Control.Monad.State.Class (modify',gets)
+import Control.Monad.State.Class (modify,modify',gets)
 import Anamnesis
     ( MonadIO(liftIO), MonadReader(ask)
     , MonadState(get), Anamnesis )
 import Anamnesis.Data
-    ( Env(envLoadQ, envCamVar)
+    ( Env(..)
     , State(stWindow, stInput)
     , InputState(..), InputElem(..)
     , Camera(..) )
 import Anamnesis.Util ( logDebug )
 import Artos.Data
 import Artos.Queue ( writeQueue )
-import Artos.Var ( atomically, readTVar, modifyTVar' )
+import Artos.Var ( atomically, readTVar, modifyTVar', writeTVar )
 import Epiklesis.Data ( Window(..), WinElem(..), LinkAction(..) )
 import Epiklesis.Window ( currentWin, switchWin, backWin, replaceWin )
 import Paracletus.Buff ( moveSlider )
@@ -62,7 +62,10 @@ evalMouse win mb mbs mk = do
           modify' $ \s → s { stInput = newIS }
         else return ()
       Just _  → if ((mbs ≡ GLFW.MouseButtonState'Released) ≡ True) then do
+          env ← ask
           let newIS = oldIS { mouse3 = Nothing }
+          -- reload dyns when the world has been moved
+          liftIO $ atomically $ writeQueue (envEventQ env) $ EventCam CARefresh
           modify' $ \s → s { stInput = newIS }
         else return ()
 
@@ -149,4 +152,27 @@ falseInputElems (ie:ies) = [ie'] ⧺ falseInputElems ies
                 IESlider _ a → IESlider False a
                 IESelect b a → IESelect b a
                 IENULL       → IENULL
+
+
+-- moves the camera when using the mouse
+moveCamWithMouse ∷ (Double,Double) → Anamnesis ε σ ()
+moveCamWithMouse (x,y) = do
+  env ← ask
+  st  ← get
+  case (stWindow st) of
+    Nothing → return ()
+    -- w is glfw window, win is our window
+    Just w  → do
+      (px,py) ← liftIO $ GLFW.getCursorPos w
+      let (x',y') = ((px - x), (py - y))
+          newIS   = (stInput st) { mouse3 = Just (px,py) }
+      Camera (cx,cy,cz) (mx,my) ← liftIO . atomically $ readTVar (envCamVar env)
+      liftIO . atomically $ writeQueue (envLoadQ env) $ LoadCmdCam (cx,cy,cz)
+      liftIO . atomically $ writeTVar (envCamVar env) $ Camera (cx+x',cy-y',cz) (mx+x',my-y')
+      modify $ \s → s { stInput = newIS }
+      
+
+
+
+
 

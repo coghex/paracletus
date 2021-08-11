@@ -13,4 +13,4 @@ rgtkey = 'D'
 shkey  = 'SH'
 
 -- FPS Cap
-fpscap = 30
+fpscap = 144

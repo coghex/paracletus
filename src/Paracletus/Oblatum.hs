@@ -30,7 +30,9 @@ import Paracletus.Oblatum.Callback
     ( errorCallback, keyCallback, mouseButtonCallback, scrollCallback )
 import Paracletus.Oblatum.Event ( moveCamWithKeys )
 import Paracletus.Oblatum.GLFW (WindowHint(..),ClientAPI(..))
-import Paracletus.Oblatum.Mouse ( sliderPressed, moveSliderWithMouse )
+import Paracletus.Oblatum.Mouse
+    ( sliderPressed, moveSliderWithMouse
+    , moveCamWithMouse )
 import qualified Paracletus.Oblatum.GLFW as GLFW
 
 -- setting of glfw callbacks and hints
@@ -149,6 +151,6 @@ processInput = do
                 moveSliderWithMouse is
               else return ()
     Nothing → return ()
-  --case (mouse3 is) of
-  --  Just pos → moveCamWithMouse pos
-  --  Nothing  → return ()
+  case (mouse3 is) of
+    Just pos → moveCamWithMouse pos
+    Nothing  → return ()

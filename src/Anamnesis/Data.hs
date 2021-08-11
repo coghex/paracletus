@@ -49,9 +49,9 @@ data Camera = Camera { cam ∷ (Double,Double,Double)
                      , mov ∷ (Double,Double) } deriving (Show, Eq)
 
 -- input data
-data InputState = InputState { mouse1   ∷ Maybe (Float,Float)
-                             , mouse2   ∷ Maybe (Float,Float)
-                             , mouse3   ∷ Maybe (Float,Float)
+data InputState = InputState { mouse1   ∷ Maybe (Double,Double)
+                             , mouse2   ∷ Maybe (Double,Double)
+                             , mouse3   ∷ Maybe (Double,Double)
                              , isElems  ∷ [InputElem]
                              , inpCap   ∷ Bool
                              , accelCap ∷ Bool

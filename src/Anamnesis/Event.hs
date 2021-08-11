@@ -118,6 +118,9 @@ processEvent event = case event of
       env ← ask
       liftIO . atomically $ modifyTVar' (envCamVar env) $ \cam → moveCam cam move
         where moveCam (Camera (cx,cy,cz) _) (x,y,z) = Camera (cx+x,cy+y,cz+z) (0,0)
+    CARefresh → do
+      env ← ask
+      liftIO . atomically $ writeQueue (envLoadQ env) $ LoadCmdDyns
     CAAccel (x,y) → do
       env ← ask
       st ← get
